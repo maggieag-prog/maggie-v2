@@ -3,1349 +3,1904 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Maggie's Dashboard</title>
+<title>Maggie's Dashboard ✨</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  --bg:       #0e0e11;
-  --surface:  #16161a;
-  --surface2: #1e1e24;
-  --surface3: #26262e;
-  --border:   #2a2a32;
-  --border2:  #353540;
-  --accent:   #c8a96e;
-  --accent2:  #7c6ef7;
-  --green:    #4caf82;
-  --red:      #e05c5c;
-  --yellow:   #e8b84b;
-  --blue:     #5b9cf6;
-  --text:     #f0ede8;
-  --muted:    #7a7888;
-  --muted2:   #4a4858;
+  /* ── Pink palette ── */
+  --bg: #fff5f7;                  /* soft blush background */
+  --bg-grad: linear-gradient(180deg, #fff5f7 0%, #ffe9ee 100%);
+  --surface: #ffffff;             /* clean white cards */
+  --surface2: #fdf2f5;            /* very soft pink */
+  --surface3: #fbe5eb;            /* pinker secondary surface */
+  --border: #f5d0dc;              /* dusty pink border */
+  --border-soft: #fbe5eb;
+  --accent: #e91e63;              /* hot pink */
+  --accent-soft: #f48fb1;         /* pastel pink */
+  --accent2: #c2185b;              /* deep pink */
+  --rose: #ff4081;
+  --blush: #ffc4d6;
+  --gold: #d4a574;                /* warm gold accent */
+  --green: #2e9b6c;
+  --red: #e74c3c;
+  --yellow: #f4a261;
+  --blue: #7986cb;
+  --text: #2d1b2e;                /* deep aubergine */
+  --text-soft: #6b4858;
+  --muted: #a08599;
+  --muted2: #c9b5c1;
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
-
 body {
-  background: var(--bg);
+  background: var(--bg-grad);
+  background-attachment: fixed;
   color: var(--text);
   font-family: 'Inter', sans-serif;
   font-size: 14px;
   min-height: 100vh;
 }
 
-/* ── LAYOUT ── */
-.shell { display: flex; min-height: 100vh; }
-
-.sidebar {
-  width: 220px;
-  flex-shrink: 0;
-  background: var(--surface);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  padding: 24px 0;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-}
-
-.sidebar-logo {
-  padding: 0 20px 24px;
+/* ── NAV ── */
+.nav {
+  display:flex; align-items:center;
+  padding:0 24px;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
-  margin-bottom: 12px;
+  position:sticky; top:0; z-index:100;
+  box-shadow: 0 1px 0 rgba(233,30,99,0.04);
 }
+.nav-brand {
+  font-family:'Playfair Display',serif;
+  font-size:20px; font-style:italic; font-weight:500;
+  padding:14px 22px 14px 0;
+  border-right:1px solid var(--border);
+  margin-right:8px; white-space:nowrap;
+  color: var(--accent);
+  letter-spacing: -0.3px;
+}
+.nav-brand::after {
+  content: ' ♡';
+  color: var(--rose);
+  font-style: normal;
+}
+.nav-tabs { display:flex; gap:0; flex:1; overflow-x:auto; }
+.nav-tab {
+  padding:16px 16px;
+  font-size:12px; font-weight:500;
+  color:var(--muted); cursor:pointer;
+  border:none; background:none;
+  font-family:'Inter',sans-serif;
+  border-bottom:2px solid transparent;
+  margin-bottom:-1px;
+  transition:all .15s; white-space:nowrap;
+  letter-spacing: 0.3px;
+}
+.nav-tab:hover { color:var(--accent); }
+.nav-tab.active { color:var(--accent); border-bottom-color:var(--accent); font-weight:600; }
 
-.sidebar-logo .name {
-  font-family: 'DM Serif Display', serif;
+.nav-right { display:flex; align-items:center; gap:10px; margin-left:auto; padding-left:16px; }
+.live-dot { width:8px; height:8px; border-radius:50%; background:var(--accent); animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1; transform:scale(1)} 50%{opacity:.4; transform:scale(1.2)} }
+.score-pill {
+  background: linear-gradient(135deg, var(--accent), var(--rose));
+  border-radius:24px; padding:6px 14px;
+  font-size:11px; color:#fff; font-weight:500;
+  box-shadow: 0 2px 8px rgba(233,30,99,0.25);
+}
+.score-pill span { font-weight:700; font-family:'JetBrains Mono',monospace; }
+
+/* ── QUOTE BANNER ── */
+.quote-banner {
+  background: linear-gradient(135deg, #fff0f5 0%, #ffe1eb 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 32px;
+  position: relative;
+  overflow: hidden;
+}
+.quote-banner::before {
+  content: '"';
+  position: absolute;
+  font-family: 'Playfair Display', serif;
+  font-size: 140px;
+  color: var(--accent);
+  opacity: 0.08;
+  top: -30px;
+  left: 20px;
+  line-height: 1;
+  font-style: italic;
+}
+.quote-banner::after {
+  content: '✨';
+  position: absolute;
+  font-size: 80px;
+  opacity: 0.08;
+  bottom: -20px;
+  right: 20px;
+  transform: rotate(15deg);
+}
+.quote-content {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+.quote-text {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
   font-size: 18px;
   color: var(--text);
   font-weight: 400;
+  line-height: 1.5;
+  margin-bottom: 6px;
 }
-
-.sidebar-logo .sub {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  color: var(--accent);
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  margin-top: 2px;
-}
-
-.nav-group { margin-bottom: 4px; padding: 0 12px; }
-
-.nav-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--muted2);
-  padding: 10px 8px 4px;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 8px 10px;
-  border-radius: 7px;
-  cursor: pointer;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 400;
-  transition: all 0.15s;
-  user-select: none;
-  text-decoration: none;
-}
-
-.nav-item:hover { background: var(--surface2); color: var(--text); }
-.nav-item.active { background: var(--surface3); color: var(--text); font-weight: 500; }
-.nav-item .icon { font-size: 14px; width: 18px; text-align: center; }
-
-.sidebar-bottom {
-  margin-top: auto;
-  padding: 12px;
-  border-top: 1px solid var(--border);
-}
-
-.live-indicator {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 11px;
-  color: var(--muted);
-  padding: 6px 8px;
-}
-
-.live-dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--green);
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
-
-/* ── MAIN ── */
-.main { flex: 1; overflow-y: auto; }
-
-.topbar {
-  padding: 20px 28px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--bg);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.topbar-left h1 {
-  font-family: 'DM Serif Display', serif;
-  font-size: 22px;
-  font-weight: 400;
-}
-
-.topbar-left .date-line {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  color: var(--accent);
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  margin-top: 2px;
-}
-
-.score-pill {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 6px 14px;
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.score-pill strong { color: var(--accent); font-family: 'JetBrains Mono', monospace; }
-
-/* ── VIEWS ── */
-.view { display: none; padding: 24px 28px; }
-.view.active { display: block; }
-
-/* ── CARDS ── */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
-}
-
-.card-label {
+.quote-author {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 14px;
+  color: var(--accent);
+  font-weight: 500;
 }
 
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-.grid12 { display: grid; grid-template-columns: 1fr 280px; gap: 16px; }
-.grid21 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
-.gap16 { display: flex; flex-direction: column; gap: 16px; }
+/* ── VIEWS ── */
+.view { display:none; padding:24px; }
+.view.active { display:block; }
 
-/* ── TASKS ── */
-.tasks-list { display: flex; flex-direction: column; gap: 7px; }
+.page-header { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:24px; gap:16px; flex-wrap:wrap; }
+.page-title {
+  font-family:'Playfair Display',serif;
+  font-size:28px; font-weight:500;
+  color: var(--text);
+  letter-spacing: -0.5px;
+}
+.page-sub {
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; color:var(--accent);
+  letter-spacing:1.8px; text-transform:uppercase;
+  margin-top:5px; font-weight:500;
+}
 
+.grid-3 { display:grid; grid-template-columns:1fr 1fr 300px; gap:16px; }
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.col-span-2 { grid-column:1/3; }
+
+/* ── CARD ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 2px 12px rgba(233,30,99,0.05);
+}
+.card-label {
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; letter-spacing:2px;
+  text-transform:uppercase; color:var(--accent);
+  font-weight: 600;
+  margin-bottom:14px;
+  display:flex; justify-content:space-between; align-items:center; gap:8px;
+}
+
+/* Tasks */
+.tasks-list { display:flex; flex-direction:column; gap:8px; }
 .task-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 9px 12px;
+  display:flex; align-items:center; gap:11px;
+  padding:10px 13px;
   background: var(--surface2);
-  border-radius: 8px;
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: border-color 0.15s;
+  border-radius:10px;
+  border:1px solid transparent;
+  transition:all .18s; cursor:pointer;
 }
-
-.task-item:hover { border-color: var(--border); }
-.task-item.done { opacity: 0.4; }
-.task-item.done .task-text { text-decoration: line-through; }
-
+.task-item:hover { border-color:var(--accent-soft); background: var(--surface3); }
+.task-item.done { opacity:.5; }
+.task-item.done .task-text { text-decoration:line-through; }
 .task-check {
-  width: 17px; height: 17px; border-radius: 50%;
-  border: 1.5px solid var(--muted2); flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 9px; transition: all 0.15s;
+  width:18px; height:18px; border-radius:50%;
+  border:2px solid var(--accent-soft); flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; transition:all .15s;
+  background: #fff;
 }
-
-.task-item.done .task-check { background: var(--green); border-color: var(--green); color: white; }
-.task-text { flex: 1; font-size: 13px; }
-
-.tag {
-  font-size: 9px; padding: 2px 7px;
-  border-radius: 10px; font-family: 'JetBrains Mono', monospace;
-  letter-spacing: 0.3px;
+.task-item.done .task-check {
+  background: linear-gradient(135deg, var(--accent), var(--rose));
+  border-color:var(--accent); color:#fff;
 }
+.task-text { flex:1; font-size:13.5px; color: var(--text); }
 
-.tag-pr       { background: rgba(124,110,247,0.15); color: var(--accent2); }
-.tag-personal { background: rgba(200,169,110,0.12); color: var(--accent); }
-.tag-urgent   { background: rgba(224,92,92,0.12);   color: var(--red); }
-
-.task-del { background:none; border:none; color:var(--muted2); cursor:pointer; font-size:13px; display:none; }
-.task-item:hover .task-del { display:block; }
-.task-del:hover { color: var(--red); }
-
-/* ── MINI TASK ROW (weekly view) ── */
-.mini-task {
-  display: flex; align-items: center; gap: 7px;
-  padding: 5px 8px; border-radius: 6px;
-  font-size: 12px; cursor: pointer;
-  transition: background 0.1s;
+.task-tag {
+  font-size:10px; padding:3px 9px; border-radius:12px;
+  font-family:'JetBrains Mono',monospace;
+  font-weight: 500;
 }
-.mini-task:hover { background: var(--surface3); }
-.mini-task.done { opacity: 0.4; }
-.mini-task.done .mini-text { text-decoration: line-through; }
-.mini-check { width:14px;height:14px;border-radius:50%;border:1.5px solid var(--muted2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:8px; }
-.mini-task.done .mini-check { background:var(--green);border-color:var(--green);color:#fff; }
-.mini-text { flex:1; }
+.tag-pr { background: linear-gradient(135deg, #f8bbd0, #f48fb1); color: #880e4f; }
+.tag-personal { background: linear-gradient(135deg, #fff0f5, var(--blush)); color: #ad1457; }
+.tag-urgent { background: linear-gradient(135deg, #ffcdd2, #ef9a9a); color: #b71c1c; }
 
-/* ── ADD FORM ── */
-.add-row {
-  display: flex; gap: 8px; margin-top: 10px; align-items: center;
-}
+.task-delete { background:none; border:none; color:var(--muted2); cursor:pointer; font-size:14px; display:none; }
+.task-item:hover .task-delete { display:block; }
+.task-delete:hover { color: var(--red); }
 
-input.fi, select.fi {
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 6px; color: var(--text); font-family: 'Inter', sans-serif;
-  font-size: 12px; padding: 6px 10px; outline: none;
+.add-task-form, .add-goal-form, .add-lead-form, .add-client-form {
+  display:none; gap:8px; margin-top:12px;
+  align-items:center; flex-wrap:wrap;
 }
-input.fi:focus, select.fi:focus { border-color: var(--accent); }
-input.fi { flex:1; }
+.add-task-form.open, .add-goal-form.open, .add-lead-form.open, .add-client-form.open { display:flex; }
+
+.f-input, .f-select, .f-textarea {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family:'Inter',sans-serif; font-size:13px;
+  padding: 7px 11px; outline:none;
+  transition: all .15s;
+}
+.f-input:focus, .f-select:focus, .f-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(233,30,99,0.1);
+}
+.f-input::placeholder { color: var(--muted2); }
+.f-input.grow { flex:1; min-width:180px; }
+.f-textarea { width:100%; min-height:60px; resize:vertical; }
 
 .btn {
-  padding: 6px 14px; border-radius: 6px; border: none;
-  font-family: 'Inter', sans-serif; font-size: 12px;
-  font-weight: 500; cursor: pointer; transition: opacity 0.15s;
-  white-space: nowrap;
+  padding:7px 16px; border-radius:8px; border:none;
+  font-family:'Inter',sans-serif; font-size:12px;
+  cursor:pointer; font-weight:600; transition: all .18s;
+  letter-spacing: 0.2px;
 }
-.btn:hover { opacity: 0.85; }
-.btn-gold   { background: var(--accent); color: #111; }
-.btn-ghost  { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
-.btn-purple { background: var(--accent2); color: #fff; }
-.btn-sm { padding: 4px 10px; font-size: 11px; }
+.btn-accent {
+  background: linear-gradient(135deg, var(--accent), var(--rose));
+  color:#fff;
+  box-shadow: 0 2px 8px rgba(233,30,99,0.25);
+}
+.btn-accent:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(233,30,99,0.35); }
+.btn-ghost {
+  background: var(--surface);
+  color: var(--text-soft);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { background: var(--surface2); border-color: var(--accent-soft); }
+.btn-sm { padding:5px 12px; font-size:11px; }
+.add-btn {
+  background:none;
+  border: 1.5px dashed var(--accent-soft);
+  border-radius:8px;
+  color: var(--accent);
+  font-size:12px; font-weight:500;
+  padding:5px 12px; cursor:pointer;
+  transition:all .15s;
+}
+.add-btn:hover { border-color: var(--accent); background: var(--surface2); }
 
-/* ── HABITS ── */
+/* Habits */
+.week-label { display:flex; justify-content:flex-end; gap:4px; margin-bottom:8px; }
+.week-label span {
+  width:10px; text-align:center;
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; color:var(--muted); font-weight:600;
+}
 .habit-row {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 11px 0; border-bottom: 1px solid var(--border);
+  display:flex; justify-content:space-between; align-items:center;
+  padding:12px 0; border-bottom:1px solid var(--border-soft);
 }
-.habit-row:last-child { border-bottom: none; }
-.habit-info .habit-name { font-weight:500; font-size:13px; }
-.habit-info .habit-streak { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent); margin-top:2px; }
-.habit-dots { display:flex; gap:4px; }
-.dot { width:9px;height:9px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);cursor:pointer;transition:all 0.15s; }
-.dot.done { background:var(--green);border-color:var(--green); }
-.dot.today { border-color:var(--accent); }
-.dot.today:hover { background:var(--accent); }
-.toggle { width:34px;height:19px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0; }
-.toggle.on { background:var(--green);border-color:var(--green); }
-.toggle::after { content:'';position:absolute;top:2px;left:2px;width:13px;height:13px;border-radius:50%;background:white;transition:transform 0.2s; }
-.toggle.on::after { transform:translateX(15px); }
-.week-hdr { display:flex;justify-content:flex-end;gap:4px;margin-bottom:8px; }
-.week-hdr span { width:9px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted); }
+.habit-row:last-child { border-bottom:none; }
+.habit-name { font-weight:500; font-size:13px; }
+.habit-streak {
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; color:var(--accent); margin-top:3px; font-weight: 600;
+}
+.habit-dots { display:flex; gap:5px; }
+.dot {
+  width:11px; height:11px; border-radius:50%;
+  background: var(--surface2); border:1.5px solid var(--border);
+  transition:all .15s;
+}
+.dot.done {
+  background: linear-gradient(135deg, var(--accent), var(--rose));
+  border-color: var(--accent);
+  box-shadow: 0 1px 3px rgba(233,30,99,0.3);
+}
+.dot.today { border-color: var(--accent); border-width: 2px; }
+.habit-toggle {
+  width:36px; height:20px; border-radius:12px;
+  background: var(--surface2); border:1px solid var(--border);
+  cursor:pointer; position:relative; flex-shrink:0;
+  transition: all .2s;
+}
+.habit-toggle.on {
+  background: linear-gradient(135deg, var(--accent), var(--rose));
+  border-color: var(--accent);
+}
+.habit-toggle::after {
+  content:''; position:absolute; top:2px; left:2px;
+  width:14px; height:14px; border-radius:50%;
+  background:#fff; transition:transform .2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.habit-toggle.on::after { transform:translateX(16px); }
 
-/* ── PIPELINE ── */
-.pipeline-meta { display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px; }
-.big-num { font-family:'DM Serif Display',serif;font-size:30px;line-height:1; }
-.meta-sub { font-size:11px;color:var(--muted);margin-top:3px; }
-.meta-sub .hi { color:var(--accent); }
-.prog-wrap { width:200px;display:flex;flex-direction:column;gap:5px;padding-top:2px; }
-.prog-bar { height:4px;background:var(--surface2);border-radius:2px;overflow:hidden; }
-.prog-fill { height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width 0.6s; }
-.prog-lbl { display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted); }
+/* Pipeline KANBAN */
+.view-toggle {
+  display:flex; gap:0;
+  background: var(--surface2);
+  border-radius:10px; padding:3px;
+  border:1px solid var(--border);
+}
+.view-toggle button {
+  background:none; border:none;
+  color:var(--muted); font-size:11px;
+  padding:6px 14px; border-radius:7px;
+  cursor:pointer; font-family:'Inter',sans-serif;
+  font-weight:500; transition:all .15s;
+}
+.view-toggle button.active {
+  background: linear-gradient(135deg, var(--accent), var(--rose));
+  color:#fff; font-weight:600;
+  box-shadow: 0 2px 6px rgba(233,30,99,0.25);
+}
 
-.tbl { width:100%;border-collapse:collapse; }
-.tbl th { text-align:left;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:0 8px 9px;border-bottom:1px solid var(--border); }
-.tbl td { padding:9px 8px;font-size:12px;border-bottom:1px solid var(--border);vertical-align:middle; }
-.tbl tr:last-child td { border-bottom:none; }
-.tbl tr:hover td { background:var(--surface2); }
+.kanban {
+  display:grid; grid-template-columns:repeat(7,minmax(190px,1fr));
+  gap:12px; overflow-x:auto; padding-bottom:12px;
+}
+.kanban-col {
+  background: var(--surface);
+  border-radius:12px; padding:14px;
+  border:1px solid var(--border);
+  min-height:320px;
+  box-shadow: 0 2px 8px rgba(233,30,99,0.04);
+}
+.kanban-col.drag-over {
+  border-color: var(--accent);
+  background: var(--surface2);
+  box-shadow: 0 0 0 3px rgba(233,30,99,0.15);
+}
+.kanban-col-header {
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:10px; padding-bottom:10px;
+  border-bottom:1px solid var(--border-soft);
+}
+.kanban-col-title {
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; letter-spacing:1px; text-transform:uppercase;
+  color:var(--text-soft); font-weight:600;
+  display:flex; align-items:center; gap:6px;
+}
+.kanban-col-count {
+  background: linear-gradient(135deg, var(--accent), var(--rose));
+  color: #fff; border-radius:10px;
+  padding:2px 8px; font-size:10px;
+  font-family:'JetBrains Mono',monospace; font-weight:700;
+}
+.kanban-col-value {
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; color:var(--accent);
+  margin-bottom:10px; font-weight:600;
+}
 
-.s-pill { padding:2px 8px;border-radius:10px;font-size:9px;font-family:'JetBrains Mono',monospace;white-space:nowrap; }
-.sp-lead     { background:rgba(124,110,247,0.12);color:var(--accent2); }
-.sp-proposal { background:rgba(232,184,75,0.12);color:var(--yellow); }
-.sp-followup { background:rgba(200,169,110,0.12);color:var(--accent); }
-.sp-closed   { background:rgba(76,175,130,0.12);color:var(--green); }
-.sp-cold     { background:rgba(122,120,136,0.12);color:var(--muted); }
+.kanban-card {
+  background: linear-gradient(135deg, #fff, #fdf2f5);
+  border-radius:10px; padding:12px;
+  border:1px solid var(--border);
+  margin-bottom:8px; cursor:grab;
+  transition:all .18s;
+  box-shadow: 0 1px 4px rgba(233,30,99,0.06);
+}
+.kanban-card:hover {
+  border-color: var(--accent-soft);
+  transform:translateY(-2px);
+  box-shadow: 0 4px 12px rgba(233,30,99,0.15);
+}
+.kanban-card.dragging { opacity:.4; cursor:grabbing; }
+.kanban-card-name { font-weight:600; font-size:13px; margin-bottom:3px; color: var(--text); }
+.kanban-card-company { font-size:11px; color:var(--muted); margin-bottom:8px; }
+.kanban-card-meta { display:flex; justify-content:space-between; align-items:center; gap:6px; margin-top:6px; }
+.kanban-card-value { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent); font-weight:700; }
+.kanban-card-source {
+  font-size:9px; padding:2px 7px; border-radius:8px;
+  font-family:'JetBrains Mono',monospace;
+  text-transform:uppercase; letter-spacing:.5px; font-weight:600;
+}
+.src-linkedin { background: #e3eafd; color: #3f51b5; }
+.src-referral { background: #f3e5f5; color: #7b1fa2; }
+.src-inbound { background: #e0f2e9; color: #2e7d32; }
+.src-event { background: #fff3e0; color: #e65100; }
+.src-other { background: #f5f5f5; color: #616161; }
+.kanban-card-action {
+  font-size:11px; color:var(--muted);
+  margin-top:8px; padding-top:8px;
+  border-top:1px solid var(--border-soft);
+}
+.kanban-card-action.due-today { color: var(--red); font-weight:500; }
+.kanban-card-action.due-soon { color: var(--yellow); font-weight:500; }
 
-.f-pill { font-size:9px;padding:2px 7px;border-radius:5px;font-family:'JetBrains Mono',monospace; }
-.fp-today { background:rgba(224,92,92,0.12);color:var(--red); }
-.fp-week  { background:rgba(232,184,75,0.12);color:var(--yellow); }
-.fp-done  { background:rgba(76,175,130,0.1);color:var(--green); }
+/* Pipeline Table */
+.pipeline-table { width:100%; border-collapse:collapse; }
+.pipeline-table th {
+  text-align:left;
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:1.5px;
+  text-transform:uppercase; color:var(--accent); font-weight:600;
+  padding:0 10px 12px;
+  border-bottom:2px solid var(--border);
+}
+.pipeline-table td { padding:11px 10px; font-size:13px; border-bottom:1px solid var(--border-soft); vertical-align:middle; }
+.pipeline-table tr:hover td { background: var(--surface2); }
 
-/* ── GOALS ── */
+.stage-pill {
+  padding:3px 10px; border-radius:12px;
+  font-size:10px; font-family:'JetBrains Mono',monospace;
+  white-space:nowrap; cursor:pointer; font-weight:600;
+}
+.stg-lead { background: #f5f5f5; color: #616161; }
+.stg-contacted { background: #e3eafd; color: #3f51b5; }
+.stg-discovery { background: #f3e5f5; color: #7b1fa2; }
+.stg-proposal { background: #fff3e0; color: #e65100; }
+.stg-negotiation { background: #fce4ec; color: var(--accent2); }
+.stg-closed_won { background: #e0f2e9; color: #2e7d32; }
+.stg-closed_lost { background: #ffebee; color: #c62828; }
+
+.value-cell { font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600; color: var(--accent); }
+
+/* CLIENTS */
+.client-card {
+  background: var(--surface);
+  border-radius:14px; padding:18px;
+  border:1px solid var(--border);
+  margin-bottom:12px;
+  box-shadow: 0 2px 8px rgba(233,30,99,0.04);
+  transition: box-shadow .2s;
+}
+.client-card:hover { box-shadow: 0 4px 14px rgba(233,30,99,0.1); }
+.client-card.overdue {
+  border-color: var(--red);
+  background: linear-gradient(135deg, #fff, #ffebee);
+}
+.client-card.due-soon { border-color: var(--yellow); }
+.client-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; gap:10px; }
+.client-name { font-weight:600; font-size:16px; color: var(--text); font-family: 'Playfair Display', serif; }
+.client-company { font-size:12px; color:var(--muted); margin-top:3px; }
+.client-status {
+  font-size:10px; padding:4px 10px; border-radius:12px;
+  font-family:'JetBrains Mono',monospace; font-weight:600;
+}
+.cs-active { background: #e0f2e9; color: #2e7d32; }
+.cs-paused { background: #fff3e0; color: #e65100; }
+.cs-ended { background: #f5f5f5; color: #616161; }
+
+.client-meta {
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr));
+  gap:12px; margin:12px 0; padding:14px;
+  background: var(--surface2);
+  border-radius:10px;
+}
+.meta-block .meta-label {
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; letter-spacing:1px;
+  color:var(--accent); text-transform:uppercase;
+  margin-bottom:3px; font-weight:600;
+}
+.meta-block .meta-value { font-size:13px; font-weight:600; color: var(--text); }
+.meta-value.overdue-text { color: var(--red); }
+.meta-value.due-soon-text { color: var(--yellow); }
+
+.client-notes {
+  font-size:12px; color: var(--text-soft);
+  padding:10px 12px; background: var(--surface2);
+  border-radius:8px; margin-top:10px;
+  line-height:1.6; font-style: italic;
+}
+.client-actions { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+
+/* Daily pipeline preview */
+.pipeline-mini-list { display:flex; flex-direction:column; gap:8px; }
+.pipeline-mini-item {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px 12px; background: var(--surface2);
+  border-radius:10px; font-size:13px;
+  border: 1px solid var(--border-soft);
+}
+.pipeline-mini-item .stage {
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px; padding:2px 8px; border-radius:8px; font-weight:600;
+}
+
+/* Calendar events */
+.cal-event {
+  display:flex; align-items:center; gap:14px;
+  padding:12px 14px;
+  background: linear-gradient(135deg, #fff, var(--surface2));
+  border-radius:12px;
+  border: 1px solid var(--border-soft);
+  margin-bottom:8px;
+  transition: all .15s;
+}
+.cal-event:hover { border-color: var(--accent-soft); }
+.cal-event.in-progress {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, #fff5f8, #ffe9ee);
+}
+.cal-event-time {
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px; font-weight:700;
+  color: var(--accent);
+  min-width:50px;
+  text-align:center;
+}
+.cal-event-time .end-time {
+  font-size:10px; color: var(--muted); font-weight:500; margin-top:2px;
+}
+.cal-event-divider {
+  width:3px; align-self:stretch;
+  border-radius:2px;
+  background: var(--accent);
+}
+.cal-event-body { flex:1; }
+.cal-event-title { font-weight:600; font-size:14px; color: var(--text); margin-bottom:3px; }
+.cal-event-meta {
+  font-size:11px; color: var(--muted);
+  display:flex; gap:10px; flex-wrap:wrap;
+}
+.cal-event-meta span { display:flex; align-items:center; gap:3px; }
+.cal-event-cal-pill {
+  font-size:9px; padding:2px 7px; border-radius:8px;
+  font-family:'JetBrains Mono',monospace;
+  background: var(--surface3);
+  color: var(--text-soft);
+  font-weight:600;
+}
+.cal-connect-prompt {
+  text-align: center;
+  padding: 28px 24px;
+  background: linear-gradient(135deg, #fff, #ffe9ee);
+  border-radius: 12px;
+  border: 1.5px dashed var(--accent-soft);
+}
+.cal-connect-prompt h3 {
+  font-family:'Playfair Display',serif;
+  font-size:18px; color: var(--text);
+  margin-bottom:8px; font-weight:500;
+}
+.cal-connect-prompt p {
+  color: var(--text-soft); font-size:13px;
+  margin-bottom:16px; line-height:1.5;
+}
+
+/* Goals */
 .goal-item {
-  padding: 14px 16px;
-  background: var(--surface2);
-  border-radius: 9px;
-  margin-bottom: 10px;
-  border: 1px solid var(--border);
-  transition: border-color 0.15s;
+  padding:14px; background: var(--surface);
+  border-radius:10px; border:1px solid var(--border);
+  margin-bottom:10px;
+  transition: all .2s;
 }
-.goal-item:last-child { margin-bottom: 0; }
-.goal-item.done { opacity: 0.5; }
+.goal-item:hover { border-color: var(--accent-soft); }
+.goal-item.done-goal { opacity:.55; }
+.goal-header { display:flex; justify-content:space-between; gap:8px; margin-bottom:10px; }
+.goal-title { font-size:13.5px; font-weight:600; flex:1; color: var(--text); }
+.goal-meta { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent); white-space:nowrap; font-weight:600; }
+.goal-bar { height:5px; background: var(--surface3); border-radius:3px; overflow:hidden; }
+.goal-fill { height:100%; border-radius:3px; transition:width .6s; }
+.fill-revenue { background: linear-gradient(90deg, var(--accent), var(--gold)); }
+.fill-pipeline { background: linear-gradient(90deg, var(--accent), var(--rose)); }
+.fill-personal { background: linear-gradient(90deg, var(--rose), var(--blush)); }
+.fill-general { background: linear-gradient(90deg, var(--accent-soft), var(--rose)); }
+.goal-actions { display:flex; gap:6px; margin-top:10px; }
+.goal-value-input { width:80px; }
+.form-row { display:flex; gap:8px; flex-wrap:wrap; width:100%; }
 
-.goal-head { display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px; }
-.goal-title { font-weight:500;font-size:13px; }
-.goal-meta { font-size:11px;color:var(--muted);margin-top:2px; }
-.goal-pct { font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent); }
-
-.goal-bar { height:3px;background:var(--surface3);border-radius:2px;overflow:hidden;margin-top:6px; }
-.goal-bar-fill { height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width 0.5s; }
-
-.goal-actions { display:flex;gap:6px;margin-top:10px;align-items:center; }
-
-/* ── WEEKLY GRID ── */
-.week-grid { display:grid;grid-template-columns:repeat(7,1fr);gap:10px; }
-
+/* Weekly */
+.week-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; }
 .day-col {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 9px;
-  padding: 12px 10px;
-  min-height: 120px;
+  background: var(--surface); border-radius:10px;
+  padding:12px 10px; min-height:130px;
+  border:1px solid var(--border);
+  transition: all .2s;
+}
+.day-col:hover { border-color: var(--accent-soft); }
+.day-col.today {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, #fff, var(--surface2));
+  box-shadow: 0 2px 12px rgba(233,30,99,0.08);
+}
+.day-header { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--accent); text-transform:uppercase; margin-bottom:6px; font-weight:600; }
+.day-date { font-size:18px; font-weight:600; margin-bottom:10px; font-family: 'Playfair Display', serif; }
+.day-col.today .day-date { color:var(--accent); }
+.day-task {
+  font-size:11px; padding:4px 8px; border-radius:6px;
+  margin-bottom:4px; background: var(--surface2);
+  cursor:pointer; transition: all .15s;
+}
+.day-task:hover { background: var(--surface3); }
+.day-task.done { opacity:.45; text-decoration:line-through; }
+.day-task.tag-pr { border-left:3px solid var(--accent); }
+.day-task.tag-personal { border-left:3px solid var(--rose); }
+.day-task.tag-urgent { border-left:3px solid var(--red); }
+
+/* Monthly */
+.month-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; }
+.month-day-header { font-family:'JetBrains Mono',monospace; font-size:9px; text-align:center; color:var(--accent); padding:8px 0; font-weight:600; letter-spacing:1px; }
+.month-day {
+  background: var(--surface); border-radius:8px;
+  padding:8px; min-height:75px;
+  border:1px solid var(--border);
+  transition: all .15s;
+}
+.month-day:hover { border-color: var(--accent-soft); }
+.month-day.today {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, #fff, var(--surface2));
+  box-shadow: 0 1px 6px rgba(233,30,99,0.1);
+}
+.month-day.other-month { opacity:.4; }
+.month-day-num { font-size:12px; font-weight:600; margin-bottom:5px; font-family: 'Playfair Display', serif; }
+.month-day.today .month-day-num { color: var(--accent); font-weight:700; }
+.month-task-dot { width:6px; height:6px; border-radius:50%; display:inline-block; margin:1px; }
+.dot-done { background: linear-gradient(135deg, var(--accent), var(--rose)); }
+.dot-pending { background: var(--muted2); }
+.month-nav { display:flex; align-items:center; gap:14px; }
+.month-nav button {
+  background:none; border:1.5px solid var(--border);
+  border-radius:8px; color: var(--accent);
+  padding:5px 14px; cursor:pointer;
+  font-size:14px; font-weight:600;
+  transition: all .15s;
+}
+.month-nav button:hover { background: var(--surface2); border-color: var(--accent); }
+.month-nav .month-title {
+  font-family:'Playfair Display',serif;
+  font-size:22px; font-weight:500;
+  color: var(--text);
 }
 
-.day-col.today { border-color: var(--accent); }
-
-.day-head { margin-bottom:10px; }
-.day-name { font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted); }
-.day-num { font-family:'DM Serif Display',serif;font-size:20px;color:var(--text);line-height:1.1; }
-.day-col.today .day-num { color:var(--accent); }
-.day-count { font-size:10px;color:var(--muted);margin-top:2px; }
-
-/* ── REFLECTION ── */
-.reflection-q {
-  margin-bottom: 16px;
+/* Reflection */
+.reflection-questions { display:flex; flex-direction:column; gap:18px; }
+.q-block {
+  background: linear-gradient(135deg, #fff, var(--surface2));
+  border-radius:14px; padding:18px;
+  border:1px solid var(--border);
+  transition: all .2s;
 }
-
-.q-label { font-size:11px;font-weight:600;color:var(--accent);margin-bottom:6px;display:flex;align-items:center;gap:6px; }
-.q-icon { font-size:14px; }
-
-.q-textarea {
-  width:100%; min-height:70px;
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 8px; color: var(--text);
-  font-family: 'Inter', sans-serif; font-size: 13px;
-  padding: 10px 12px; outline: none; resize: vertical; line-height: 1.6;
+.q-block:hover { border-color: var(--accent-soft); box-shadow: 0 2px 10px rgba(233,30,99,0.06); }
+.q-label {
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; color:var(--accent);
+  text-transform:uppercase; margin-bottom:10px;
+  font-weight:600; letter-spacing:1.5px;
 }
-.q-textarea:focus { border-color: var(--accent); }
-.q-textarea::placeholder { color: var(--muted2); }
-
-.reflection-week-picker { display:flex;align-items:center;gap:10px;margin-bottom:20px; }
-.week-nav { background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);cursor:pointer;padding:4px 10px;font-size:12px; }
-.week-nav:hover { border-color:var(--accent);color:var(--accent); }
-.week-label-disp { font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);min-width:100px;text-align:center; }
-
-/* ── KPI CARDS ── */
-.kpi-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px; }
-.kpi { background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px; }
-.kpi-val { font-family:'DM Serif Display',serif;font-size:24px;line-height:1; }
-.kpi-lbl { font-size:11px;color:var(--muted);margin-top:4px; }
-.kpi-delta { font-family:'JetBrains Mono',monospace;font-size:10px;margin-top:4px; }
-.delta-up { color:var(--green); }
-.delta-dn { color:var(--red); }
-
-/* ── MONTH / QUARTER OVERVIEW ── */
-.timeline { display:flex;flex-direction:column;gap:3px; }
-.tl-item {
-  display:flex;align-items:center;gap:10px;padding:8px 10px;
-  background:var(--surface2);border-radius:7px;
-  font-size:12px;cursor:pointer;border:1px solid transparent;transition:border-color 0.15s;
+.q-text { font-size:14px; font-weight:600; margin-bottom:12px; color: var(--text); font-family: 'Playfair Display', serif; font-style: italic; }
+.q-answer {
+  width:100%; background: var(--surface);
+  border:1px solid var(--border); border-radius:8px;
+  color: var(--text);
+  font-family:'Inter',sans-serif; font-size:13px;
+  padding:12px 14px; outline:none; resize:vertical; min-height:80px;
+  transition: all .15s;
 }
-.tl-item:hover { border-color:var(--border2); }
-.tl-item.done-item { opacity:0.45; }
-.tl-dot { width:8px;height:8px;border-radius:50%;flex-shrink:0; }
-.tl-dot.c-pr      { background:var(--accent2); }
-.tl-dot.c-revenue { background:var(--accent); }
-.tl-dot.c-personal{ background:var(--green); }
-.tl-text { flex:1; }
-.tl-sub { font-size:10px;color:var(--muted); }
-.tl-pct { font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted); }
+.q-answer:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(233,30,99,0.1); }
+.reflection-nav { display:flex; align-items:center; gap:12px; margin-bottom:20px; flex-wrap:wrap; }
+.reflection-status { font-size:11px; padding:4px 12px; border-radius:12px; font-family:'JetBrains Mono',monospace; font-weight:600; }
+.r-complete { background: #e0f2e9; color: #2e7d32; }
+.r-pending { background: #fff3e0; color: #e65100; }
+.past-ref-item {
+  background: var(--surface);
+  border-radius:10px; padding:13px 15px;
+  border:1px solid var(--border);
+  cursor:pointer; transition: all .15s;
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:8px;
+}
+.past-ref-item:hover { border-color: var(--accent-soft); transform: translateX(2px); }
+.past-ref-week { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent); font-weight:700; }
+.past-ref-preview { font-size:12px; color:var(--muted); margin-top:3px; font-style: italic; }
 
-/* ── TOAST ── */
+/* Stats */
+.stat-row { display:flex; gap:14px; margin-bottom:20px; flex-wrap:wrap; }
+.stat-box {
+  background: linear-gradient(135deg, #fff, var(--surface2));
+  border-radius:12px; padding:14px 16px;
+  flex:1; min-width:130px;
+  border:1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(233,30,99,0.04);
+}
+.stat-num {
+  font-family:'Playfair Display',serif;
+  font-size:28px; line-height:1; font-weight:500;
+  color: var(--accent);
+}
+.stat-label { font-size:11px; color:var(--text-soft); margin-top:5px; font-weight:500; }
+.stat-change { font-family:'JetBrains Mono',monospace; font-size:10px; margin-top:5px; color: var(--green); font-weight:600; }
+
+/* Modal */
+.modal-backdrop { display:none; position:fixed; inset:0; background:rgba(45,27,46,0.6); backdrop-filter: blur(4px); z-index:200; justify-content:center; align-items:center; padding:24px; }
+.modal-backdrop.open { display:flex; }
+.modal {
+  background: var(--surface);
+  border:1px solid var(--border);
+  border-radius:18px; padding:28px;
+  max-width:600px; width:100%; max-height:85vh; overflow-y:auto;
+  box-shadow: 0 20px 60px rgba(233,30,99,0.2);
+}
+.modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+.modal-title { font-family:'Playfair Display',serif; font-size:22px; color: var(--text); font-weight: 500; }
+.modal-close { background:none; border:none; color:var(--muted); font-size:26px; cursor:pointer; line-height:1; }
+.modal-close:hover { color: var(--accent); }
+
 .toast {
-  position:fixed;bottom:22px;right:22px;
-  background:var(--surface2);border:1px solid var(--border2);
-  border-radius:9px;padding:11px 16px;font-size:13px;color:var(--text);
-  transform:translateY(60px);opacity:0;transition:all 0.25s;z-index:9999;
+  position:fixed; bottom:24px; right:24px;
+  background: linear-gradient(135deg, var(--accent), var(--rose));
+  border-radius:12px; padding:12px 18px;
+  font-size:13px; color:#fff; font-weight:500;
+  transform:translateY(80px); opacity:0; transition:all .3s;
+  z-index:999; box-shadow: 0 4px 16px rgba(233,30,99,0.3);
 }
-.toast.show { transform:translateY(0);opacity:1; }
+.toast.show { transform:translateY(0); opacity:1; }
 
-/* ── EMPTY ── */
-.empty { color:var(--muted);font-size:12px;padding:12px 0;text-align:center; }
+.loading { color:var(--muted); font-size:12px; padding:12px 0; font-style: italic; }
+.empty { color:var(--muted); font-size:13px; padding:24px 0; text-align:center; font-style: italic; }
 
-/* ── SECTION HEADER ── */
-.section-head { display:flex;justify-content:space-between;align-items:center;margin-bottom:16px; }
+/* Daily action items */
+.day-add { font-size:11px; color:var(--muted2); cursor:pointer; padding:4px 0; margin-top:4px; }
+.day-add:hover { color: var(--accent); }
 
-/* ── RESPONSIVE ── */
-@media (max-width:1100px) {
-  .week-grid { grid-template-columns:repeat(4,1fr); }
-  .kpi-grid { grid-template-columns:repeat(2,1fr); }
+@media (max-width:1000px) {
+  .grid-3 { grid-template-columns:1fr; }
+  .grid-2 { grid-template-columns:1fr; }
+  .col-span-2 { grid-column:1; }
+  .kanban { grid-template-columns:repeat(7,270px); }
+  .week-grid { grid-template-columns:repeat(3,1fr); }
+  .quote-banner { padding: 16px 20px; }
+  .quote-text { font-size: 15px; }
 }
-@media (max-width:780px) {
-  .sidebar { display:none; }
-  .grid2,.grid3,.grid12,.grid21 { grid-template-columns:1fr; }
-  .week-grid { grid-template-columns:1fr 1fr; }
+@media (max-width:600px) {
+  .quote-text { font-size: 14px; }
 }
 </style>
 </head>
 <body>
-<div class="shell">
 
-<!-- ── SIDEBAR ── -->
-<nav class="sidebar">
-  <div class="sidebar-logo">
-    <div class="name">Maggie</div>
-    <div class="sub">Command Centre</div>
+<nav class="nav">
+  <div class="nav-brand">Maggie</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-view="daily" onclick="switchView('daily')">Today</button>
+    <button class="nav-tab" data-view="weekly" onclick="switchView('weekly')">This Week</button>
+    <button class="nav-tab" data-view="pipeline" onclick="switchView('pipeline')">Pipeline</button>
+    <button class="nav-tab" data-view="clients" onclick="switchView('clients')">Clients</button>
+    <button class="nav-tab" data-view="monthly" onclick="switchView('monthly')">Monthly</button>
+    <button class="nav-tab" data-view="quarterly" onclick="switchView('quarterly')">Quarterly</button>
+    <button class="nav-tab" data-view="reflection" onclick="switchView('reflection')">Reflection</button>
   </div>
-
-  <div class="nav-group">
-    <div class="nav-label">Views</div>
-    <div class="nav-item active" data-view="daily">
-      <span class="icon">☀️</span> Daily
-    </div>
-    <div class="nav-item" data-view="weekly">
-      <span class="icon">📅</span> Weekly
-    </div>
-    <div class="nav-item" data-view="monthly">
-      <span class="icon">🗓</span> Monthly
-    </div>
-    <div class="nav-item" data-view="quarterly">
-      <span class="icon">🎯</span> Quarterly
-    </div>
-  </div>
-
-  <div class="nav-group">
-    <div class="nav-label">Focus</div>
-    <div class="nav-item" data-view="pipeline">
-      <span class="icon">📊</span> Pipeline
-    </div>
-    <div class="nav-item" data-view="reflection">
-      <span class="icon">📓</span> Reflection
-    </div>
-  </div>
-
-  <div class="sidebar-bottom">
-    <div class="live-indicator">
-      <div class="live-dot"></div>
-      Live sync on
-    </div>
+  <div class="nav-right">
+    <div class="live-dot" title="Live"></div>
+    <div class="score-pill">Today <span id="scoreDisplay">—</span></div>
   </div>
 </nav>
 
-<!-- ── MAIN ── -->
-<div class="main">
-  <div class="topbar">
-    <div class="topbar-left">
-      <h1 id="topTitle">Good morning, Maggie.</h1>
-      <div class="date-line" id="topDate"></div>
-    </div>
-    <div class="score-pill">Today <strong id="scoreDisplay">—</strong></div>
+<!-- DAILY QUOTE BANNER -->
+<div class="quote-banner">
+  <div class="quote-content">
+    <div class="quote-text" id="quoteText">Loading your daily dose of inspiration…</div>
+    <div class="quote-author" id="quoteAuthor"></div>
   </div>
+</div>
 
-  <!-- ════════════ DAILY ════════════ -->
-  <div class="view active" id="view-daily">
-    <div class="grid12" style="margin-bottom:16px">
-
-      <!-- Tasks -->
-      <div class="card">
-        <div class="section-head">
-          <div class="card-label">Today's Priorities</div>
-          <button class="btn btn-ghost btn-sm" onclick="toggleForm('daily-form')">+ Add task</button>
-        </div>
-        <div class="tasks-list" id="daily-tasks"><div class="empty">Loading…</div></div>
-        <div id="daily-form" style="display:none">
-          <div class="add-row" style="margin-top:10px">
-            <input class="fi" id="dt-text" placeholder="What needs to happen…" onkeydown="if(event.key==='Enter')addDailyTask()">
-            <select class="fi" id="dt-tag" style="width:auto;flex:0">
-              <option value="pr">PR</option>
-              <option value="personal">Personal</option>
-              <option value="urgent">Urgent</option>
-            </select>
-            <button class="btn btn-gold" onclick="addDailyTask()">Add</button>
-            <button class="btn btn-ghost" onclick="toggleForm('daily-form')">✕</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Habits -->
-      <div class="card">
-        <div class="card-label">Habits</div>
-        <div class="week-hdr">
-          <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
-        </div>
-        <div id="habits-daily"><div class="empty">Loading…</div></div>
-      </div>
-
-    </div>
-
-    <!-- Pipeline snapshot -->
-    <div class="card">
-      <div class="pipeline-meta">
-        <div>
-          <div class="big-num" id="d-pipe-val">AED —</div>
-          <div class="meta-sub">pipeline · <span class="hi" id="d-pipe-pct">—</span></div>
-        </div>
-        <div class="prog-wrap">
-          <div class="prog-bar"><div class="prog-fill" id="d-prog" style="width:0%"></div></div>
-          <div class="prog-lbl"><span>0</span><span id="d-prog-goal">Goal: AED 50k</span></div>
-        </div>
-      </div>
-      <div class="card-label" style="margin-bottom:10px">Pipeline — Follow-ups Due Today</div>
-      <table class="tbl" id="d-leads-tbl">
-        <thead><tr><th>Contact</th><th>Status</th><th>Value</th><th>Follow-up</th></tr></thead>
-        <tbody id="d-leads-body"></tbody>
-      </table>
+<!-- DAILY -->
+<div id="view-daily" class="view active">
+  <div class="page-header">
+    <div>
+      <div class="page-title" id="dailyGreeting">Good morning, beautiful.</div>
+      <div class="page-sub" id="dailyDate"></div>
     </div>
   </div>
-
-  <!-- ════════════ WEEKLY ════════════ -->
-  <div class="view" id="view-weekly">
-    <div class="kpi-grid" id="w-kpis"></div>
-    <div class="week-grid" id="week-grid"></div>
-  </div>
-
-  <!-- ════════════ MONTHLY ════════════ -->
-  <div class="view" id="view-monthly">
-    <div class="kpi-grid" id="m-kpis" style="margin-bottom:16px"></div>
-    <div class="grid21">
-      <div class="card">
-        <div class="section-head">
-          <div class="card-label">Monthly Goals — <span id="m-month-label"></span></div>
-          <button class="btn btn-gold btn-sm" onclick="openGoalForm('monthly')">+ Add goal</button>
-        </div>
-        <div id="m-goals-list"></div>
+  <div class="grid-3">
+    <div class="card col-span-2">
+      <div class="card-label">Today's Priorities
+        <button class="add-btn" onclick="toggleAddTask('daily')">+ Add task</button>
       </div>
-      <div class="card">
-        <div class="card-label">Habits This Month</div>
-        <div id="m-habits"></div>
-      </div>
-    </div>
-
-    <!-- Goal add form -->
-    <div class="card" id="goal-form-monthly" style="display:none;margin-top:16px">
-      <div class="card-label">New Monthly Goal</div>
-      <div class="add-row" style="flex-wrap:wrap">
-        <input class="fi" id="mg-title" placeholder="Goal title" style="min-width:200px">
-        <select class="fi" id="mg-cat" style="width:auto;flex:0">
-          <option value="pr">PR Agency</option>
-          <option value="revenue">Revenue</option>
-          <option value="personal">Personal</option>
+      <div class="tasks-list" id="dailyTasksList"><div class="loading">Loading…</div></div>
+      <div class="add-task-form" id="addTaskFormDaily">
+        <input class="f-input grow" id="newTaskInputDaily" placeholder="What needs to happen today, queen…" onkeydown="if(event.key==='Enter')saveTask('daily')">
+        <select class="f-select" id="newTaskTagDaily">
+          <option value="pr">PR</option><option value="personal">Personal</option><option value="urgent">Urgent</option>
         </select>
-        <input class="fi" id="mg-target" placeholder="Target (number)" type="number" style="max-width:130px">
-        <input class="fi" id="mg-unit" placeholder="Unit (AED, clients…)" style="max-width:130px">
-        <button class="btn btn-gold" onclick="saveGoal('monthly')">Save</button>
-        <button class="btn btn-ghost" onclick="closeGoalForm('monthly')">Cancel</button>
+        <button class="btn btn-accent" onclick="saveTask('daily')">Add</button>
+        <button class="btn btn-ghost" onclick="toggleAddTask('daily')">Cancel</button>
       </div>
+    </div>
+    <div class="card" style="grid-row:1/3">
+      <div class="card-label">Habits — This Week</div>
+      <div class="week-label"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div>
+      <div id="habitsList"><div class="loading">Loading…</div></div>
+    </div>
+    <div class="card col-span-2">
+      <div class="card-label">Today's Pipeline & Client Actions</div>
+      <div id="todayActions"><div class="loading">Loading…</div></div>
+    </div>
+    <div class="card col-span-2" id="calendarCard">
+      <div class="card-label">
+        📅 Today's Calendar
+        <span id="calendarStatus" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0">Checking connection…</span>
+      </div>
+      <div id="calendarToday"><div class="loading">Loading…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- WEEKLY -->
+<div id="view-weekly" class="view">
+  <div class="page-header">
+    <div><div class="page-title">This Week</div><div class="page-sub" id="weekRange"></div></div>
+    <button class="add-btn" onclick="toggleAddTask('weekly')">+ Add task</button>
+  </div>
+  <div class="stat-row" id="weekStats"></div>
+  <div class="week-grid" id="weekGrid"><div class="loading">Loading…</div></div>
+  <div class="add-task-form" id="addTaskFormWeekly" style="margin-top:12px">
+    <input class="f-input grow" id="newTaskInputWeekly" placeholder="Task…">
+    <input class="f-input" id="newTaskDateWeekly" type="date">
+    <select class="f-select" id="newTaskTagWeekly">
+      <option value="pr">PR</option><option value="personal">Personal</option><option value="urgent">Urgent</option>
+    </select>
+    <button class="btn btn-accent" onclick="saveTask('weekly')">Add</button>
+    <button class="btn btn-ghost" onclick="toggleAddTask('weekly')">Cancel</button>
+  </div>
+</div>
+
+<!-- PIPELINE -->
+<div id="view-pipeline" class="view">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Full Pipeline</div>
+      <div class="page-sub" id="pipelineSub">Active leads · drag cards between stages</div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <div class="view-toggle">
+        <button class="active" id="kanbanToggle" onclick="setPipelineView('kanban')">Kanban</button>
+        <button id="tableToggle" onclick="setPipelineView('table')">Table</button>
+      </div>
+      <button class="btn btn-accent btn-sm" onclick="toggleAddLead()">+ New Lead</button>
     </div>
   </div>
 
-  <!-- ════════════ QUARTERLY ════════════ -->
-  <div class="view" id="view-quarterly">
-    <div class="kpi-grid" id="q-kpis" style="margin-bottom:16px"></div>
-    <div class="grid21">
-      <div class="card">
-        <div class="section-head">
-          <div class="card-label">Quarterly Goals — <span id="q-quarter-label"></span></div>
-          <button class="btn btn-gold btn-sm" onclick="openGoalForm('quarterly')">+ Add goal</button>
-        </div>
-        <div id="q-goals-list"></div>
-      </div>
-      <div class="card">
-        <div class="card-label">Quarter at a Glance</div>
-        <div id="q-summary"></div>
-      </div>
-    </div>
+  <div class="stat-row" id="pipelineStats"></div>
 
-    <div class="card" id="goal-form-quarterly" style="display:none;margin-top:16px">
-      <div class="card-label">New Quarterly Goal</div>
-      <div class="add-row" style="flex-wrap:wrap">
-        <input class="fi" id="qg-title" placeholder="Goal title" style="min-width:200px">
-        <select class="fi" id="qg-cat" style="width:auto;flex:0">
-          <option value="pr">PR Agency</option>
-          <option value="revenue">Revenue</option>
-          <option value="personal">Personal</option>
-        </select>
-        <input class="fi" id="qg-target" placeholder="Target (number)" type="number" style="max-width:130px">
-        <input class="fi" id="qg-unit" placeholder="Unit (AED, clients…)" style="max-width:130px">
-        <button class="btn btn-gold" onclick="saveGoal('quarterly')">Save</button>
-        <button class="btn btn-ghost" onclick="closeGoalForm('quarterly')">Cancel</button>
-      </div>
+  <div class="add-lead-form" id="addLeadForm" style="margin-bottom:18px; flex-direction:column; align-items:stretch; background:var(--surface); padding:20px; border-radius:14px; border:1px solid var(--border)">
+    <div class="form-row">
+      <input class="f-input grow" id="leadName" placeholder="Name *">
+      <input class="f-input" id="leadCompany" placeholder="Company" style="max-width:180px">
+      <input class="f-input" id="leadValue" placeholder="Value (AED)" type="number" style="max-width:130px">
+    </div>
+    <div class="form-row" style="margin-top:8px">
+      <select class="f-select" id="leadStage">
+        <option value="lead">Lead</option><option value="contacted">Contacted</option>
+        <option value="discovery">Discovery</option><option value="proposal">Proposal</option>
+        <option value="negotiation">Negotiation</option><option value="closed_won">Closed Won</option><option value="closed_lost">Closed Lost</option>
+      </select>
+      <select class="f-select" id="leadSource">
+        <option value="linkedin">LinkedIn</option><option value="referral">Referral</option>
+        <option value="inbound">Inbound</option><option value="event">Event</option><option value="other">Other</option>
+      </select>
+      <input class="f-input" id="leadNextAction" placeholder="Next action (e.g. Send case studies)" style="flex:1">
+      <input class="f-input" id="leadNextDate" type="date" style="max-width:150px">
+    </div>
+    <div class="form-row" style="margin-top:8px">
+      <input class="f-input" id="leadEmail" placeholder="Email" style="flex:1">
+      <input class="f-input" id="leadPhone" placeholder="Phone" style="flex:1">
+      <input class="f-input" id="leadLinkedin" placeholder="LinkedIn URL" style="flex:1">
+    </div>
+    <textarea class="f-textarea" id="leadNotes" placeholder="Notes / context" style="margin-top:8px"></textarea>
+    <div style="display:flex; gap:8px; margin-top:10px">
+      <button class="btn btn-accent" onclick="saveLead()">Save Lead</button>
+      <button class="btn btn-ghost" onclick="toggleAddLead()">Cancel</button>
     </div>
   </div>
 
-  <!-- ════════════ PIPELINE ════════════ -->
-  <div class="view" id="view-pipeline">
-    <div class="card" style="margin-bottom:16px">
-      <div class="pipeline-meta">
-        <div>
-          <div class="big-num" id="p-total">AED —</div>
-          <div class="meta-sub">total pipeline · <span class="hi" id="p-pct">—% of goal</span></div>
-        </div>
-        <div class="prog-wrap">
-          <div class="prog-bar"><div class="prog-fill" id="p-prog" style="width:0%"></div></div>
-          <div class="prog-lbl"><span>0</span><span>AED 50,000</span></div>
-        </div>
-      </div>
-    </div>
+  <div id="kanbanView">
+    <div class="kanban" id="kanbanBoard"><div class="loading">Loading…</div></div>
+  </div>
 
+  <div id="tableView" style="display:none" class="card">
+    <table class="pipeline-table">
+      <thead>
+        <tr><th>Contact</th><th>Stage</th><th>Source</th><th>Value</th><th>Next Action</th><th>Due</th><th></th></tr>
+      </thead>
+      <tbody id="pipelineTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- CLIENTS -->
+<div id="view-clients" class="view">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Client Follow-ups</div>
+      <div class="page-sub">Existing clients · stay in touch on schedule</div>
+    </div>
+    <button class="btn btn-accent btn-sm" onclick="toggleAddClient()">+ Add Client</button>
+  </div>
+
+  <div class="stat-row" id="clientStats"></div>
+
+  <div class="add-client-form" id="addClientForm" style="margin-bottom:18px; flex-direction:column; align-items:stretch; background:var(--surface); padding:20px; border-radius:14px; border:1px solid var(--border)">
+    <div class="form-row">
+      <input class="f-input grow" id="cName" placeholder="Client name *">
+      <input class="f-input" id="cCompany" placeholder="Company" style="max-width:180px">
+      <input class="f-input" id="cProject" placeholder="Project / engagement" style="flex:1">
+    </div>
+    <div class="form-row" style="margin-top:8px">
+      <input class="f-input" id="cRetainer" placeholder="Retainer (AED/mo)" type="number" style="max-width:160px">
+      <input class="f-input" id="cStart" type="date" style="max-width:160px">
+      <input class="f-input" id="cFreq" placeholder="Check-in every X days" type="number" value="14" style="max-width:160px">
+      <input class="f-input" id="cNextFollowup" type="date" style="max-width:160px">
+    </div>
+    <div class="form-row" style="margin-top:8px">
+      <input class="f-input" id="cEmail" placeholder="Email" style="flex:1">
+      <input class="f-input" id="cPhone" placeholder="Phone" style="flex:1">
+      <input class="f-input" id="cLinkedin" placeholder="LinkedIn" style="flex:1">
+    </div>
+    <textarea class="f-textarea" id="cNotes" placeholder="Notes" style="margin-top:8px"></textarea>
+    <div style="display:flex; gap:8px; margin-top:10px">
+      <button class="btn btn-accent" onclick="saveClient()">Save Client</button>
+      <button class="btn btn-ghost" onclick="toggleAddClient()">Cancel</button>
+    </div>
+  </div>
+
+  <div id="clientsList"><div class="loading">Loading…</div></div>
+</div>
+
+<!-- MONTHLY -->
+<div id="view-monthly" class="view">
+  <div class="page-header">
+    <div class="month-nav">
+      <button onclick="changeMonth(-1)">←</button>
+      <div class="month-title" id="monthTitle"></div>
+      <button onclick="changeMonth(1)">→</button>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-bottom:16px">
     <div class="card">
-      <div class="section-head">
-        <div class="card-label">All Leads</div>
-        <button class="btn btn-gold btn-sm" onclick="toggleForm('lead-form')">+ Add lead</button>
+      <div class="card-label">Monthly Goals
+        <button class="btn btn-ghost btn-sm" onclick="toggleAddGoal('monthly')">+ Goal</button>
       </div>
-      <table class="tbl">
-        <thead><tr><th>Contact</th><th>Status</th><th>Value</th><th>Follow-up</th><th></th></tr></thead>
-        <tbody id="p-leads-body"></tbody>
-      </table>
-      <div id="lead-form" style="display:none;margin-top:14px">
-        <div class="add-row" style="flex-wrap:wrap">
-          <input class="fi" id="l-name" placeholder="Name" style="max-width:130px">
-          <input class="fi" id="l-company" placeholder="Company" style="max-width:130px">
-          <select class="fi" id="l-status" style="width:auto;flex:0">
-            <option value="lead">Lead</option><option value="proposal">Proposal</option>
-            <option value="followup">Follow-up</option><option value="closed">Closed</option>
-            <option value="cold">Cold</option>
+      <div id="monthlyGoalsList"><div class="loading">Loading…</div></div>
+      <div class="add-goal-form" id="addGoalFormMonthly" style="flex-direction:column">
+        <div class="form-row">
+          <input class="f-input grow" id="gMonthTitle" placeholder="Goal title">
+          <select class="f-select" id="gMonthCategory">
+            <option value="revenue">Revenue</option><option value="pipeline">Pipeline</option>
+            <option value="personal">Personal</option><option value="general">General</option>
           </select>
-          <input class="fi" id="l-value" placeholder="Value AED" type="number" style="max-width:110px">
-          <select class="fi" id="l-followup" style="width:auto;flex:0">
-            <option value="today">Today</option><option value="week">This week</option><option value="done">Done</option>
-          </select>
-          <button class="btn btn-gold" onclick="addLead()">Add</button>
-          <button class="btn btn-ghost" onclick="toggleForm('lead-form')">Cancel</button>
+        </div>
+        <div class="form-row" style="margin-top:8px">
+          <input class="f-input" id="gMonthTarget" placeholder="Target" type="number" style="max-width:130px">
+          <input class="f-input" id="gMonthUnit" placeholder="Unit" style="max-width:140px">
+          <button class="btn btn-accent" onclick="saveGoal('monthly')">Add</button>
+          <button class="btn btn-ghost" onclick="toggleAddGoal('monthly')">Cancel</button>
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- ════════════ REFLECTION ════════════ -->
-  <div class="view" id="view-reflection">
     <div class="card">
-      <div class="reflection-week-picker">
-        <button class="week-nav" onclick="shiftReflection(-1)">‹</button>
-        <div class="week-label-disp" id="ref-week-label">—</div>
-        <button class="week-nav" onclick="shiftReflection(1)">›</button>
-        <span style="font-size:11px;color:var(--muted);margin-left:4px">week</span>
-      </div>
-
-      <div id="ref-stats" style="margin-bottom:20px;padding:12px 16px;background:var(--surface2);border-radius:9px;display:flex;gap:24px;flex-wrap:wrap"></div>
-
-      <div class="reflection-q">
-        <div class="q-label"><span class="q-icon">🏆</span> What did you win this week?</div>
-        <textarea class="q-textarea" id="ref-wins" placeholder="Celebrate it…"></textarea>
-      </div>
-      <div class="reflection-q">
-        <div class="q-label"><span class="q-icon">📉</span> What slipped and why?</div>
-        <textarea class="q-textarea" id="ref-slipped" placeholder="Be honest, not harsh…"></textarea>
-      </div>
-      <div class="reflection-q">
-        <div class="q-label"><span class="q-icon">🎯</span> What's your #1 focus next week?</div>
-        <textarea class="q-textarea" id="ref-focus" placeholder="One thing. Make it count."></textarea>
-      </div>
-      <div class="reflection-q">
-        <div class="q-label"><span class="q-icon">💛</span> How did you show up for yourself?</div>
-        <textarea class="q-textarea" id="ref-showed" placeholder="Rest, energy, presence…"></textarea>
-      </div>
-      <div class="reflection-q">
-        <div class="q-label"><span class="q-icon">📊</span> Pipeline: what moved, what stalled?</div>
-        <textarea class="q-textarea" id="ref-pipeline" placeholder="Key deals, conversations, blockers…"></textarea>
-      </div>
-
-      <div style="display:flex;gap:8px;margin-top:4px">
-        <button class="btn btn-gold" onclick="saveReflection()">Save reflection</button>
-        <button class="btn btn-ghost" onclick="loadReflection()">↺ Reload</button>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top:16px">
-      <div class="card-label">Past Reflections</div>
-      <div id="past-reflections"></div>
+      <div class="card-label">Month at a Glance</div>
+      <div id="monthStats"></div>
     </div>
   </div>
+  <div class="card">
+    <div class="card-label">Task Calendar</div>
+    <div class="month-grid" id="monthCalHeaderRow" style="margin-bottom:5px"></div>
+    <div class="month-grid" id="monthCalGrid"><div class="loading">Loading…</div></div>
+  </div>
+</div>
 
-</div><!-- /main -->
-</div><!-- /shell -->
+<!-- QUARTERLY -->
+<div id="view-quarterly" class="view">
+  <div class="page-header">
+    <div>
+      <div class="page-title" id="quarterTitle"></div>
+      <div class="page-sub" id="quarterSub"></div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost btn-sm" onclick="changeQuarter(-1)">← Prev</button>
+      <button class="btn btn-ghost btn-sm" onclick="changeQuarter(1)">Next →</button>
+    </div>
+  </div>
+  <div class="stat-row" id="quarterStats"></div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-label">Quarterly Goals
+        <button class="btn btn-ghost btn-sm" onclick="toggleAddGoal('quarterly')">+ Goal</button>
+      </div>
+      <div id="quarterlyGoalsList"><div class="loading">Loading…</div></div>
+      <div class="add-goal-form" id="addGoalFormQuarterly" style="flex-direction:column">
+        <div class="form-row">
+          <input class="f-input grow" id="gQTitle" placeholder="Goal title">
+          <select class="f-select" id="gQCategory">
+            <option value="revenue">Revenue</option><option value="pipeline">Pipeline</option>
+            <option value="personal">Personal</option><option value="general">General</option>
+          </select>
+        </div>
+        <div class="form-row" style="margin-top:8px">
+          <input class="f-input" id="gQTarget" placeholder="Target" type="number" style="max-width:120px">
+          <input class="f-input" id="gQUnit" placeholder="Unit" style="max-width:130px">
+          <button class="btn btn-accent" onclick="saveGoal('quarterly')">Add</button>
+          <button class="btn btn-ghost" onclick="toggleAddGoal('quarterly')">Cancel</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">Quarter Breakdown</div>
+      <div id="quarterBreakdown"></div>
+    </div>
+  </div>
+</div>
+
+<!-- REFLECTION -->
+<div id="view-reflection" class="view">
+  <div class="page-header">
+    <div><div class="page-title">Weekly Reflection</div><div class="page-sub">Friday ritual · 4pm UAE</div></div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <div class="reflection-nav">
+        <button class="btn btn-ghost btn-sm" onclick="changeReflectionWeek(-1)">← Prev</button>
+        <div class="week-title" id="reflectionWeekTitle" style="font-family:'Playfair Display',serif;font-size:20px;font-weight:500"></div>
+        <button class="btn btn-ghost btn-sm" onclick="changeReflectionWeek(1)">Next →</button>
+        <span class="reflection-status" id="reflectionStatus"></span>
+      </div>
+      <div class="reflection-questions" id="reflectionQuestions"></div>
+      <button class="btn btn-accent" style="margin-top:18px;width:100%;padding:12px" onclick="saveReflection()">Save Reflection ♡</button>
+    </div>
+    <div>
+      <div class="card-label" style="margin-bottom:14px">Past Reflections</div>
+      <div id="pastReflections"><div class="loading">Loading…</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="clientModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalClientName">Client</div>
+      <button class="modal-close" onclick="closeClientModal()">×</button>
+    </div>
+    <div id="modalClientBody"></div>
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════════
-// UTILS
-// ══════════════════════════════════════════════
 const API = '';
+
+// ── DAILY QUOTES (cycles through, one per day) ──
+const QUOTES = [
+  { text: "She believed she could, so she did.", author: "R.S. Grey" },
+  { text: "I am the storm.", author: "Unknown" },
+  { text: "The most courageous act is still to think for yourself. Aloud.", author: "Coco Chanel" },
+  { text: "A girl should be two things: who and what she wants.", author: "Coco Chanel" },
+  { text: "I'm not bossy. I'm the boss.", author: "Beyoncé" },
+  { text: "Done is better than perfect.", author: "Sheryl Sandberg" },
+  { text: "You can't be hesitant about who you are.", author: "Viola Davis" },
+  { text: "I never dreamed about success. I worked for it.", author: "Estée Lauder" },
+  { text: "Trust your gut. It knows what your head hasn't figured out yet.", author: "Unknown" },
+  { text: "Make your own magic.", author: "Unknown" },
+  { text: "You are your best thing.", author: "Toni Morrison" },
+  { text: "Soft and powerful are not opposites.", author: "Unknown" },
+  { text: "Stop waiting for permission. You're the boss now.", author: "Unknown" },
+  { text: "She remembered who she was and the game changed.", author: "Lalah Delia" },
+  { text: "What's meant for you will not pass you by.", author: "Unknown" },
+  { text: "Be the woman your younger self needed.", author: "Unknown" },
+  { text: "Quiet confidence is the loudest power move.", author: "Unknown" },
+  { text: "I don't want to be perfect. I want to be powerful.", author: "Unknown" },
+  { text: "Your only job today is to be a little braver than yesterday.", author: "Unknown" },
+  { text: "You're allowed to want more than you have.", author: "Unknown" },
+  { text: "Bet on yourself. The returns are always higher.", author: "Unknown" },
+  { text: "Stop shrinking. Start shining.", author: "Unknown" },
+  { text: "Soft heart, sharp mind, steady hands.", author: "Unknown" },
+  { text: "The pen that writes your story is in your own hand.", author: "Unknown" },
+  { text: "You don't find your worth in a man. You find your worth within yourself.", author: "Unknown" },
+  { text: "Pretty is not the rent you pay for existing as a woman.", author: "Erin McKean" },
+  { text: "Above all, be the heroine of your own life.", author: "Nora Ephron" },
+  { text: "I am my own muse.", author: "Frida Kahlo" },
+  { text: "Don't waste your energy trying to convince people. Show them.", author: "Unknown" },
+  { text: "Your vibe attracts your tribe — and your bag.", author: "Unknown" },
+  { text: "You were born to stand out, don't try to fit in.", author: "Unknown" },
+];
+
+function renderDailyQuote() {
+  const start = new Date(2026, 0, 1);
+  const days = Math.floor((new Date() - start) / (1000*60*60*24));
+  const q = QUOTES[days % QUOTES.length];
+  document.getElementById('quoteText').textContent = '\u201C' + q.text + '\u201D';
+  document.getElementById('quoteAuthor').textContent = '— ' + q.author;
+}
+
 const GOAL = 50000;
-
 const now = new Date();
-const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const shortDays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+let allTasks = [], allHabits = [], allLeads = [], allClients = [];
+let weeklyTasks = [], monthlyTasks = [];
+let currentMonth = now.getMonth() + 1, currentMonthYear = now.getFullYear();
+let currentQuarter = Math.ceil((now.getMonth() + 1) / 3), currentQuarterYear = now.getFullYear();
+let currentReflectionWeek = getISOWeek(now), currentReflectionYear = now.getFullYear();
+let reflectionData = null;
+let pipelineView = 'kanban';
+let draggedLeadId = null;
+let editingLeadId = null, editingClientId = null;
+let addLeadOpen = false, addClientOpen = false;
+let addTaskOpen = { daily:false, weekly:false };
+let addGoalOpen = { monthly:false, quarterly:false };
 
-function todayStr() {
-  return now.toLocaleDateString('en-CA', { timeZone: 'Asia/Dubai' });
+const STAGES = [
+  { key:'lead', label:'Lead', emoji:'🌸' },
+  { key:'contacted', label:'Contacted', emoji:'💌' },
+  { key:'discovery', label:'Discovery', emoji:'🔍' },
+  { key:'proposal', label:'Proposal', emoji:'📋' },
+  { key:'negotiation', label:'Negotiation', emoji:'🤝' },
+  { key:'closed_won', label:'Won', emoji:'✨' },
+  { key:'closed_lost', label:'Lost', emoji:'🌙' },
+];
+const SOURCES = { linkedin:'LinkedIn', referral:'Referral', inbound:'Inbound', event:'Event', other:'Other' };
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+function todayStr() { return now.toLocaleDateString('en-CA', { timeZone: 'Asia/Dubai' }); }
+function getISOWeek(d) {
+  const date = new Date(d); date.setHours(0,0,0,0);
+  date.setDate(date.getDate() + 3 - ((date.getDay() + 6) % 7));
+  const week1 = new Date(date.getFullYear(), 0, 4);
+  return 1 + Math.round(((date - week1) / 86400000 - 3 + ((week1.getDay() + 6) % 7)) / 7);
+}
+function daysBetween(d1, d2) { return Math.floor((new Date(d2) - new Date(d1)) / 86400000); }
+function toast(msg) { const el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 3000); }
+function tagLabel(t) { return {pr:'PR',personal:'Personal',urgent:'Urgent'}[t]||'Personal'; }
+function tagCls(t) { return {pr:'tag-pr',personal:'tag-personal',urgent:'tag-urgent'}[t]||'tag-personal'; }
+
+function initDateHeader() {
+  const h = now.getHours();
+  const greet = h < 12 ? 'Good morning, beautiful' : h < 17 ? 'Good afternoon, queen' : 'Good evening, lovely';
+  document.getElementById('dailyGreeting').textContent = `${greet}.`;
+  document.getElementById('dailyDate').textContent = `${DAYS[now.getDay()]}  ·  ${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
 }
 
-function dateStr(d) {
-  return d.toLocaleDateString('en-CA', { timeZone: 'Asia/Dubai' });
+function switchView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.querySelector(`.nav-tab[data-view="${name}"]`)?.classList.add('active');
+  if (name === 'weekly') loadWeeklyView();
+  if (name === 'pipeline') loadPipelineView();
+  if (name === 'clients') loadClientsView();
+  if (name === 'monthly') loadMonthlyView();
+  if (name === 'quarterly') loadQuarterlyView();
+  if (name === 'reflection') loadReflectionView();
 }
 
-function getMonthKey() {
-  return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-}
-
-function getQuarterKey() {
-  return `${now.getFullYear()}-Q${Math.ceil((now.getMonth()+1)/3)}`;
-}
-
-function getWeekKey(d) {
-  const dt = d || now;
-  const jan4 = new Date(dt.getFullYear(), 0, 4);
-  const start = new Date(jan4);
-  start.setDate(jan4.getDate() - jan4.getDay() + 1);
-  const week = Math.floor((dt - start) / (7 * 864e5)) + 1;
-  return `${dt.getFullYear()}-W${String(week).padStart(2,'0')}`;
-}
-
-function getWeekDates(offset = 0) {
-  const d = new Date(now);
-  d.setDate(d.getDate() + offset * 7);
-  const day = d.getDay();
-  const mon = new Date(d); mon.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
-  return Array.from({length:7}, (_,i) => { const x = new Date(mon); x.setDate(mon.getDate()+i); return x; });
-}
-
-function fmt(n) { return 'AED ' + (n||0).toLocaleString(); }
-function pct(p, t) { return t ? Math.min(100, Math.round((p/t)*100)) : 0; }
-
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 3000);
-}
-
-function toggleForm(id) {
-  const el = document.getElementById(id);
-  el.style.display = el.style.display === 'none' ? 'block' : 'none';
-}
-
-// ── Date header ──
-document.getElementById('topDate').textContent =
-  `${days[now.getDay()]}  ·  ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-
-const dayIdx = (now.getDay() + 6) % 7; // Mon=0
-
-// ══════════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════════
-let allTasks = [], allHabits = [], allLeads = [], monthlyGoals = [], quarterlyGoals = [], allReflections = [];
-let weekOffset = 0, reflectionOffset = 0;
-
-// ══════════════════════════════════════════════
-// NAV
-// ══════════════════════════════════════════════
-const viewTitles = {
-  daily:      'Good morning, Maggie.',
-  weekly:     'This Week',
-  monthly:    'Monthly View',
-  quarterly:  'Quarterly View',
-  pipeline:   'PR Pipeline',
-  reflection: 'Weekly Reflection',
-};
-
-document.querySelectorAll('.nav-item').forEach(item => {
-  item.addEventListener('click', () => {
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    item.classList.add('active');
-    const v = item.dataset.view;
-    document.getElementById('view-' + v).classList.add('active');
-    document.getElementById('topTitle').textContent = viewTitles[v];
-    if (v === 'weekly')     renderWeekly();
-    if (v === 'monthly')    renderMonthly();
-    if (v === 'quarterly')  renderQuarterly();
-    if (v === 'pipeline')   renderPipelineFull();
-    if (v === 'reflection') { loadReflection(); renderPastReflections(); }
-  });
-});
-
-// ══════════════════════════════════════════════
-// SCORE
-// ══════════════════════════════════════════════
-function updateScore() {
-  const today = todayStr();
-  const dayTasks = allTasks.filter(t => t.date === today);
-  const doneTasks = dayTasks.filter(t => t.done).length;
-  const doneHabits = allHabits.filter(h => (h.completions||[]).includes(today)).length;
-  const total = dayTasks.length + allHabits.length;
-  const s = total ? Math.round(((doneTasks + doneHabits) / total) * 100) : 0;
-  document.getElementById('scoreDisplay').textContent = s + '%';
-}
-
-// ══════════════════════════════════════════════
-// TASKS
-// ══════════════════════════════════════════════
-async function loadTasks() {
+// ── DAILY ──
+async function loadDailyTasks() {
   const res = await fetch(`${API}/api/tasks?date=${todayStr()}`);
   allTasks = await res.json();
   renderDailyTasks();
 }
-
 function renderDailyTasks() {
-  const el = document.getElementById('daily-tasks');
-  if (!allTasks.length) { el.innerHTML = '<div class="empty">No tasks yet — add one above</div>'; updateScore(); return; }
-  const tagMap = { pr:'tag-pr', personal:'tag-personal', urgent:'tag-urgent' };
-  const tagLbl = { pr:'PR', personal:'Personal', urgent:'Urgent' };
-  el.innerHTML = allTasks.map(t => `
-    <div class="task-item ${t.done?'done':''}" onclick="toggleTask(${t.id})">
+  const list = document.getElementById('dailyTasksList');
+  if (!allTasks.length) { list.innerHTML = '<div class="empty">A fresh start ✨ — add your first task</div>'; updateScore(); return; }
+  list.innerHTML = allTasks.map(t => `
+    <div class="task-item ${t.done?'done':''}" onclick="toggleTask(${t.id},'daily')">
       <div class="task-check">${t.done?'✓':''}</div>
       <div class="task-text">${t.text}</div>
-      <span class="tag ${tagMap[t.tag]||'tag-personal'}">${tagLbl[t.tag]||'Personal'}</span>
-      <button class="task-del" onclick="delTask(${t.id},event)">×</button>
+      <span class="task-tag ${tagCls(t.tag)}">${tagLabel(t.tag)}</span>
+      <button class="task-delete" onclick="deleteTask(${t.id},event,'daily')">×</button>
     </div>`).join('');
   updateScore();
 }
-
-async function toggleTask(id) {
-  const t = allTasks.find(x => x.id === id);
-  await fetch(`${API}/api/tasks/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({done:!t.done}) });
-  allTasks = allTasks.map(x => x.id === id ? {...x, done:!x.done} : x);
-  renderDailyTasks();
-  if (document.getElementById('view-weekly').classList.contains('active')) renderWeekly();
-  toast(t.done ? '↩ Unmarked' : '✅ Done!');
+async function toggleTask(id, view) {
+  const arr = view === 'daily' ? allTasks : weeklyTasks;
+  const task = arr.find(t => t.id === id); if (!task) return;
+  await fetch(`${API}/api/tasks/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({done:!task.done}) });
+  if (view === 'daily') { allTasks = allTasks.map(t => t.id === id ? {...t, done:!t.done} : t); renderDailyTasks(); }
+  else { weeklyTasks = weeklyTasks.map(t => t.id === id ? {...t, done:!t.done} : t); renderWeekGrid(); }
+  toast(task.done ? '↩ Unmarked' : '✨ Yes queen!');
 }
-
-async function delTask(id, e) {
+async function deleteTask(id, e, view) {
   e.stopPropagation();
   await fetch(`${API}/api/tasks/${id}`, { method:'DELETE' });
-  allTasks = allTasks.filter(x => x.id !== id);
-  renderDailyTasks();
-  toast('Task removed');
+  if (view === 'daily') { allTasks = allTasks.filter(t => t.id !== id); renderDailyTasks(); }
+  else { weeklyTasks = weeklyTasks.filter(t => t.id !== id); renderWeekGrid(); }
+  toast('Removed ♡');
 }
-
-async function addDailyTask() {
-  const text = document.getElementById('dt-text').value.trim();
+function toggleAddTask(view) {
+  addTaskOpen[view] = !addTaskOpen[view];
+  const cap = view.charAt(0).toUpperCase() + view.slice(1);
+  document.getElementById('addTaskForm' + cap).classList.toggle('open', addTaskOpen[view]);
+  if (addTaskOpen[view]) document.getElementById('newTaskInput' + cap).focus();
+  if (view === 'weekly') { const d = document.getElementById('newTaskDateWeekly'); if (!d.value) d.value = todayStr(); }
+}
+async function saveTask(view) {
+  const cap = view.charAt(0).toUpperCase() + view.slice(1);
+  const text = document.getElementById('newTaskInput' + cap).value.trim();
   if (!text) return;
-  const tag = document.getElementById('dt-tag').value;
-  const res = await fetch(`${API}/api/tasks`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({text, tag}) });
-  const t = await res.json();
-  allTasks.push(t);
-  document.getElementById('dt-text').value = '';
-  toggleForm('daily-form');
-  renderDailyTasks();
-  toast('Task added ✓');
+  const tag = document.getElementById('newTaskTag' + cap).value;
+  const date = view === 'weekly' ? document.getElementById('newTaskDateWeekly').value || todayStr() : todayStr();
+  const res = await fetch(`${API}/api/tasks`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({text, tag, date}) });
+  const newTask = await res.json();
+  if (view === 'daily') { allTasks.push(newTask); renderDailyTasks(); }
+  else { weeklyTasks.push(newTask); renderWeekGrid(); }
+  document.getElementById('newTaskInput' + cap).value = '';
+  toggleAddTask(view);
+  toast('Added ♡');
+}
+function updateScore() {
+  const done = allTasks.filter(t => t.done).length;
+  const hDone = allHabits.filter(h => h.doneToday).length;
+  const total = allTasks.length + allHabits.length;
+  document.getElementById('scoreDisplay').textContent = (total === 0 ? 0 : Math.round(((done + hDone) / total) * 100)) + '%';
 }
 
-// ══════════════════════════════════════════════
-// HABITS
-// ══════════════════════════════════════════════
+async function loadTodayActions() {
+  if (!allLeads.length) { const r = await fetch(`${API}/api/leads`); allLeads = await r.json(); }
+  if (!allClients.length) { const r = await fetch(`${API}/api/clients`); allClients = await r.json(); }
+  const today = todayStr();
+  const leadActions = allLeads.filter(l => l.next_action_date === today && !['closed_won','closed_lost'].includes(l.stage));
+  const clientFollowups = allClients.filter(c => c.status === 'active' && c.next_followup && c.next_followup <= today);
+  const el = document.getElementById('todayActions');
+  if (!leadActions.length && !clientFollowups.length) { el.innerHTML = '<div class="empty">All clear today ♡</div>'; return; }
+  let html = '<div class="pipeline-mini-list">';
+  leadActions.forEach(l => {
+    html += `<div class="pipeline-mini-item"><div><strong>${l.name}</strong> ${l.company?`<span style="color:var(--muted)">· ${l.company}</span>`:''}<div style="font-size:11px;color:var(--muted);margin-top:3px">→ ${l.next_action||'Follow up'}</div></div><span class="stage stg-${l.stage}">${STAGES.find(s=>s.key===l.stage)?.label||l.stage}</span></div>`;
+  });
+  clientFollowups.forEach(c => {
+    const overdue = c.next_followup < today;
+    html += `<div class="pipeline-mini-item" onclick="openClientModal(${c.id})" style="cursor:pointer"><div>${overdue?'🌹':'💕'} <strong>${c.name}</strong> ${c.company?`<span style="color:var(--muted)">· ${c.company}</span>`:''}<div style="font-size:11px;color:var(--muted);margin-top:3px">Check-in ${overdue?'overdue':'due today'}</div></div><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();quickLogContact(${c.id})">Log Contact</button></div>`;
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+async function quickLogContact(id) {
+  await fetch(`${API}/api/clients/${id}/contact`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({type:'note', summary:'Quick check-in'}) });
+  toast('Logged ♡');
+  allClients = []; loadTodayActions();
+  if (document.getElementById('view-clients').classList.contains('active')) loadClientsView();
+}
+
+// ── HABITS ──
 async function loadHabits() {
   const res = await fetch(`${API}/api/habits`);
-  allHabits = await res.json();
-  renderHabitsDaily();
-}
-
-function renderHabitsDaily() {
-  const el = document.getElementById('habits-daily');
+  const habits = await res.json();
   const today = todayStr();
-  const last7 = Array.from({length:7}, (_,i) => { const d = new Date(now); d.setDate(d.getDate()-(6-i)); return dateStr(d); });
-
-  el.innerHTML = allHabits.map(h => {
-    const comps = h.completions || [];
-    const wkCount = comps.filter(c => last7.includes(c)).length;
-    const dots = last7.map((date, i) => {
-      const done = comps.includes(date);
-      const isToday = date === today;
-      return `<div class="dot ${done?'done':''} ${!done&&isToday?'today':''}"></div>`;
+  allHabits = habits.map(h => ({ ...h, doneToday: h.completions.includes(today) }));
+  renderHabits();
+}
+function renderHabits() {
+  const list = document.getElementById('habitsList');
+  const last7 = Array.from({length:7}, (_,i) => { const d = new Date(now); d.setDate(d.getDate() - (6-i)); return d.toLocaleDateString('en-CA',{timeZone:'Asia/Dubai'}); });
+  const today = todayStr();
+  list.innerHTML = allHabits.map(h => {
+    const wk = h.completions.filter(c => last7.includes(c)).length;
+    const dots = last7.map(date => {
+      const done = h.completions.includes(date), isTd = date === today;
+      return `<div class="dot${done?' done':''}${!done&&isTd?' today':''}"></div>`;
     }).join('');
-    return `
-      <div class="habit-row">
-        <div class="habit-info">
-          <div class="habit-name">${h.emoji} ${h.name}</div>
-          <div class="habit-streak">${wkCount}× this week</div>
-        </div>
-        <div class="habit-dots">${dots}</div>
-        <div class="toggle ${comps.includes(today)?'on':''}" onclick="toggleHabit(${h.id})"></div>
-      </div>`;
+    return `<div class="habit-row"><div><div class="habit-name">${h.emoji} ${h.name}</div><div class="habit-streak">${wk}× this week</div></div><div class="habit-dots">${dots}</div><div class="habit-toggle ${h.doneToday?'on':''}" onclick="toggleHabit(${h.id})"></div></div>`;
   }).join('');
   updateScore();
 }
-
 async function toggleHabit(id) {
-  const res = await fetch(`${API}/api/habits/${id}/toggle`, { method:'POST' });
-  const { done } = await res.json();
+  const res = await fetch(`${API}/api/habits/${id}/toggle`, {method:'POST'});
+  const {done} = await res.json();
   const today = todayStr();
   allHabits = allHabits.map(h => {
     if (h.id !== id) return h;
-    const c = done ? [...(h.completions||[]), today] : (h.completions||[]).filter(x => x !== today);
-    return {...h, completions: c};
+    const completions = done ? [...h.completions, today] : h.completions.filter(c => c !== today);
+    return {...h, completions, doneToday: done};
   });
-  renderHabitsDaily();
-  toast(done ? '✅ Habit done!' : '↩ Habit unmarked');
+  renderHabits();
+  toast(done ? '✨ Done!' : '↩ Unmarked');
 }
 
-// ══════════════════════════════════════════════
-// LEADS
-// ══════════════════════════════════════════════
-async function loadLeads() {
+// ══════ PIPELINE ══════
+async function loadPipelineView() {
   const res = await fetch(`${API}/api/leads`);
   allLeads = await res.json();
-  renderDailyPipeline();
+  renderPipelineStats();
+  if (pipelineView === 'kanban') renderKanban(); else renderPipelineTable();
+}
+function setPipelineView(v) {
+  pipelineView = v;
+  document.getElementById('kanbanToggle').classList.toggle('active', v === 'kanban');
+  document.getElementById('tableToggle').classList.toggle('active', v === 'table');
+  document.getElementById('kanbanView').style.display = v === 'kanban' ? 'block' : 'none';
+  document.getElementById('tableView').style.display = v === 'table' ? 'block' : 'none';
+  if (v === 'kanban') renderKanban(); else renderPipelineTable();
+}
+function renderPipelineStats() {
+  const active = allLeads.filter(l => !['closed_won','closed_lost'].includes(l.stage));
+  const activeValue = active.reduce((s,l) => s + (l.value || 0), 0);
+  const wonValue = allLeads.filter(l => l.stage === 'closed_won').reduce((s,l) => s + (l.value || 0), 0);
+  const wonCount = allLeads.filter(l => l.stage === 'closed_won').length;
+  const lostCount = allLeads.filter(l => l.stage === 'closed_lost').length;
+  const winRate = (wonCount + lostCount) > 0 ? Math.round((wonCount / (wonCount + lostCount)) * 100) : 0;
+  document.getElementById('pipelineStats').innerHTML = `
+    <div class="stat-box"><div class="stat-num">${active.length}</div><div class="stat-label">Active leads</div></div>
+    <div class="stat-box"><div class="stat-num">AED ${(activeValue/1000).toFixed(0)}k</div><div class="stat-label">Pipeline value</div></div>
+    <div class="stat-box"><div class="stat-num">AED ${(wonValue/1000).toFixed(0)}k</div><div class="stat-label">Won (all-time)</div><div class="stat-change">${wonCount} deals ✨</div></div>
+    <div class="stat-box"><div class="stat-num">${winRate}%</div><div class="stat-label">Win rate</div></div>`;
+}
+function renderKanban() {
+  const board = document.getElementById('kanbanBoard');
+  board.innerHTML = STAGES.map(stage => {
+    const leadsInStage = allLeads.filter(l => l.stage === stage.key);
+    const stageValue = leadsInStage.reduce((s,l) => s + (l.value || 0), 0);
+    const cards = leadsInStage.map(l => {
+      const today = todayStr();
+      let dueCls = '';
+      if (l.next_action_date) {
+        if (l.next_action_date <= today) dueCls = 'due-today';
+        else if (daysBetween(today, l.next_action_date) <= 3) dueCls = 'due-soon';
+      }
+      return `<div class="kanban-card" draggable="true" data-lead-id="${l.id}" ondragstart="dragStart(event,${l.id})" ondragend="dragEnd(event)" onclick="editLead(${l.id})">
+        <div class="kanban-card-name">${l.name}</div>
+        ${l.company ? `<div class="kanban-card-company">${l.company}</div>` : ''}
+        <div class="kanban-card-meta">
+          <span class="kanban-card-value">AED ${(l.value||0).toLocaleString()}</span>
+          <span class="kanban-card-source src-${l.source||'other'}">${SOURCES[l.source]||'Other'}</span>
+        </div>
+        ${l.next_action ? `<div class="kanban-card-action ${dueCls}">→ ${l.next_action}${l.next_action_date ? ` · ${l.next_action_date}` : ''}</div>` : ''}
+      </div>`;
+    }).join('');
+    return `<div class="kanban-col" data-stage="${stage.key}" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="drop(event,'${stage.key}')">
+      <div class="kanban-col-header">
+        <div class="kanban-col-title">${stage.emoji} ${stage.label}</div>
+        <div class="kanban-col-count">${leadsInStage.length}</div>
+      </div>
+      <div class="kanban-col-value">AED ${stageValue.toLocaleString()}</div>
+      ${cards || '<div class="empty" style="padding:10px 0;font-size:11px">—</div>'}
+    </div>`;
+  }).join('');
 }
 
-const sLbl = { lead:'Lead', proposal:'Proposal Sent', followup:'Follow-up', closed:'Closed', cold:'Cold' };
-const sCls = { lead:'sp-lead', proposal:'sp-proposal', followup:'sp-followup', closed:'sp-closed', cold:'sp-cold' };
-const fLbl = { today:'Today', week:'This week', done:'Done' };
-const fCls = { today:'fp-today', week:'fp-week', done:'fp-done' };
+function dragStart(e, leadId) { draggedLeadId = leadId; e.target.classList.add('dragging'); }
+function dragEnd(e) { e.target.classList.remove('dragging'); document.querySelectorAll('.kanban-col').forEach(c=>c.classList.remove('drag-over')); }
+function dragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function dragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+async function drop(e, stage) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!draggedLeadId) return;
+  await fetch(`${API}/api/leads/${draggedLeadId}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({stage}) });
+  allLeads = allLeads.map(l => l.id === draggedLeadId ? {...l, stage} : l);
+  renderKanban(); renderPipelineStats();
+  toast(`→ ${STAGES.find(s=>s.key===stage).label} ♡`);
+  draggedLeadId = null;
+}
 
-function renderDailyPipeline() {
-  const active = allLeads.filter(l => l.status !== 'cold');
-  const total = active.reduce((s,l) => s+l.value, 0);
-  const p = pct(total, GOAL);
-  document.getElementById('d-pipe-val').textContent = fmt(total);
-  document.getElementById('d-pipe-pct').textContent = p + '% of goal';
-  document.getElementById('d-prog').style.width = p + '%';
-
-  const todayLeads = allLeads.filter(l => l.followup === 'today');
-  const body = document.getElementById('d-leads-body');
-  body.innerHTML = todayLeads.length ? todayLeads.map(l => `
+function renderPipelineTable() {
+  const body = document.getElementById('pipelineTableBody');
+  const sorted = [...allLeads].sort((a,b) => (a.next_action_date||'9999') > (b.next_action_date||'9999') ? 1 : -1);
+  body.innerHTML = sorted.map(l => `
     <tr>
-      <td><div style="font-weight:500">${l.name}</div><div style="font-size:11px;color:var(--muted)">${l.company||''}</div></td>
-      <td><span class="s-pill ${sCls[l.status]}">${sLbl[l.status]}</span></td>
-      <td style="font-family:'JetBrains Mono',monospace;font-size:11px">${fmt(l.value)}</td>
-      <td><span class="f-pill ${fCls[l.followup]}">${fLbl[l.followup]}</span></td>
-    </tr>`).join('') : `<tr><td colspan="4" class="empty">No follow-ups due today</td></tr>`;
+      <td><strong>${l.name}</strong>${l.company ? `<div style="font-size:11px;color:var(--muted)">${l.company}</div>` : ''}</td>
+      <td><span class="stage-pill stg-${l.stage}" onclick="cycleStage(${l.id})">${STAGES.find(s=>s.key===l.stage)?.label||l.stage}</span></td>
+      <td><span class="kanban-card-source src-${l.source||'other'}">${SOURCES[l.source]||'Other'}</span></td>
+      <td class="value-cell">AED ${(l.value||0).toLocaleString()}</td>
+      <td>${l.next_action || '—'}</td>
+      <td>${l.next_action_date || '—'}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="editLead(${l.id})">Edit</button> <button style="background:none;border:none;color:var(--muted2);cursor:pointer;font-size:14px" onclick="deleteLead(${l.id})">×</button></td>
+    </tr>`).join('') || '<tr><td colspan="7" class="empty">No leads yet ✨</td></tr>';
 }
-
-function renderPipelineFull() {
-  const active = allLeads.filter(l => l.status !== 'cold');
-  const total = active.reduce((s,l) => s+l.value, 0);
-  const p = pct(total, GOAL);
-  document.getElementById('p-total').textContent = fmt(total);
-  document.getElementById('p-pct').textContent = p + '% of goal';
-  document.getElementById('p-prog').style.width = p + '%';
-
-  const body = document.getElementById('p-leads-body');
-  body.innerHTML = allLeads.length ? allLeads.map(l => `
-    <tr>
-      <td><div style="font-weight:500">${l.name}</div><div style="font-size:11px;color:var(--muted)">${l.company||''}</div></td>
-      <td><span class="s-pill ${sCls[l.status]}">${sLbl[l.status]}</span></td>
-      <td style="font-family:'JetBrains Mono',monospace;font-size:11px">${fmt(l.value)}</td>
-      <td><span class="f-pill ${fCls[l.followup]}">${fLbl[l.followup]}</span></td>
-      <td><button style="background:none;border:none;color:var(--muted);cursor:pointer" onclick="delLead(${l.id})">×</button></td>
-    </tr>`).join('') : `<tr><td colspan="5" class="empty">No leads yet</td></tr>`;
+async function cycleStage(id) {
+  const lead = allLeads.find(l => l.id === id);
+  const idx = STAGES.findIndex(s => s.key === lead.stage);
+  const next = STAGES[(idx + 1) % STAGES.length].key;
+  await fetch(`${API}/api/leads/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({stage:next}) });
+  allLeads = allLeads.map(l => l.id === id ? {...l, stage:next} : l);
+  renderPipelineTable(); renderPipelineStats();
+  toast(`→ ${STAGES.find(s=>s.key===next).label}`);
 }
-
-async function addLead() {
-  const name = document.getElementById('l-name').value.trim();
-  if (!name) { toast('⚠️ Name required'); return; }
+function toggleAddLead() {
+  addLeadOpen = !addLeadOpen;
+  document.getElementById('addLeadForm').classList.toggle('open', addLeadOpen);
+  if (!addLeadOpen) { editingLeadId = null; ['leadName','leadCompany','leadValue','leadNextAction','leadNextDate','leadEmail','leadPhone','leadLinkedin','leadNotes'].forEach(id => document.getElementById(id).value=''); }
+}
+function editLead(id) {
+  editingLeadId = id;
+  const l = allLeads.find(x => x.id === id); if (!l) return;
+  ['leadName:name','leadCompany:company','leadValue:value','leadStage:stage','leadSource:source','leadNextAction:next_action','leadNextDate:next_action_date','leadEmail:email','leadPhone:phone','leadLinkedin:linkedin','leadNotes:notes'].forEach(p => {
+    const [fid, key] = p.split(':');
+    document.getElementById(fid).value = l[key] || '';
+  });
+  if (!addLeadOpen) toggleAddLead();
+}
+async function saveLead() {
   const body = {
-    name,
-    company:  document.getElementById('l-company').value.trim(),
-    status:   document.getElementById('l-status').value,
-    value:    parseInt(document.getElementById('l-value').value)||0,
-    followup: document.getElementById('l-followup').value,
+    name: document.getElementById('leadName').value.trim(),
+    company: document.getElementById('leadCompany').value.trim() || null,
+    value: parseInt(document.getElementById('leadValue').value) || 0,
+    stage: document.getElementById('leadStage').value,
+    source: document.getElementById('leadSource').value,
+    next_action: document.getElementById('leadNextAction').value.trim() || null,
+    next_action_date: document.getElementById('leadNextDate').value || null,
+    email: document.getElementById('leadEmail').value.trim() || null,
+    phone: document.getElementById('leadPhone').value.trim() || null,
+    linkedin: document.getElementById('leadLinkedin').value.trim() || null,
+    notes: document.getElementById('leadNotes').value.trim() || null,
   };
-  const res = await fetch(`${API}/api/leads`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
-  allLeads.push(await res.json());
-  ['l-name','l-company','l-value'].forEach(id => document.getElementById(id).value = '');
-  toggleForm('lead-form');
-  renderPipelineFull();
-  renderDailyPipeline();
-  toast('Lead added ✓');
+  if (!body.name) { toast('⚠️ Name required'); return; }
+  if (editingLeadId) {
+    await fetch(`${API}/api/leads/${editingLeadId}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    toast('Updated ♡');
+  } else {
+    await fetch(`${API}/api/leads`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    toast('Lead added ✨');
+  }
+  toggleAddLead();
+  loadPipelineView();
 }
-
-async function delLead(id) {
+async function deleteLead(id) {
+  if (!confirm('Delete this lead?')) return;
   await fetch(`${API}/api/leads/${id}`, { method:'DELETE' });
   allLeads = allLeads.filter(l => l.id !== id);
-  renderPipelineFull();
-  renderDailyPipeline();
-  toast('Lead removed');
+  if (pipelineView === 'kanban') renderKanban(); else renderPipelineTable();
+  renderPipelineStats();
+  toast('Removed');
 }
 
-// ══════════════════════════════════════════════
-// WEEKLY VIEW
-// ══════════════════════════════════════════════
-async function renderWeekly() {
-  const dates = getWeekDates(weekOffset);
-  const from = dateStr(dates[0]), to = dateStr(dates[6]);
+// ══════ CLIENTS ══════
+async function loadClientsView() {
+  const res = await fetch(`${API}/api/clients`);
+  allClients = await res.json();
+  renderClientStats(); renderClientsList();
+}
+function renderClientStats() {
+  const active = allClients.filter(c => c.status === 'active');
+  const mrr = active.reduce((s,c) => s + (c.retainer_value || 0), 0);
   const today = todayStr();
-
-  const res = await fetch(`${API}/api/tasks/range?from=${from}&to=${to}`);
-  const weekTasks = await res.json();
-
-  // KPIs
-  const done = weekTasks.filter(t => t.done).length;
-  const total = weekTasks.length;
-  const pipeTotal = allLeads.filter(l=>l.status!=='cold').reduce((s,l)=>s+l.value,0);
-  const followToday = allLeads.filter(l=>l.followup==='today').length;
-  const habitDays = allHabits.length ? allHabits.reduce((s,h) => {
-    const c = h.completions||[];
-    return s + dates.filter(d => c.includes(dateStr(d))).length;
-  }, 0) : 0;
-  const maxHabitDays = allHabits.length * 7;
-
-  document.getElementById('w-kpis').innerHTML = `
-    <div class="kpi"><div class="kpi-val">${done}/${total}</div><div class="kpi-lbl">Tasks complete</div><div class="kpi-delta ${done===total&&total>0?'delta-up':''}">${total?Math.round((done/total)*100):0}% done</div></div>
-    <div class="kpi"><div class="kpi-val">${habitDays}/${maxHabitDays}</div><div class="kpi-lbl">Habit completions</div><div class="kpi-delta">${maxHabitDays?Math.round((habitDays/maxHabitDays)*100):0}% rate</div></div>
-    <div class="kpi"><div class="kpi-val" style="font-size:18px">${fmt(pipeTotal)}</div><div class="kpi-lbl">Pipeline value</div></div>
-    <div class="kpi"><div class="kpi-val">${followToday}</div><div class="kpi-lbl">Follow-ups today</div><div class="kpi-delta ${followToday>0?'delta-dn':''}"></div></div>
-  `;
-
-  // Day columns
-  const grid = document.getElementById('week-grid');
-  grid.innerHTML = dates.map(d => {
-    const ds = dateStr(d);
-    const isToday = ds === today;
-    const dayTasks = weekTasks.filter(t => t.date === ds);
-    const doneCt = dayTasks.filter(t=>t.done).length;
-
-    const tasksHtml = dayTasks.length
-      ? dayTasks.map(t => `
-        <div class="mini-task ${t.done?'done':''}" onclick="quickToggleTask(${t.id},'${ds}')">
-          <div class="mini-check">${t.done?'✓':''}</div>
-          <div class="mini-text">${t.text}</div>
-        </div>`).join('')
-      : `<div style="font-size:11px;color:var(--muted2);padding:4px 0">—</div>`;
-
-    return `
-      <div class="day-col ${isToday?'today':''}">
-        <div class="day-head">
-          <div class="day-name">${shortDays[d.getDay()]}</div>
-          <div class="day-num">${d.getDate()}</div>
-          <div class="day-count">${doneCt}/${dayTasks.length}</div>
+  const overdue = active.filter(c => c.next_followup && c.next_followup < today).length;
+  const dueSoon = active.filter(c => c.next_followup && c.next_followup >= today && daysBetween(today, c.next_followup) <= 7).length;
+  document.getElementById('clientStats').innerHTML = `
+    <div class="stat-box"><div class="stat-num">${active.length}</div><div class="stat-label">Active clients</div></div>
+    <div class="stat-box"><div class="stat-num">AED ${mrr.toLocaleString()}</div><div class="stat-label">Monthly recurring</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:${overdue>0?'var(--red)':'var(--green)'}">${overdue}</div><div class="stat-label">Overdue check-ins</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:${dueSoon>0?'var(--yellow)':'var(--text)'}">${dueSoon}</div><div class="stat-label">Due this week</div></div>`;
+}
+function renderClientsList() {
+  const list = document.getElementById('clientsList');
+  if (!allClients.length) { list.innerHTML = '<div class="empty">No clients yet ♡</div>'; return; }
+  const today = todayStr();
+  list.innerHTML = allClients.map(c => {
+    let cardCls = '', dueText = '', dueTextCls = '';
+    if (c.next_followup) {
+      if (c.next_followup < today) { cardCls = 'overdue'; const days = daysBetween(c.next_followup, today); dueText = `Overdue by ${days} day${days===1?'':'s'}`; dueTextCls = 'overdue-text'; }
+      else if (daysBetween(today, c.next_followup) <= 7) { cardCls = 'due-soon'; dueText = c.next_followup === today ? 'Due today' : `In ${daysBetween(today, c.next_followup)} days`; dueTextCls = 'due-soon-text'; }
+      else dueText = c.next_followup;
+    } else dueText = 'Not scheduled';
+    return `<div class="client-card ${cardCls}">
+      <div class="client-header">
+        <div><div class="client-name">${c.name}</div><div class="client-company">${c.company || ''}${c.project ? ' · ' + c.project : ''}</div></div>
+        <span class="client-status cs-${c.status}">${c.status}</span>
+      </div>
+      <div class="client-meta">
+        <div class="meta-block"><div class="meta-label">Retainer</div><div class="meta-value">${c.retainer_value ? 'AED ' + c.retainer_value.toLocaleString() + '/mo' : '—'}</div></div>
+        <div class="meta-block"><div class="meta-label">Last contact</div><div class="meta-value">${c.last_contact || '—'}</div></div>
+        <div class="meta-block"><div class="meta-label">Next check-in</div><div class="meta-value ${dueTextCls}">${dueText}</div></div>
+        <div class="meta-block"><div class="meta-label">Frequency</div><div class="meta-value">Every ${c.followup_frequency_days||14} days</div></div>
+      </div>
+      ${c.notes ? `<div class="client-notes">${c.notes}</div>` : ''}
+      <div class="client-actions">
+        <button class="btn btn-accent btn-sm" onclick="quickLogContact(${c.id})">✓ Log check-in</button>
+        <button class="btn btn-ghost btn-sm" onclick="openClientModal(${c.id})">View history</button>
+        <button class="btn btn-ghost btn-sm" onclick="editClient(${c.id})">Edit</button>
+        <button style="background:none;border:none;color:var(--muted2);cursor:pointer;margin-left:auto;font-size:16px" onclick="deleteClient(${c.id})">×</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleAddClient() {
+  addClientOpen = !addClientOpen;
+  document.getElementById('addClientForm').classList.toggle('open', addClientOpen);
+  if (!addClientOpen) { editingClientId = null; ['cName','cCompany','cProject','cRetainer','cStart','cFreq','cNextFollowup','cEmail','cPhone','cLinkedin','cNotes'].forEach(id => { const el = document.getElementById(id); el.value = id === 'cFreq' ? '14' : ''; }); }
+}
+function editClient(id) {
+  const c = allClients.find(x => x.id === id); if (!c) return;
+  editingClientId = id;
+  ['cName:name','cCompany:company','cProject:project','cRetainer:retainer_value','cStart:start_date','cFreq:followup_frequency_days','cNextFollowup:next_followup','cEmail:email','cPhone:phone','cLinkedin:linkedin','cNotes:notes'].forEach(p => {
+    const [fid, key] = p.split(':');
+    document.getElementById(fid).value = c[key] || (fid === 'cFreq' ? 14 : '');
+  });
+  if (!addClientOpen) toggleAddClient();
+}
+async function saveClient() {
+  const body = {
+    name: document.getElementById('cName').value.trim(),
+    company: document.getElementById('cCompany').value.trim() || null,
+    project: document.getElementById('cProject').value.trim() || null,
+    retainer_value: parseInt(document.getElementById('cRetainer').value) || 0,
+    start_date: document.getElementById('cStart').value || null,
+    followup_frequency_days: parseInt(document.getElementById('cFreq').value) || 14,
+    next_followup: document.getElementById('cNextFollowup').value || null,
+    email: document.getElementById('cEmail').value.trim() || null,
+    phone: document.getElementById('cPhone').value.trim() || null,
+    linkedin: document.getElementById('cLinkedin').value.trim() || null,
+    notes: document.getElementById('cNotes').value.trim() || null,
+  };
+  if (!body.name) { toast('⚠️ Name required'); return; }
+  if (editingClientId) {
+    await fetch(`${API}/api/clients/${editingClientId}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    toast('Updated ♡');
+  } else {
+    await fetch(`${API}/api/clients`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    toast('Client added ✨');
+  }
+  toggleAddClient();
+  loadClientsView();
+}
+async function deleteClient(id) {
+  if (!confirm('Delete this client?')) return;
+  await fetch(`${API}/api/clients/${id}`, { method:'DELETE' });
+  allClients = allClients.filter(c => c.id !== id);
+  renderClientsList(); renderClientStats();
+  toast('Removed');
+}
+async function openClientModal(id) {
+  const c = allClients.find(x => x.id === id); if (!c) return;
+  document.getElementById('modalClientName').textContent = c.name + (c.company ? ` · ${c.company}` : '');
+  const body = document.getElementById('modalClientBody');
+  body.innerHTML = '<div class="loading">Loading history…</div>';
+  document.getElementById('clientModal').classList.add('open');
+  const res = await fetch(`${API}/api/clients/${id}/interactions`);
+  const interactions = await res.json();
+  body.innerHTML = `
+    <div style="margin-bottom:16px;display:flex;gap:8px">
+      <select class="f-select" id="logType" style="max-width:120px">
+        <option value="call">📞 Call</option><option value="meeting">🤝 Meeting</option>
+        <option value="email">💌 Email</option><option value="message">💬 Message</option><option value="note">📝 Note</option>
+      </select>
+      <input class="f-input grow" id="logSummary" placeholder="Quick summary…" onkeydown="if(event.key==='Enter')logInteraction(${id})">
+      <button class="btn btn-accent" onclick="logInteraction(${id})">Log</button>
+    </div>
+    <div class="card-label">History</div>
+    ${interactions.length === 0 ? '<div class="empty">No interactions yet</div>' :
+      interactions.map(i => `<div style="padding:12px;background:var(--surface2);border-radius:10px;margin-bottom:8px;border:1px solid var(--border-soft)">
+        <div style="display:flex;justify-content:space-between;gap:8px">
+          <strong style="font-size:13px">${({call:'📞 Call',meeting:'🤝 Meeting',email:'💌 Email',message:'💬 Message',note:'📝 Note'})[i.type] || i.type}</strong>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);font-weight:600">${i.date}</span>
         </div>
-        ${tasksHtml}
-      </div>`;
+        <div style="font-size:13px;margin-top:5px;color:var(--text)">${i.summary}</div>
+      </div>`).join('')}`;
+}
+async function logInteraction(clientId) {
+  const type = document.getElementById('logType').value;
+  const summary = document.getElementById('logSummary').value.trim();
+  if (!summary) { toast('⚠️ Add a summary'); return; }
+  await fetch(`${API}/api/clients/${clientId}/contact`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({type, summary}) });
+  toast('Logged ♡');
+  openClientModal(clientId); loadClientsView();
+}
+function closeClientModal() { document.getElementById('clientModal').classList.remove('open'); }
+
+// ══════ WEEKLY ══════
+async function loadWeeklyView() {
+  const res = await fetch(`${API}/api/tasks/week`);
+  weeklyTasks = await res.json();
+  const dayOfWeek = (now.getDay() + 6) % 7;
+  const monday = new Date(now); monday.setDate(now.getDate() - dayOfWeek);
+  const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
+  document.getElementById('weekRange').textContent = `${monday.getDate()} ${MONTHS[monday.getMonth()]} — ${sunday.getDate()} ${MONTHS[sunday.getMonth()]} ${sunday.getFullYear()}`;
+  renderWeekStats(); renderWeekGrid();
+}
+function renderWeekStats() {
+  const done = weeklyTasks.filter(t => t.done).length, total = weeklyTasks.length;
+  const pct = total ? Math.round((done/total)*100) : 0;
+  document.getElementById('weekStats').innerHTML = `
+    <div class="stat-box"><div class="stat-num">${total}</div><div class="stat-label">Tasks</div></div>
+    <div class="stat-box"><div class="stat-num">${done}</div><div class="stat-label">Done</div><div class="stat-change">↑ ${pct}% ✨</div></div>
+    <div class="stat-box"><div class="stat-num">${weeklyTasks.filter(t=>t.tag==='pr').length}</div><div class="stat-label">PR tasks</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:${weeklyTasks.filter(t=>t.tag==='urgent'&&!t.done).length>0?'var(--red)':'var(--green)'}">${weeklyTasks.filter(t=>t.tag==='urgent'&&!t.done).length}</div><div class="stat-label">Urgent</div></div>`;
+}
+function renderWeekGrid() {
+  const grid = document.getElementById('weekGrid');
+  const dayOfWeek = (now.getDay() + 6) % 7;
+  const monday = new Date(now); monday.setDate(now.getDate() - dayOfWeek);
+  const dayLabels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const today = todayStr();
+  grid.innerHTML = Array.from({length:7}, (_,i) => {
+    const d = new Date(monday); d.setDate(monday.getDate() + i);
+    const dateStr = d.toLocaleDateString('en-CA',{timeZone:'Asia/Dubai'});
+    const isToday = dateStr === today;
+    const dayTasks = weeklyTasks.filter(t => t.date === dateStr);
+    return `<div class="day-col ${isToday?'today':''}"><div class="day-header">${dayLabels[i]}</div><div class="day-date">${d.getDate()}</div>${dayTasks.map(t => `<div class="day-task ${t.done?'done':''} ${tagCls(t.tag)}" onclick="toggleTask(${t.id},'weekly')" title="${t.text}">${t.text.length>22?t.text.slice(0,22)+'…':t.text}</div>`).join('')}</div>`;
   }).join('');
 }
 
-async function quickToggleTask(id, date) {
-  // Find in allTasks (today) or fetch
-  const t = allTasks.find(x => x.id === id);
-  const done = t ? t.done : false;
-  await fetch(`${API}/api/tasks/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({done:!done}) });
-  if (t) { allTasks = allTasks.map(x => x.id === id ? {...x, done:!x.done} : x); renderDailyTasks(); }
-  renderWeekly();
+// ══════ MONTHLY ══════
+async function loadMonthlyView() {
+  document.getElementById('monthTitle').textContent = `${MONTHS[currentMonth-1]} ${currentMonthYear}`;
+  await Promise.all([loadMonthlyGoals(), loadMonthlyCalendar()]);
+  renderMonthStats();
 }
-
-// ══════════════════════════════════════════════
-// GOALS
-// ══════════════════════════════════════════════
-async function loadGoals() {
-  const mRes = await fetch(`${API}/api/goals?period_type=monthly&period_key=${getMonthKey()}`);
-  monthlyGoals = await mRes.json();
-  const qRes = await fetch(`${API}/api/goals?period_type=quarterly&period_key=${getQuarterKey()}`);
-  quarterlyGoals = await qRes.json();
+async function loadMonthlyGoals() {
+  const res = await fetch(`${API}/api/goals/monthly?year=${currentMonthYear}&month=${currentMonth}`);
+  renderGoals('monthly', await res.json());
 }
-
-function renderGoalsList(goals, containerId) {
-  const el = document.getElementById(containerId);
-  if (!goals.length) { el.innerHTML = '<div class="empty">No goals yet — add one above</div>'; return; }
-
-  const catDot = { pr:'c-pr', revenue:'c-revenue', personal:'c-personal' };
-  el.innerHTML = goals.map(g => {
-    const p = g.target ? pct(g.progress, g.target) : null;
-    const progressHtml = g.target ? `
-      <div class="goal-bar"><div class="goal-bar-fill" style="width:${p}%"></div></div>
-      <div style="display:flex;justify-content:space-between;margin-top:4px">
-        <span style="font-size:11px;color:var(--muted)">${(g.unit||'')} ${(g.progress||0).toLocaleString()} / ${g.target.toLocaleString()}</span>
-        <span class="goal-pct">${p}%</span>
-      </div>` : '';
-
-    return `
-      <div class="goal-item ${g.done?'done-item':''}" id="goal-${g.id}">
-        <div class="goal-head">
-          <div>
-            <div class="goal-title">${g.title}</div>
-            <div class="goal-meta"><span class="tl-dot ${catDot[g.category]||'c-personal'}" style="display:inline-block;vertical-align:middle;margin-right:4px"></span>${g.category}</div>
-          </div>
-        </div>
-        ${progressHtml}
-        <div class="goal-actions">
-          ${g.target ? `<input class="fi" type="number" value="${g.progress||0}" style="max-width:100px" onchange="updateGoalProgress(${g.id},this.value)" placeholder="Progress">` : ''}
-          <button class="btn btn-ghost btn-sm" onclick="toggleGoalDone(${g.id})">${g.done?'↩ Reopen':'✅ Mark done'}</button>
-          <button class="btn btn-ghost btn-sm" onclick="deleteGoal(${g.id})" style="color:var(--red)">×</button>
-        </div>
-      </div>`;
-  }).join('');
+async function loadMonthlyCalendar() {
+  const res = await fetch(`${API}/api/tasks/month?year=${currentMonthYear}&month=${currentMonth}`);
+  monthlyTasks = await res.json(); renderMonthCalendar();
 }
-
-function renderMonthly() {
-  const mKey = getMonthKey();
-  const [y, m] = mKey.split('-');
-  document.getElementById('m-month-label').textContent = `${months[parseInt(m)-1]} ${y}`;
-
-  // KPIs
-  const mDone = monthlyGoals.filter(g=>g.done).length;
-  const pipeTotal = allLeads.filter(l=>l.status!=='cold').reduce((s,l)=>s+l.value,0);
-  const closed = allLeads.filter(l=>l.status==='closed').reduce((s,l)=>s+l.value,0);
-  const habitRate = (() => {
-    const daysGone = now.getDate();
-    const completions = allHabits.reduce((s,h) => s + (h.completions||[]).filter(c => c.startsWith(mKey)).length, 0);
-    const max = allHabits.length * daysGone;
-    return max ? Math.round((completions/max)*100) : 0;
-  })();
-
-  document.getElementById('m-kpis').innerHTML = `
-    <div class="kpi"><div class="kpi-val">${mDone}/${monthlyGoals.length}</div><div class="kpi-lbl">Goals complete</div></div>
-    <div class="kpi"><div class="kpi-val" style="font-size:18px">${fmt(pipeTotal)}</div><div class="kpi-lbl">Pipeline value</div><div class="kpi-delta hi">${pct(pipeTotal,GOAL)}% of goal</div></div>
-    <div class="kpi"><div class="kpi-val" style="font-size:18px">${fmt(closed)}</div><div class="kpi-lbl">Revenue closed</div></div>
-    <div class="kpi"><div class="kpi-val">${habitRate}%</div><div class="kpi-lbl">Habit consistency</div></div>
-  `;
-
-  renderGoalsList(monthlyGoals, 'm-goals-list');
-
-  // Month habit heatmap (simplified)
-  const daysInMonth = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
-  const mHabits = document.getElementById('m-habits');
-  mHabits.innerHTML = allHabits.map(h => {
-    const comps = (h.completions||[]).filter(c => c.startsWith(mKey));
-    const streak = comps.length;
-    return `
-      <div style="margin-bottom:12px">
-        <div style="font-size:12px;font-weight:500;margin-bottom:6px">${h.emoji} ${h.name}</div>
-        <div style="display:flex;gap:3px;flex-wrap:wrap">
-          ${Array.from({length:daysInMonth},(_,i)=>{
-            const ds = `${mKey}-${String(i+1).padStart(2,'0')}`;
-            const done = comps.includes(ds);
-            return `<div style="width:11px;height:11px;border-radius:2px;background:${done?'var(--green)':'var(--surface3)'}" title="${ds}"></div>`;
-          }).join('')}
-        </div>
-        <div style="font-size:10px;color:var(--accent);font-family:'JetBrains Mono',monospace;margin-top:5px">${streak}/${daysInMonth} days</div>
-      </div>`;
-  }).join('') || '<div class="empty">No habits yet</div>';
-}
-
-function renderQuarterly() {
-  const qKey = getQuarterKey();
-  document.getElementById('q-quarter-label').textContent = qKey;
-
-  const qDone = quarterlyGoals.filter(g=>g.done).length;
-  const pipeTotal = allLeads.filter(l=>l.status!=='cold').reduce((s,l)=>s+l.value,0);
-  const closed = allLeads.filter(l=>l.status==='closed').reduce((s,l)=>s+l.value,0);
-  const qRevGoal = quarterlyGoals.find(g=>g.category==='revenue'&&g.target);
-
-  document.getElementById('q-kpis').innerHTML = `
-    <div class="kpi"><div class="kpi-val">${qDone}/${quarterlyGoals.length}</div><div class="kpi-lbl">Quarterly goals done</div></div>
-    <div class="kpi"><div class="kpi-val" style="font-size:18px">${fmt(pipeTotal)}</div><div class="kpi-lbl">Pipeline</div></div>
-    <div class="kpi"><div class="kpi-val" style="font-size:18px">${fmt(closed)}</div><div class="kpi-lbl">Revenue closed</div><div class="kpi-delta delta-up">${qRevGoal?pct(closed,qRevGoal.target)+'% of target':''}</div></div>
-    <div class="kpi"><div class="kpi-val">${allLeads.filter(l=>l.status==='closed').length}</div><div class="kpi-lbl">Clients closed</div></div>
-  `;
-
-  renderGoalsList(quarterlyGoals, 'q-goals-list');
-
-  // Quarter summary
-  const catDot = { pr:'c-pr', revenue:'c-revenue', personal:'c-personal' };
-  document.getElementById('q-summary').innerHTML = `
-    <div class="timeline">
-      ${quarterlyGoals.map(g => {
-        const p = g.target ? pct(g.progress, g.target) : null;
-        return `
-          <div class="tl-item ${g.done?'done-item':''}">
-            <div class="tl-dot ${catDot[g.category]||'c-personal'}"></div>
-            <div>
-              <div class="tl-text">${g.title}</div>
-              <div class="tl-sub">${g.category}</div>
-            </div>
-            <div class="tl-pct">${p !== null ? p+'%' : (g.done?'✅':'—')}</div>
-          </div>`;
-      }).join('') || '<div class="empty">No quarterly goals yet</div>'}
+function renderMonthStats() {
+  const done = monthlyTasks.filter(t => t.done).length, total = monthlyTasks.length;
+  document.getElementById('monthStats').innerHTML = `
+    <div class="stat-row" style="margin-bottom:10px">
+      <div class="stat-box"><div class="stat-num">${total}</div><div class="stat-label">Tasks</div></div>
+      <div class="stat-box"><div class="stat-num">${total?Math.round((done/total)*100):0}%</div><div class="stat-label">Completion</div></div>
+    </div>
+    <div class="stat-row" style="margin:0">
+      <div class="stat-box"><div class="stat-num">${monthlyTasks.filter(t=>t.tag==='pr').length}</div><div class="stat-label">PR tasks</div></div>
+      <div class="stat-box"><div class="stat-num">${monthlyTasks.filter(t=>t.tag==='urgent').length}</div><div class="stat-label">Urgent</div></div>
     </div>`;
 }
-
-function openGoalForm(type) {
-  document.getElementById('goal-form-' + type).style.display = 'block';
+function renderMonthCalendar() {
+  document.getElementById('monthCalHeaderRow').innerHTML = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d => `<div class="month-day-header">${d}</div>`).join('');
+  const firstDay = new Date(currentMonthYear, currentMonth-1, 1);
+  const lastDay = new Date(currentMonthYear, currentMonth, 0);
+  const startDow = (firstDay.getDay() + 6) % 7;
+  const today = todayStr();
+  let cells = [];
+  for (let i = 0; i < startDow; i++) { const d = new Date(firstDay); d.setDate(d.getDate() - (startDow - i)); cells.push({date:d, otherMonth:true}); }
+  for (let d = 1; d <= lastDay.getDate(); d++) cells.push({date: new Date(currentMonthYear, currentMonth-1, d), otherMonth:false});
+  while (cells.length % 7 !== 0) { const last = cells[cells.length-1].date; const d = new Date(last); d.setDate(last.getDate()+1); cells.push({date:d, otherMonth:true}); }
+  document.getElementById('monthCalGrid').innerHTML = cells.map(cell => {
+    const dateStr = cell.date.toLocaleDateString('en-CA');
+    const dayTasks = monthlyTasks.filter(t => t.date === dateStr);
+    const dots = dayTasks.map(t => `<span class="month-task-dot ${t.done?'dot-done':'dot-pending'}"></span>`).join('');
+    return `<div class="month-day ${dateStr===today?'today':''} ${cell.otherMonth?'other-month':''}"><div class="month-day-num">${cell.date.getDate()}</div><div>${dots}</div></div>`;
+  }).join('');
 }
-function closeGoalForm(type) {
-  document.getElementById('goal-form-' + type).style.display = 'none';
+function changeMonth(dir) {
+  currentMonth += dir;
+  if (currentMonth > 12) { currentMonth = 1; currentMonthYear++; }
+  if (currentMonth < 1) { currentMonth = 12; currentMonthYear--; }
+  loadMonthlyView();
 }
 
+// ══════ QUARTERLY ══════
+async function loadQuarterlyView() {
+  const qStart = (currentQuarter - 1) * 3 + 1, qEnd = currentQuarter * 3;
+  document.getElementById('quarterTitle').textContent = `Q${currentQuarter} ${currentQuarterYear}`;
+  document.getElementById('quarterSub').textContent = `${MONTHS[qStart-1]} — ${MONTHS[qEnd-1]} ${currentQuarterYear}`;
+  const res = await fetch(`${API}/api/goals/quarterly?year=${currentQuarterYear}&quarter=${currentQuarter}`);
+  const goals = await res.json();
+  if (!allLeads.length) { const r = await fetch(`${API}/api/leads`); allLeads = await r.json(); }
+  renderGoals('quarterly', goals); renderQuarterStats(goals); renderQuarterBreakdown();
+}
+function renderQuarterStats(goals) {
+  const done = goals.filter(g => g.done).length;
+  const pipelineTotal = allLeads.filter(l => !['closed_won','closed_lost'].includes(l.stage)).reduce((s,l) => s + (l.value||0), 0);
+  document.getElementById('quarterStats').innerHTML = `
+    <div class="stat-box"><div class="stat-num">${goals.length}</div><div class="stat-label">Goals set</div></div>
+    <div class="stat-box"><div class="stat-num">${done}</div><div class="stat-label">Achieved ✨</div></div>
+    <div class="stat-box"><div class="stat-num">AED ${(pipelineTotal/1000).toFixed(0)}k</div><div class="stat-label">Pipeline</div></div>
+    <div class="stat-box"><div class="stat-num">${allLeads.filter(l=>l.stage==='closed_won').length}</div><div class="stat-label">Closed deals</div></div>`;
+}
+function renderQuarterBreakdown() {
+  const qStart = (currentQuarter - 1) * 3 + 1;
+  document.getElementById('quarterBreakdown').innerHTML = [qStart, qStart+1, qStart+2].map(m => {
+    const isCurrentMonth = m === (now.getMonth()+1) && currentQuarterYear === now.getFullYear();
+    return `<div style="padding:12px 0;border-bottom:1px solid var(--border-soft)">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-weight:600;font-family:'Playfair Display',serif;font-size:15px">${MONTHS[m-1]}</span>
+        ${isCurrentMonth?'<span style="font-family:JetBrains Mono,monospace;font-size:10px;color:var(--accent);font-weight:600">CURRENT ♡</span>':''}
+      </div>
+    </div>`;
+  }).join('');
+}
+function changeQuarter(dir) {
+  currentQuarter += dir;
+  if (currentQuarter > 4) { currentQuarter = 1; currentQuarterYear++; }
+  if (currentQuarter < 1) { currentQuarter = 4; currentQuarterYear--; }
+  loadQuarterlyView();
+}
+
+function renderGoals(type, goals) {
+  const el = document.getElementById(type === 'monthly' ? 'monthlyGoalsList' : 'quarterlyGoalsList');
+  if (!goals.length) { el.innerHTML = '<div class="empty">No goals yet ♡</div>'; return; }
+  el.innerHTML = goals.map(g => {
+    const pct = g.target_value ? Math.min(100, Math.round((g.current_value/g.target_value)*100)) : null;
+    return `<div class="goal-item ${g.done?'done-goal':''}">
+      <div class="goal-header">
+        <div class="goal-title">${g.title}</div>
+        ${pct !== null ? `<div class="goal-meta">${g.current_value}${g.unit?' '+g.unit:''} / ${g.target_value}${g.unit?' '+g.unit:''}</div>` : ''}
+      </div>
+      ${pct !== null ? `<div class="goal-bar"><div class="goal-fill fill-${g.category||'general'}" style="width:${pct}%"></div></div>` : ''}
+      <div class="goal-actions">
+        ${pct !== null ? `<input class="f-input goal-value-input" type="number" value="${g.current_value}" onchange="updateGoalProgress('${type}',${g.id},this.value)">` : ''}
+        <button class="btn btn-ghost btn-sm" onclick="toggleGoalDone('${type}',${g.id},${g.done})">${g.done?'↩':'✓'}</button>
+        <button style="background:none;border:none;color:var(--muted2);cursor:pointer;margin-left:auto" onclick="deleteGoal('${type}',${g.id})">×</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+async function updateGoalProgress(type, id, value) {
+  await fetch(`${API}/api/goals/${type}/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({current_value: parseFloat(value)}) });
+  toast('Updated ✨');
+  if (type === 'monthly') loadMonthlyGoals(); else loadQuarterlyView();
+}
+async function toggleGoalDone(type, id, current) {
+  await fetch(`${API}/api/goals/${type}/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({done: !current}) });
+  if (type === 'monthly') loadMonthlyGoals(); else loadQuarterlyView();
+  toast(!current ? '🎉 Achieved!' : '↩');
+}
+async function deleteGoal(type, id) {
+  await fetch(`${API}/api/goals/${type}/${id}`, {method:'DELETE'});
+  if (type === 'monthly') loadMonthlyGoals(); else loadQuarterlyView();
+  toast('Removed');
+}
+function toggleAddGoal(type) {
+  addGoalOpen[type] = !addGoalOpen[type];
+  document.getElementById('addGoalForm' + (type === 'monthly' ? 'Monthly' : 'Quarterly')).classList.toggle('open', addGoalOpen[type]);
+}
 async function saveGoal(type) {
-  const pre = type === 'monthly' ? 'mg' : 'qg';
-  const title = document.getElementById(`${pre}-title`).value.trim();
-  if (!title) { toast('⚠️ Title required'); return; }
+  const prefix = type === 'monthly' ? 'gMonth' : 'gQ';
+  const title = document.getElementById(prefix + 'Title').value.trim();
+  if (!title) return;
   const body = {
     title,
-    category:    document.getElementById(`${pre}-cat`).value,
-    period_type: type,
-    period_key:  type === 'monthly' ? getMonthKey() : getQuarterKey(),
-    target:      parseFloat(document.getElementById(`${pre}-target`).value)||null,
-    unit:        document.getElementById(`${pre}-unit`).value.trim()||null,
+    target_value: parseFloat(document.getElementById(prefix+'Target').value) || null,
+    unit: document.getElementById(prefix+'Unit').value.trim(),
+    category: document.getElementById(prefix+'Category').value,
+    ...(type === 'monthly' ? {year:currentMonthYear, month:currentMonth} : {year:currentQuarterYear, quarter:currentQuarter})
   };
-  const res = await fetch(`${API}/api/goals`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
-  const g = await res.json();
-  if (type === 'monthly') { monthlyGoals.push(g); renderMonthly(); }
-  else { quarterlyGoals.push(g); renderQuarterly(); }
-  document.getElementById(`${pre}-title`).value = '';
-  document.getElementById(`${pre}-target`).value = '';
-  document.getElementById(`${pre}-unit`).value = '';
-  closeGoalForm(type);
-  toast('Goal added ✓');
+  await fetch(`${API}/api/goals/${type}`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+  ['Title','Target','Unit'].forEach(f => document.getElementById(prefix+f).value='');
+  toggleAddGoal(type);
+  if (type === 'monthly') loadMonthlyGoals(); else loadQuarterlyView();
+  toast('Goal added ✨');
 }
 
-async function updateGoalProgress(id, val) {
-  const progress = parseFloat(val)||0;
-  await fetch(`${API}/api/goals/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({progress}) });
-  monthlyGoals = monthlyGoals.map(g => g.id===id ? {...g,progress} : g);
-  quarterlyGoals = quarterlyGoals.map(g => g.id===id ? {...g,progress} : g);
-  toast('Progress updated ✓');
+// ══════ REFLECTION ══════
+const REFLECTION_QUESTIONS = [
+  { key:'wins', emoji:'🏆', label:'Wins', text:'What did you win this week?' },
+  { key:'slipped', emoji:'🌙', label:'Slipped', text:'What slipped and why?' },
+  { key:'focus_next', emoji:'🎯', label:'Focus Next', text:"What's your #1 focus next week?" },
+  { key:'showed_up', emoji:'💕', label:'Showed Up', text:'How did you show up for yourself?' },
+  { key:'pipeline', emoji:'✨', label:'Pipeline', text:'Pipeline: what moved, what stalled?' },
+];
+
+async function loadReflectionView() {
+  updateReflectionHeader();
+  await Promise.all([loadCurrentReflection(), loadPastReflections()]);
 }
-
-async function toggleGoalDone(id) {
-  const g = [...monthlyGoals,...quarterlyGoals].find(x=>x.id===id);
-  const done = !g.done;
-  await fetch(`${API}/api/goals/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({done}) });
-  monthlyGoals = monthlyGoals.map(x => x.id===id ? {...x,done} : x);
-  quarterlyGoals = quarterlyGoals.map(x => x.id===id ? {...x,done} : x);
-  if (document.getElementById('view-monthly').classList.contains('active')) renderMonthly();
-  if (document.getElementById('view-quarterly').classList.contains('active')) renderQuarterly();
-  toast(done ? '✅ Goal marked done!' : '↩ Goal reopened');
+function updateReflectionHeader() {
+  const label = currentReflectionWeek === getISOWeek(now) && currentReflectionYear === now.getFullYear()
+    ? `This week (W${currentReflectionWeek})` : `Week ${currentReflectionWeek}, ${currentReflectionYear}`;
+  document.getElementById('reflectionWeekTitle').textContent = label;
 }
-
-async function deleteGoal(id) {
-  await fetch(`${API}/api/goals/${id}`, { method:'DELETE' });
-  monthlyGoals = monthlyGoals.filter(g=>g.id!==id);
-  quarterlyGoals = quarterlyGoals.filter(g=>g.id!==id);
-  if (document.getElementById('view-monthly').classList.contains('active')) renderMonthly();
-  if (document.getElementById('view-quarterly').classList.contains('active')) renderQuarterly();
-  toast('Goal removed');
+async function loadCurrentReflection() {
+  const res = await fetch(`${API}/api/reflections?year=${currentReflectionYear}&week=${currentReflectionWeek}`);
+  reflectionData = await res.json();
+  renderReflectionQuestions();
 }
-
-// ══════════════════════════════════════════════
-// REFLECTION
-// ══════════════════════════════════════════════
-function getReflectionWeekDates() {
-  const dates = getWeekDates(reflectionOffset);
-  const from = dateStr(dates[0]), to = dateStr(dates[6]);
-  const wk = getWeekKey(dates[0]);
-  return { from, to, wk, dates };
-}
-
-async function loadReflection() {
-  const { from, to, wk, dates } = getReflectionWeekDates();
-  document.getElementById('ref-week-label').textContent = `${dates[0].getDate()} ${months[dates[0].getMonth()].slice(0,3)} – ${dates[6].getDate()} ${months[dates[6].getMonth()].slice(0,3)}`;
-
-  // Stats for that week
-  const res = await fetch(`${API}/api/tasks/range?from=${from}&to=${to}`);
-  const tasks = await res.json();
-  const done = tasks.filter(t=>t.done).length;
-  const pipeTotal = allLeads.filter(l=>l.status!=='cold').reduce((s,l)=>s+l.value,0);
-  document.getElementById('ref-stats').innerHTML = `
-    <div><span style="font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--accent)">${done}/${tasks.length}</span><div style="font-size:11px;color:var(--muted);margin-top:2px">tasks done</div></div>
-    <div><span style="font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--accent)">${tasks.length?Math.round((done/tasks.length)*100):0}%</span><div style="font-size:11px;color:var(--muted);margin-top:2px">completion rate</div></div>
-    <div><span style="font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--accent)">${fmt(pipeTotal)}</span><div style="font-size:11px;color:var(--muted);margin-top:2px">pipeline</div></div>
-  `;
-
-  // Load saved reflection
-  const rRes = await fetch(`${API}/api/reflections/${wk}`);
-  const r = await rRes.json();
-  document.getElementById('ref-wins').value     = r.wins || '';
-  document.getElementById('ref-slipped').value  = r.slipped || '';
-  document.getElementById('ref-focus').value    = r.next_focus || '';
-  document.getElementById('ref-showed').value   = r.showed_up || '';
-  document.getElementById('ref-pipeline').value = r.pipeline_notes || '';
-}
-
-async function saveReflection() {
-  const { from, to, wk, dates } = getReflectionWeekDates();
-  const body = {
-    week_key:       wk,
-    week_start:     from,
-    wins:           document.getElementById('ref-wins').value,
-    slipped:        document.getElementById('ref-slipped').value,
-    next_focus:     document.getElementById('ref-focus').value,
-    showed_up:      document.getElementById('ref-showed').value,
-    pipeline_notes: document.getElementById('ref-pipeline').value,
-  };
-  await fetch(`${API}/api/reflections`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
-  toast('Reflection saved ✓');
-  renderPastReflections();
-}
-
-function shiftReflection(dir) {
-  reflectionOffset += dir;
-  if (reflectionOffset > 0) reflectionOffset = 0;
-  loadReflection();
-}
-
-async function renderPastReflections() {
-  const res = await fetch(`${API}/api/reflections`);
-  allReflections = await res.json();
-  const el = document.getElementById('past-reflections');
-  if (!allReflections.length) { el.innerHTML = '<div class="empty">No past reflections yet</div>'; return; }
-  el.innerHTML = allReflections.map(r => `
-    <div style="padding:12px 0;border-bottom:1px solid var(--border)">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent)">${r.week_key}</span>
-        <span style="font-size:11px;color:var(--muted)">${r.week_start}</span>
-      </div>
-      ${r.wins ? `<div style="font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">🏆 </span>${r.wins}</div>` : ''}
-      ${r.next_focus ? `<div style="font-size:12px"><span style="color:var(--muted)">🎯 </span>${r.next_focus}</div>` : ''}
+function renderReflectionQuestions() {
+  const answers = reflectionData?.answers || {};
+  const isComplete = reflectionData?.completed_at;
+  const status = document.getElementById('reflectionStatus');
+  status.className = 'reflection-status ' + (isComplete ? 'r-complete' : 'r-pending');
+  status.textContent = isComplete ? '✓ Complete' : '· In progress';
+  document.getElementById('reflectionQuestions').innerHTML = REFLECTION_QUESTIONS.map(q => `
+    <div class="q-block">
+      <div class="q-label">${q.emoji} ${q.label}</div>
+      <div class="q-text">${q.text}</div>
+      <textarea class="q-answer" id="qa-${q.key}" placeholder="Write your answer…">${answers[q.key]||''}</textarea>
     </div>`).join('');
 }
-
-// ══════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════
-async function init() {
-  await Promise.all([loadTasks(), loadHabits(), loadLeads(), loadGoals()]);
-  renderDailyPipeline();
-  // Poll every 30s for WhatsApp-driven updates
-  setInterval(() => { loadTasks(); loadHabits(); }, 30000);
+async function saveReflection() {
+  const answers = {};
+  REFLECTION_QUESTIONS.forEach(q => { const val = document.getElementById('qa-'+q.key)?.value.trim(); if (val) answers[q.key] = val; });
+  await fetch(`${API}/api/reflections`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({year:currentReflectionYear, week:currentReflectionWeek, answers}) });
+  reflectionData = { ...reflectionData, answers, completed_at: Object.keys(answers).length >= 5 ? new Date().toISOString() : null };
+  renderReflectionQuestions();
+  loadPastReflections();
+  toast('Saved ♡');
+}
+async function loadPastReflections() {
+  const res = await fetch(`${API}/api/reflections/recent`);
+  const items = await res.json();
+  const el = document.getElementById('pastReflections');
+  if (!items.length) { el.innerHTML = '<div class="empty">No reflections yet ♡</div>'; return; }
+  el.innerHTML = items.map(r => {
+    const preview = r.answers?.wins || r.answers?.focus_next || 'No answers yet';
+    return `<div class="past-ref-item" onclick="loadReflectionWeek(${r.year},${r.week})">
+      <div><div class="past-ref-week">Week ${r.week}, ${r.year}</div><div class="past-ref-preview">${preview.slice(0,60)}${preview.length>60?'…':''}</div></div>
+      ${r.completed_at ? '<span style="color:var(--green);font-size:14px">✨</span>' : '<span style="color:var(--yellow);font-size:14px">…</span>'}
+    </div>`;
+  }).join('');
+}
+function loadReflectionWeek(year, week) {
+  currentReflectionYear = year; currentReflectionWeek = week;
+  updateReflectionHeader(); loadCurrentReflection();
+}
+function changeReflectionWeek(dir) {
+  currentReflectionWeek += dir;
+  if (currentReflectionWeek > 52) { currentReflectionWeek = 1; currentReflectionYear++; }
+  if (currentReflectionWeek < 1) { currentReflectionWeek = 52; currentReflectionYear--; }
+  updateReflectionHeader(); loadCurrentReflection();
 }
 
-init();
+// ── INIT ──
+renderDailyQuote();
+initDateHeader();
+loadDailyTasks();
+loadHabits();
+loadTodayActions();
+loadCalendar();
+
+// ── CALENDAR ──
+async function loadCalendar() {
+  const statusEl = document.getElementById('calendarStatus');
+  const listEl = document.getElementById('calendarToday');
+  try {
+    const res = await fetch(`${API}/api/calendar/today`);
+    const data = await res.json();
+
+    if (!data.connected) {
+      statusEl.textContent = '· not connected';
+      listEl.innerHTML = `
+        <div class="cal-connect-prompt">
+          <h3>Connect your Google Calendar ♡</h3>
+          <p>See your meetings on the dashboard and get a 7pm WhatsApp preview of tomorrow's day.</p>
+          <a href="/auth/google" class="btn btn-accent" style="text-decoration:none;display:inline-block;padding:10px 20px">Connect Google Calendar</a>
+        </div>`;
+      return;
+    }
+
+    statusEl.textContent = `· ${data.events.length} event${data.events.length===1?'':'s'} today`;
+
+    if (data.events.length === 0) {
+      listEl.innerHTML = '<div class="empty">Calendar is clear today ✨</div>';
+      return;
+    }
+
+    const now = new Date();
+    listEl.innerHTML = data.events.map(e => {
+      const start = new Date(e.start);
+      const end = e.end ? new Date(e.end) : null;
+      const inProgress = !e.allDay && start <= now && (!end || end >= now);
+      const timeStr = e.allDay ? 'All day' : start.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit',timeZone:'Asia/Dubai',hour12:false});
+      const endStr = (e.allDay || !end) ? '' : end.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit',timeZone:'Asia/Dubai',hour12:false});
+
+      return `<div class="cal-event ${inProgress?'in-progress':''}">
+        <div class="cal-event-time">${timeStr}${endStr?`<div class="end-time">${endStr}</div>`:''}</div>
+        <div class="cal-event-divider" style="background:${e.calendar_color||'var(--accent)'}"></div>
+        <div class="cal-event-body">
+          <div class="cal-event-title">${inProgress?'🔴 ':''}${e.title}</div>
+          <div class="cal-event-meta">
+            ${e.location ? `<span>📍 ${e.location}</span>` : ''}
+            ${e.meeting_link ? `<span>💻 <a href="${e.meeting_link}" target="_blank" style="color:var(--accent)">Join</a></span>` : ''}
+            ${e.attendees.length > 0 ? `<span>👥 ${e.attendees.length}</span>` : ''}
+            <span class="cal-event-cal-pill">${e.calendar_name}</span>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch (err) {
+    listEl.innerHTML = `<div class="empty">Couldn't load calendar — ${err.message}</div>`;
+  }
+}
+
+setInterval(() => {
+  if (document.getElementById('view-daily').classList.contains('active')) {
+    loadDailyTasks();
+    loadHabits();
+    loadCalendar();
+  }
+}, 30000);
+
+const urlParams = new URLSearchParams(window.location.search);
+const viewParam = urlParams.get('view');
+if (viewParam && ['weekly','pipeline','clients','monthly','quarterly','reflection'].includes(viewParam)) {
+  switchView(viewParam);
+}
 </script>
 </body>
 </html>
