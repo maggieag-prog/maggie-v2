@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maggie's Dashboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg:       #0e0e11;
+  --surface:  #16161a;
+  --surface2: #1e1e24;
+  --surface3: #26262e;
+  --border:   #2a2a32;
+  --border2:  #353540;
+  --accent:   #c8a96e;
+  --accent2:  #7c6ef7;
+  --green:    #4caf82;
+  --red:      #e05c5c;
+  --yellow:   #e8b84b;
+  --blue:     #5b9cf6;
+  --text:     #f0ede8;
+  --muted:    #7a7888;
+  --muted2:   #4a4858;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  min-height: 100vh;
+}
+
+/* ── LAYOUT ── */
+.shell { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.sidebar-logo {
+  padding: 0 20px 24px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+.sidebar-logo .name {
+  font-family: 'DM Serif Display', serif;
+  font-size: 18px;
+  color: var(--text);
+  font-weight: 400;
+}
+
+.sidebar-logo .sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--accent);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.nav-group { margin-bottom: 4px; padding: 0 12px; }
+
+.nav-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted2);
+  padding: 10px 8px 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 400;
+  transition: all 0.15s;
+  user-select: none;
+  text-decoration: none;
+}
+
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { background: var(--surface3); color: var(--text); font-weight: 500; }
+.nav-item .icon { font-size: 14px; width: 18px; text-align: center; }
+
+.sidebar-bottom {
+  margin-top: auto;
+  padding: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  color: var(--muted);
+  padding: 6px 8px;
+}
+
+.live-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+/* ── MAIN ── */
+.main { flex: 1; overflow-y: auto; }
+
+.topbar {
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbar-left h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 22px;
+  font-weight: 400;
+}
+
+.topbar-left .date-line {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.score-pill {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.score-pill strong { color: var(--accent); font-family: 'JetBrains Mono', monospace; }
+
+/* ── VIEWS ── */
+.view { display: none; padding: 24px 28px; }
+.view.active { display: block; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.card-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.grid12 { display: grid; grid-template-columns: 1fr 280px; gap: 16px; }
+.grid21 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+.gap16 { display: flex; flex-direction: column; gap: 16px; }
+
+/* ── TASKS ── */
+.tasks-list { display: flex; flex-direction: column; gap: 7px; }
+
+.task-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px;
+  background: var(--surface2);
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.task-item:hover { border-color: var(--border); }
+.task-item.done { opacity: 0.4; }
+.task-item.done .task-text { text-decoration: line-through; }
+
+.task-check {
+  width: 17px; height: 17px; border-radius: 50%;
+  border: 1.5px solid var(--muted2); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; transition: all 0.15s;
+}
+
+.task-item.done .task-check { background: var(--green); border-color: var(--green); color: white; }
+.task-text { flex: 1; font-size: 13px; }
+
+.tag {
+  font-size: 9px; padding: 2px 7px;
+  border-radius: 10px; font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.3px;
+}
+
+.tag-pr       { background: rgba(124,110,247,0.15); color: var(--accent2); }
+.tag-personal { background: rgba(200,169,110,0.12); color: var(--accent); }
+.tag-urgent   { background: rgba(224,92,92,0.12);   color: var(--red); }
+
+.task-del { background:none; border:none; color:var(--muted2); cursor:pointer; font-size:13px; display:none; }
+.task-item:hover .task-del { display:block; }
+.task-del:hover { color: var(--red); }
+
+/* ── MINI TASK ROW (weekly view) ── */
+.mini-task {
+  display: flex; align-items: center; gap: 7px;
+  padding: 5px 8px; border-radius: 6px;
+  font-size: 12px; cursor: pointer;
+  transition: background 0.1s;
+}
+.mini-task:hover { background: var(--surface3); }
+.mini-task.done { opacity: 0.4; }
+.mini-task.done .mini-text { text-decoration: line-through; }
+.mini-check { width:14px;height:14px;border-radius:50%;border:1.5px solid var(--muted2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:8px; }
+.mini-task.done .mini-check { background:var(--green);border-color:var(--green);color:#fff; }
+.mini-text { flex:1; }
+
+/* ── ADD FORM ── */
+.add-row {
+  display: flex; gap: 8px; margin-top: 10px; align-items: center;
+}
+
+input.fi, select.fi {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--text); font-family: 'Inter', sans-serif;
+  font-size: 12px; padding: 6px 10px; outline: none;
+}
+input.fi:focus, select.fi:focus { border-color: var(--accent); }
+input.fi { flex:1; }
+
+.btn {
+  padding: 6px 14px; border-radius: 6px; border: none;
+  font-family: 'Inter', sans-serif; font-size: 12px;
+  font-weight: 500; cursor: pointer; transition: opacity 0.15s;
+  white-space: nowrap;
+}
+.btn:hover { opacity: 0.85; }
+.btn-gold   { background: var(--accent); color: #111; }
+.btn-ghost  { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+.btn-purple { background: var(--accent2); color: #fff; }
+.btn-sm { padding: 4px 10px; font-size: 11px; }
+
+/* ── HABITS ── */
+.habit-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 11px 0; border-bottom: 1px solid var(--border);
+}
+.habit-row:last-child { border-bottom: none; }
+.habit-info .habit-name { font-weight:500; font-size:13px; }
+.habit-info .habit-streak { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent); margin-top:2px; }
+.habit-dots { display:flex; gap:4px; }
+.dot { width:9px;height:9px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);cursor:pointer;transition:all 0.15s; }
+.dot.done { background:var(--green);border-color:var(--green); }
+.dot.today { border-color:var(--accent); }
+.dot.today:hover { background:var(--accent); }
+.toggle { width:34px;height:19px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0; }
+.toggle.on { background:var(--green);border-color:var(--green); }
+.toggle::after { content:'';position:absolute;top:2px;left:2px;width:13px;height:13px;border-radius:50%;background:white;transition:transform 0.2s; }
+.toggle.on::after { transform:translateX(15px); }
+.week-hdr { display:flex;justify-content:flex-end;gap:4px;margin-bottom:8px; }
+.week-hdr span { width:9px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted); }
+
+/* ── PIPELINE ── */
+.pipeline-meta { display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px; }
+.big-num { font-family:'DM Serif Display',serif;font-size:30px;line-height:1; }
+.meta-sub { font-size:11px;color:var(--muted);margin-top:3px; }
+.meta-sub .hi { color:var(--accent); }
+.prog-wrap { width:200px;display:flex;flex-direction:column;gap:5px;padding-top:2px; }
+.prog-bar { height:4px;background:var(--surface2);border-radius:2px;overflow:hidden; }
+.prog-fill { height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width 0.6s; }
+.prog-lbl { display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted); }
+
+.tbl { width:100%;border-collapse:collapse; }
+.tbl th { text-align:left;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:0 8px 9px;border-bottom:1px solid var(--border); }
+.tbl td { padding:9px 8px;font-size:12px;border-bottom:1px solid var(--border);vertical-align:middle; }
+.tbl tr:last-child td { border-bottom:none; }
+.tbl tr:hover td { background:var(--surface2); }
+
+.s-pill { padding:2px 8px;border-radius:10px;font-size:9px;font-family:'JetBrains Mono',monospace;white-space:nowrap; }
+.sp-lead     { background:rgba(124,110,247,0.12);color:var(--accent2); }
+.sp-proposal { background:rgba(232,184,75,0.12);color:var(--yellow); }
+.sp-followup { background:rgba(200,169,110,0.12);color:var(--accent); }
+.sp-closed   { background:rgba(76,175,130,0.12);color:var(--green); }
+.sp-cold     { background:rgba(122,120,136,0.12);color:var(--muted); }
+
+.f-pill { font-size:9px;padding:2px 7px;border-radius:5px;font-family:'JetBrains Mono',monospace; }
+.fp-today { background:rgba(224,92,92,0.12);color:var(--red); }
+.fp-week  { background:rgba(232,184,75,0.12);color:var(--yellow); }
+.fp-done  { background:rgba(76,175,130,0.1);color:var(--green); }
+
+/* ── GOALS ── */
+.goal-item {
+  padding: 14px 16px;
+  background: var(--surface2);
+  border-radius: 9px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border);
+  transition: border-color 0.15s;
+}
+.goal-item:last-child { margin-bottom: 0; }
+.goal-item.done { opacity: 0.5; }
+
+.goal-head { display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px; }
+.goal-title { font-weight:500;font-size:13px; }
+.goal-meta { font-size:11px;color:var(--muted);margin-top:2px; }
+.goal-pct { font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent); }
+
+.goal-bar { height:3px;background:var(--surface3);border-radius:2px;overflow:hidden;margin-top:6px; }
+.goal-bar-fill { height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width 0.5s; }
+
+.goal-actions { display:flex;gap:6px;margin-top:10px;align-items:center; }
+
+/* ── WEEKLY GRID ── */
+.week-grid { display:grid;grid-template-columns:repeat(7,1fr);gap:10px; }
+
+.day-col {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 12px 10px;
+  min-height: 120px;
+}
+
+.day-col.today { border-color: var(--accent); }
+
+.day-head { margin-bottom:10px; }
+.day-name { font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted); }
+.day-num { font-family:'DM Serif Display',serif;font-size:20px;color:var(--text);line-height:1.1; }
+.day-col.today .day-num { color:var(--accent); }
+.day-count { font-size:10px;color:var(--muted);margin-top:2px; }
+
+/* ── REFLECTION ── */
+.reflection-q {
+  margin-bottom: 16px;
+}
+
+.q-label { font-size:11px;font-weight:600;color:var(--accent);margin-bottom:6px;display:flex;align-items:center;gap:6px; }
+.q-icon { font-size:14px; }
+
+.q-textarea {
+  width:100%; min-height:70px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text);
+  font-family: 'Inter', sans-serif; font-size: 13px;
+  padding: 10px 12px; outline: none; resize: vertical; line-height: 1.6;
+}
+.q-textarea:focus { border-color: var(--accent); }
+.q-textarea::placeholder { color: var(--muted2); }
+
+.reflection-week-picker { display:flex;align-items:center;gap:10px;margin-bottom:20px; }
+.week-nav { background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);cursor:pointer;padding:4px 10px;font-size:12px; }
+.week-nav:hover { border-color:var(--accent);color:var(--accent); }
+.week-label-disp { font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);min-width:100px;text-align:center; }
+
+/* ── KPI CARDS ── */
+.kpi-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px; }
+.kpi { background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px; }
+.kpi-val { font-family:'DM Serif Display',serif;font-size:24px;line-height:1; }
+.kpi-lbl { font-size:11px;color:var(--muted);margin-top:4px; }
+.kpi-delta { font-family:'JetBrains Mono',monospace;font-size:10px;margin-top:4px; }
+.delta-up { color:var(--green); }
+.delta-dn { color:var(--red); }
+
+/* ── MONTH / QUARTER OVERVIEW ── */
+.timeline { display:flex;flex-direction:column;gap:3px; }
+.tl-item {
+  display:flex;align-items:center;gap:10px;padding:8px 10px;
+  background:var(--surface2);border-radius:7px;
+  font-size:12px;cursor:pointer;border:1px solid transparent;transition:border-color 0.15s;
+}
+.tl-item:hover { border-color:var(--border2); }
+.tl-item.done-item { opacity:0.45; }
+.tl-dot { width:8px;height:8px;border-radius:50%;flex-shrink:0; }
+.tl-dot.c-pr      { background:var(--accent2); }
+.tl-dot.c-revenue { background:var(--accent); }
+.tl-dot.c-personal{ background:var(--green); }
+.tl-text { flex:1; }
+.tl-sub { font-size:10px;color:var(--muted); }
+.tl-pct { font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted); }
+
+/* ── TOAST ── */
+.toast {
+  position:fixed;bottom:22px;right:22px;
+  background:var(--surface2);border:1px solid var(--border2);
+  border-radius:9px;padding:11px 16px;font-size:13px;color:var(--text);
+  transform:translateY(60px);opacity:0;transition:all 0.25s;z-index:9999;
+}
+.toast.show { transform:translateY(0);opacity:1; }
+
+/* ── EMPTY ── */
+.empty { color:var(--muted);font-size:12px;padding:12px 0;text-align:center; }
+
+/* ── SECTION HEADER ── */
+.section-head { display:flex;justify-content:space-between;align-items:center;margin-bottom:16px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width:1100px) {
+  .week-grid { grid-template-columns:repeat(4,1fr); }
+  .kpi-grid { grid-template-columns:repeat(2,1fr); }
+}
+@media (max-width:780px) {
+  .sidebar { display:none; }
+  .grid2,.grid3,.grid12,.grid21 { grid-template-columns:1fr; }
+  .week-grid { grid-template-columns:1fr 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ── SIDEBAR ── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="name">Maggie</div>
+    <div class="sub">Command Centre</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-label">Views</div>
+    <div class="nav-item active" data-view="daily">
+      <span class="icon">☀️</span> Daily
+    </div>
+    <div class="nav-item" data-view="weekly">
+      <span class="icon">📅</span> Weekly
+    </div>
+    <div class="nav-item" data-view="monthly">
+      <span class="icon">🗓</span> Monthly
+    </div>
+    <div class="nav-item" data-view="quarterly">
+      <span class="icon">🎯</span> Quarterly
+    </div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-label">Focus</div>
+    <div class="nav-item" data-view="pipeline">
+      <span class="icon">📊</span> Pipeline
+    </div>
+    <div class="nav-item" data-view="reflection">
+      <span class="icon">📓</span> Reflection
+    </div>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="live-indicator">
+      <div class="live-dot"></div>
+      Live sync on
+    </div>
+  </div>
+</nav>
+
+<!-- ── MAIN ── -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1 id="topTitle">Good morning, Maggie.</h1>
+      <div class="date-line" id="topDate"></div>
+    </div>
+    <div class="score-pill">Today <strong id="scoreDisplay">—</strong></div>
+  </div>
+
+  <!-- ════════════ DAILY ════════════ -->
+  <div class="view active" id="view-daily">
+    <div class="grid12" style="margin-bottom:16px">
+
+      <!-- Tasks -->
+      <div class="card">
+        <div class="section-head">
+          <div class="card-label">Today's Priorities</div>
+          <button class="btn btn-ghost btn-sm" onclick="toggleForm('daily-form')">+ Add task</button>
+        </div>
+        <div class="tasks-list" id="daily-tasks"><div class="empty">Loading…</div></div>
+        <div id="daily-form" style="display:none">
+          <div class="add-row" style="margin-top:10px">
+            <input class="fi" id="dt-text" placeholder="What needs to happen…" onkeydown="if(event.key==='Enter')addDailyTask()">
+            <select class="fi" id="dt-tag" style="width:auto;flex:0">
+              <option value="pr">PR</option>
+              <option value="personal">Personal</option>
+              <option value="urgent">Urgent</option>
+            </select>
+            <button class="btn btn-gold" onclick="addDailyTask()">Add</button>
+            <button class="btn btn-ghost" onclick="toggleForm('daily-form')">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Habits -->
+      <div class="card">
+        <div class="card-label">Habits</div>
+        <div class="week-hdr">
+          <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+        </div>
+        <div id="habits-daily"><div class="empty">Loading…</div></div>
+      </div>
+
+    </div>
+
+    <!-- Pipeline snapshot -->
+    <div class="card">
+      <div class="pipeline-meta">
+        <div>
+          <div class="big-num" id="d-pipe-val">AED —</div>
+          <div class="meta-sub">pipeline · <span class="hi" id="d-pipe-pct">—</span></div>
+        </div>
+        <div class="prog-wrap">
+          <div class="prog-bar"><div class="prog-fill" id="d-prog" style="width:0%"></div></div>
+          <div class="prog-lbl"><span>0</span><span id="d-prog-goal">Goal: AED 50k</span></div>
+        </div>
+      </div>
+      <div class="card-label" style="margin-bottom:10px">Pipeline — Follow-ups Due Today</div>
+      <table class="tbl" id="d-leads-tbl">
+        <thead><tr><th>Contact</th><th>Status</th><th>Value</th><th>Follow-up</th></tr></thead>
+        <tbody id="d-leads-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ════════════ WEEKLY ════════════ -->
+  <div class="view" id="view-weekly">
+    <div class="kpi-grid" id="w-kpis"></div>
+    <div class="week-grid" id="week-grid"></div>
+  </div>
+
+  <!-- ════════════ MONTHLY ════════════ -->
+  <div class="view" id="view-monthly">
+    <div class="kpi-grid" id="m-kpis" style="margin-bottom:16px"></div>
+    <div class="grid21">
+      <div class="card">
+        <div class="section-head">
+          <div class="card-label">Monthly Goals — <span id="m-month-label"></span></div>
+          <button class="btn btn-gold btn-sm" onclick="openGoalForm('monthly')">+ Add goal</button>
+        </div>
+        <div id="m-goals-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-label">Habits This Month</div>
+        <div id="m-habits"></div>
+      </div>
+    </div>
+
+    <!-- Goal add form -->
+    <div class="card" id="goal-form-monthly" style="display:none;margin-top:16px">
+      <div class="card-label">New Monthly Goal</div>
+      <div class="add-row" style="flex-wrap:wrap">
+        <input class="fi" id="mg-title" placeholder="Goal title" style="min-width:200px">
+        <select class="fi" id="mg-cat" style="width:auto;flex:0">
+          <option value="pr">PR Agency</option>
+          <option value="revenue">Revenue</option>
+          <option value="personal">Personal</option>
+        </select>
+        <input class="fi" id="mg-target" placeholder="Target (number)" type="number" style="max-width:130px">
+        <input class="fi" id="mg-unit" placeholder="Unit (AED, clients…)" style="max-width:130px">
+        <button class="btn btn-gold" onclick="saveGoal('monthly')">Save</button>
+        <button class="btn btn-ghost" onclick="closeGoalForm('monthly')">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ QUARTERLY ════════════ -->
+  <div class="view" id="view-quarterly">
+    <div class="kpi-grid" id="q-kpis" style="margin-bottom:16px"></div>
+    <div class="grid21">
+      <div class="card">
+        <div class="section-head">
+          <div class="card-label">Quarterly Goals — <span id="q-quarter-label"></span></div>
+          <button class="btn btn-gold btn-sm" onclick="openGoalForm('quarterly')">+ Add goal</button>
+        </div>
+        <div id="q-goals-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-label">Quarter at a Glance</div>
+        <div id="q-summary"></div>
+      </div>
+    </div>
+
+    <div class="card" id="goal-form-quarterly" style="display:none;margin-top:16px">
+      <div class="card-label">New Quarterly Goal</div>
+      <div class="add-row" style="flex-wrap:wrap">
+        <input class="fi" id="qg-title" placeholder="Goal title" style="min-width:200px">
+        <select class="fi" id="qg-cat" style="width:auto;flex:0">
+          <option value="pr">PR Agency</option>
+          <option value="revenue">Revenue</option>
+          <option value="personal">Personal</option>
+        </select>
+        <input class="fi" id="qg-target" placeholder="Target (number)" type="number" style="max-width:130px">
+        <input class="fi" id="qg-unit" placeholder="Unit (AED, clients…)" style="max-width:130px">
+        <button class="btn btn-gold" onclick="saveGoal('quarterly')">Save</button>
+        <button class="btn btn-ghost" onclick="closeGoalForm('quarterly')">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ PIPELINE ════════════ -->
+  <div class="view" id="view-pipeline">
+    <div class="card" style="margin-bottom:16px">
+      <div class="pipeline-meta">
+        <div>
+          <div class="big-num" id="p-total">AED —</div>
+          <div class="meta-sub">total pipeline · <span class="hi" id="p-pct">—% of goal</span></div>
+        </div>
+        <div class="prog-wrap">
+          <div class="prog-bar"><div class="prog-fill" id="p-prog" style="width:0%"></div></div>
+          <div class="prog-lbl"><span>0</span><span>AED 50,000</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-head">
+        <div class="card-label">All Leads</div>
+        <button class="btn btn-gold btn-sm" onclick="toggleForm('lead-form')">+ Add lead</button>
+      </div>
+      <table class="tbl">
+        <thead><tr><th>Contact</th><th>Status</th><th>Value</th><th>Follow-up</th><th></th></tr></thead>
+        <tbody id="p-leads-body"></tbody>
+      </table>
+      <div id="lead-form" style="display:none;margin-top:14px">
+        <div class="add-row" style="flex-wrap:wrap">
+          <input class="fi" id="l-name" placeholder="Name" style="max-width:130px">
+          <input class="fi" id="l-company" placeholder="Company" style="max-width:130px">
+          <select class="fi" id="l-status" style="width:auto;flex:0">
+            <option value="lead">Lead</option><option value="proposal">Proposal</option>
+            <option value="followup">Follow-up</option><option value="closed">Closed</option>
+            <option value="cold">Cold</option>
+          </select>
+          <input class="fi" id="l-value" placeholder="Value AED" type="number" style="max-width:110px">
+          <select class="fi" id="l-followup" style="width:auto;flex:0">
+            <option value="today">Today</option><option value="week">This week</option><option value="done">Done</option>
+          </select>
+          <button class="btn btn-gold" onclick="addLead()">Add</button>
+          <button class="btn btn-ghost" onclick="toggleForm('lead-form')">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ REFLECTION ════════════ -->
+  <div class="view" id="view-reflection">
+    <div class="card">
+      <div class="reflection-week-picker">
+        <button class="week-nav" onclick="shiftReflection(-1)">‹</button>
+        <div class="week-label-disp" id="ref-week-label">—</div>
+        <button class="week-nav" onclick="shiftReflection(1)">›</button>
+        <span style="font-size:11px;color:var(--muted);margin-left:4px">week</span>
+      </div>
+
+      <div id="ref-stats" style="margin-bottom:20px;padding:12px 16px;background:var(--surface2);border-radius:9px;display:flex;gap:24px;flex-wrap:wrap"></div>
+
+      <div class="reflection-q">
+        <div class="q-label"><span class="q-icon">🏆</span> What did you win this week?</div>
+        <textarea class="q-textarea" id="ref-wins" placeholder="Celebrate it…"></textarea>
+      </div>
+      <div class="reflection-q">
+        <div class="q-label"><span class="q-icon">📉</span> What slipped and why?</div>
+        <textarea class="q-textarea" id="ref-slipped" placeholder="Be honest, not harsh…"></textarea>
+      </div>
+      <div class="reflection-q">
+        <div class="q-label"><span class="q-icon">🎯</span> What's your #1 focus next week?</div>
+        <textarea class="q-textarea" id="ref-focus" placeholder="One thing. Make it count."></textarea>
+      </div>
+      <div class="reflection-q">
+        <div class="q-label"><span class="q-icon">💛</span> How did you show up for yourself?</div>
+        <textarea class="q-textarea" id="ref-showed" placeholder="Rest, energy, presence…"></textarea>
+      </div>
+      <div class="reflection-q">
+        <div class="q-label"><span class="q-icon">📊</span> Pipeline: what moved, what stalled?</div>
+        <textarea class="q-textarea" id="ref-pipeline" placeholder="Key deals, conversations, blockers…"></textarea>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn btn-gold" onclick="saveReflection()">Save reflection</button>
+        <button class="btn btn-ghost" onclick="loadReflection()">↺ Reload</button>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="card-label">Past Reflections</div>
+      <div id="past-reflections"></div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════
+const API = '';
+const GOAL = 50000;
+
+const now = new Date();
+const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const shortDays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function todayStr() {
+  return now.toLocaleDateString('en-CA', { timeZone: 'Asia/Dubai' });
+}
+
+function dateStr(d) {
+  return d.toLocaleDateString('en-CA', { timeZone: 'Asia/Dubai' });
+}
+
+function getMonthKey() {
+  return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+}
+
+function getQuarterKey() {
+  return `${now.getFullYear()}-Q${Math.ceil((now.getMonth()+1)/3)}`;
+}
+
+function getWeekKey(d) {
+  const dt = d || now;
+  const jan4 = new Date(dt.getFullYear(), 0, 4);
+  const start = new Date(jan4);
+  start.setDate(jan4.getDate() - jan4.getDay() + 1);
+  const week = Math.floor((dt - start) / (7 * 864e5)) + 1;
+  return `${dt.getFullYear()}-W${String(week).padStart(2,'0')}`;
+}
+
+function getWeekDates(offset = 0) {
+  const d = new Date(now);
+  d.setDate(d.getDate() + offset * 7);
+  const day = d.getDay();
+  const mon = new Date(d); mon.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+  return Array.from({length:7}, (_,i) => { const x = new Date(mon); x.setDate(mon.getDate()+i); return x; });
+}
+
+function fmt(n) { return 'AED ' + (n||0).toLocaleString(); }
+function pct(p, t) { return t ? Math.min(100, Math.round((p/t)*100)) : 0; }
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function toggleForm(id) {
+  const el = document.getElementById(id);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+// ── Date header ──
+document.getElementById('topDate').textContent =
+  `${days[now.getDay()]}  ·  ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+
+const dayIdx = (now.getDay() + 6) % 7; // Mon=0
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let allTasks = [], allHabits = [], allLeads = [], monthlyGoals = [], quarterlyGoals = [], allReflections = [];
+let weekOffset = 0, reflectionOffset = 0;
+
+// ══════════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════════
+const viewTitles = {
+  daily:      'Good morning, Maggie.',
+  weekly:     'This Week',
+  monthly:    'Monthly View',
+  quarterly:  'Quarterly View',
+  pipeline:   'PR Pipeline',
+  reflection: 'Weekly Reflection',
+};
+
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    item.classList.add('active');
+    const v = item.dataset.view;
+    document.getElementById('view-' + v).classList.add('active');
+    document.getElementById('topTitle').textContent = viewTitles[v];
+    if (v === 'weekly')     renderWeekly();
+    if (v === 'monthly')    renderMonthly();
+    if (v === 'quarterly')  renderQuarterly();
+    if (v === 'pipeline')   renderPipelineFull();
+    if (v === 'reflection') { loadReflection(); renderPastReflections(); }
+  });
+});
+
+// ══════════════════════════════════════════════
+// SCORE
+// ══════════════════════════════════════════════
+function updateScore() {
+  const today = todayStr();
+  const dayTasks = allTasks.filter(t => t.date === today);
+  const doneTasks = dayTasks.filter(t => t.done).length;
+  const doneHabits = allHabits.filter(h => (h.completions||[]).includes(today)).length;
+  const total = dayTasks.length + allHabits.length;
+  const s = total ? Math.round(((doneTasks + doneHabits) / total) * 100) : 0;
+  document.getElementById('scoreDisplay').textContent = s + '%';
+}
+
+// ══════════════════════════════════════════════
+// TASKS
+// ══════════════════════════════════════════════
+async function loadTasks() {
+  const res = await fetch(`${API}/api/tasks?date=${todayStr()}`);
+  allTasks = await res.json();
+  renderDailyTasks();
+}
+
+function renderDailyTasks() {
+  const el = document.getElementById('daily-tasks');
+  if (!allTasks.length) { el.innerHTML = '<div class="empty">No tasks yet — add one above</div>'; updateScore(); return; }
+  const tagMap = { pr:'tag-pr', personal:'tag-personal', urgent:'tag-urgent' };
+  const tagLbl = { pr:'PR', personal:'Personal', urgent:'Urgent' };
+  el.innerHTML = allTasks.map(t => `
+    <div class="task-item ${t.done?'done':''}" onclick="toggleTask(${t.id})">
+      <div class="task-check">${t.done?'✓':''}</div>
+      <div class="task-text">${t.text}</div>
+      <span class="tag ${tagMap[t.tag]||'tag-personal'}">${tagLbl[t.tag]||'Personal'}</span>
+      <button class="task-del" onclick="delTask(${t.id},event)">×</button>
+    </div>`).join('');
+  updateScore();
+}
+
+async function toggleTask(id) {
+  const t = allTasks.find(x => x.id === id);
+  await fetch(`${API}/api/tasks/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({done:!t.done}) });
+  allTasks = allTasks.map(x => x.id === id ? {...x, done:!x.done} : x);
+  renderDailyTasks();
+  if (document.getElementById('view-weekly').classList.contains('active')) renderWeekly();
+  toast(t.done ? '↩ Unmarked' : '✅ Done!');
+}
+
+async function delTask(id, e) {
+  e.stopPropagation();
+  await fetch(`${API}/api/tasks/${id}`, { method:'DELETE' });
+  allTasks = allTasks.filter(x => x.id !== id);
+  renderDailyTasks();
+  toast('Task removed');
+}
+
+async function addDailyTask() {
+  const text = document.getElementById('dt-text').value.trim();
+  if (!text) return;
+  const tag = document.getElementById('dt-tag').value;
+  const res = await fetch(`${API}/api/tasks`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({text, tag}) });
+  const t = await res.json();
+  allTasks.push(t);
+  document.getElementById('dt-text').value = '';
+  toggleForm('daily-form');
+  renderDailyTasks();
+  toast('Task added ✓');
+}
+
+// ══════════════════════════════════════════════
+// HABITS
+// ══════════════════════════════════════════════
+async function loadHabits() {
+  const res = await fetch(`${API}/api/habits`);
+  allHabits = await res.json();
+  renderHabitsDaily();
+}
+
+function renderHabitsDaily() {
+  const el = document.getElementById('habits-daily');
+  const today = todayStr();
+  const last7 = Array.from({length:7}, (_,i) => { const d = new Date(now); d.setDate(d.getDate()-(6-i)); return dateStr(d); });
+
+  el.innerHTML = allHabits.map(h => {
+    const comps = h.completions || [];
+    const wkCount = comps.filter(c => last7.includes(c)).length;
+    const dots = last7.map((date, i) => {
+      const done = comps.includes(date);
+      const isToday = date === today;
+      return `<div class="dot ${done?'done':''} ${!done&&isToday?'today':''}"></div>`;
+    }).join('');
+    return `
+      <div class="habit-row">
+        <div class="habit-info">
+          <div class="habit-name">${h.emoji} ${h.name}</div>
+          <div class="habit-streak">${wkCount}× this week</div>
+        </div>
+        <div class="habit-dots">${dots}</div>
+        <div class="toggle ${comps.includes(today)?'on':''}" onclick="toggleHabit(${h.id})"></div>
+      </div>`;
+  }).join('');
+  updateScore();
+}
+
+async function toggleHabit(id) {
+  const res = await fetch(`${API}/api/habits/${id}/toggle`, { method:'POST' });
+  const { done } = await res.json();
+  const today = todayStr();
+  allHabits = allHabits.map(h => {
+    if (h.id !== id) return h;
+    const c = done ? [...(h.completions||[]), today] : (h.completions||[]).filter(x => x !== today);
+    return {...h, completions: c};
+  });
+  renderHabitsDaily();
+  toast(done ? '✅ Habit done!' : '↩ Habit unmarked');
+}
+
+// ══════════════════════════════════════════════
+// LEADS
+// ══════════════════════════════════════════════
+async function loadLeads() {
+  const res = await fetch(`${API}/api/leads`);
+  allLeads = await res.json();
+  renderDailyPipeline();
+}
+
+const sLbl = { lead:'Lead', proposal:'Proposal Sent', followup:'Follow-up', closed:'Closed', cold:'Cold' };
+const sCls = { lead:'sp-lead', proposal:'sp-proposal', followup:'sp-followup', closed:'sp-closed', cold:'sp-cold' };
+const fLbl = { today:'Today', week:'This week', done:'Done' };
+const fCls = { today:'fp-today', week:'fp-week', done:'fp-done' };
+
+function renderDailyPipeline() {
+  const active = allLeads.filter(l => l.status !== 'cold');
+  const total = active.reduce((s,l) => s+l.value, 0);
+  const p = pct(total, GOAL);
+  document.getElementById('d-pipe-val').textContent = fmt(total);
+  document.getElementById('d-pipe-pct').textContent = p + '% of goal';
+  document.getElementById('d-prog').style.width = p + '%';
+
+  const todayLeads = allLeads.filter(l => l.followup === 'today');
+  const body = document.getElementById('d-leads-body');
+  body.innerHTML = todayLeads.length ? todayLeads.map(l => `
+    <tr>
+      <td><div style="font-weight:500">${l.name}</div><div style="font-size:11px;color:var(--muted)">${l.company||''}</div></td>
+      <td><span class="s-pill ${sCls[l.status]}">${sLbl[l.status]}</span></td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px">${fmt(l.value)}</td>
+      <td><span class="f-pill ${fCls[l.followup]}">${fLbl[l.followup]}</span></td>
+    </tr>`).join('') : `<tr><td colspan="4" class="empty">No follow-ups due today</td></tr>`;
+}
+
+function renderPipelineFull() {
+  const active = allLeads.filter(l => l.status !== 'cold');
+  const total = active.reduce((s,l) => s+l.value, 0);
+  const p = pct(total, GOAL);
+  document.getElementById('p-total').textContent = fmt(total);
+  document.getElementById('p-pct').textContent = p + '% of goal';
+  document.getElementById('p-prog').style.width = p + '%';
+
+  const body = document.getElementById('p-leads-body');
+  body.innerHTML = allLeads.length ? allLeads.map(l => `
+    <tr>
+      <td><div style="font-weight:500">${l.name}</div><div style="font-size:11px;color:var(--muted)">${l.company||''}</div></td>
+      <td><span class="s-pill ${sCls[l.status]}">${sLbl[l.status]}</span></td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px">${fmt(l.value)}</td>
+      <td><span class="f-pill ${fCls[l.followup]}">${fLbl[l.followup]}</span></td>
+      <td><button style="background:none;border:none;color:var(--muted);cursor:pointer" onclick="delLead(${l.id})">×</button></td>
+    </tr>`).join('') : `<tr><td colspan="5" class="empty">No leads yet</td></tr>`;
+}
+
+async function addLead() {
+  const name = document.getElementById('l-name').value.trim();
+  if (!name) { toast('⚠️ Name required'); return; }
+  const body = {
+    name,
+    company:  document.getElementById('l-company').value.trim(),
+    status:   document.getElementById('l-status').value,
+    value:    parseInt(document.getElementById('l-value').value)||0,
+    followup: document.getElementById('l-followup').value,
+  };
+  const res = await fetch(`${API}/api/leads`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  allLeads.push(await res.json());
+  ['l-name','l-company','l-value'].forEach(id => document.getElementById(id).value = '');
+  toggleForm('lead-form');
+  renderPipelineFull();
+  renderDailyPipeline();
+  toast('Lead added ✓');
+}
+
+async function delLead(id) {
+  await fetch(`${API}/api/leads/${id}`, { method:'DELETE' });
+  allLeads = allLeads.filter(l => l.id !== id);
+  renderPipelineFull();
+  renderDailyPipeline();
+  toast('Lead removed');
+}
+
+// ══════════════════════════════════════════════
+// WEEKLY VIEW
+// ══════════════════════════════════════════════
+async function renderWeekly() {
+  const dates = getWeekDates(weekOffset);
+  const from = dateStr(dates[0]), to = dateStr(dates[6]);
+  const today = todayStr();
+
+  const res = await fetch(`${API}/api/tasks/range?from=${from}&to=${to}`);
+  const weekTasks = await res.json();
+
+  // KPIs
+  const done = weekTasks.filter(t => t.done).length;
+  const total = weekTasks.length;
+  const pipeTotal = allLeads.filter(l=>l.status!=='cold').reduce((s,l)=>s+l.value,0);
+  const followToday = allLeads.filter(l=>l.followup==='today').length;
+  const habitDays = allHabits.length ? allHabits.reduce((s,h) => {
+    const c = h.completions||[];
+    return s + dates.filter(d => c.includes(dateStr(d))).length;
+  }, 0) : 0;
+  const maxHabitDays = allHabits.length * 7;
+
+  document.getElementById('w-kpis').innerHTML = `
+    <div class="kpi"><div class="kpi-val">${done}/${total}</div><div class="kpi-lbl">Tasks complete</div><div class="kpi-delta ${done===total&&total>0?'delta-up':''}">${total?Math.round((done/total)*100):0}% done</div></div>
+    <div class="kpi"><div class="kpi-val">${habitDays}/${maxHabitDays}</div><div class="kpi-lbl">Habit completions</div><div class="kpi-delta">${maxHabitDays?Math.round((habitDays/maxHabitDays)*100):0}% rate</div></div>
+    <div class="kpi"><div class="kpi-val" style="font-size:18px">${fmt(pipeTotal)}</div><div class="kpi-lbl">Pipeline value</div></div>
+    <div class="kpi"><div class="kpi-val">${followToday}</div><div class="kpi-lbl">Follow-ups today</div><div class="kpi-delta ${followToday>0?'delta-dn':''}"></div></div>
+  `;
+
+  // Day columns
+  const grid = document.getElementById('week-grid');
+  grid.innerHTML = dates.map(d => {
+    const ds = dateStr(d);
+    const isToday = ds === today;
+    const dayTasks = weekTasks.filter(t => t.date === ds);
+    const doneCt = dayTasks.filter(t=>t.done).length;
+
+    const tasksHtml = dayTasks.length
+      ? dayTasks.map(t => `
+        <div class="mini-task ${t.done?'done':''}" onclick="quickToggleTask(${t.id},'${ds}')">
+          <div class="mini-check">${t.done?'✓':''}</div>
+          <div class="mini-text">${t.text}</div>
+        </div>`).join('')
+      : `<div style="font-size:11px;color:var(--muted2);padding:4px 0">—</div>`;
+
+    return `
+      <div class="day-col ${isToday?'today':''}">
+        <div class="day-head">
+          <div class="day-name">${shortDays[d.getDay()]}</div>
+          <div class="day-num">${d.getDate()}</div>
+          <div class="day-count">${doneCt}/${dayTasks.length}</div>
+        </div>
+        ${tasksHtml}
+      </div>`;
+  }).join('');
+}
+
+async function quickToggleTask(id, date) {
+  // Find in allTasks (today) or fetch
+  const t = allTasks.find(x => x.id === id);
+  const done = t ? t.done : false;
+  await fetch(`${API}/api/tasks/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({done:!done}) });
+  if (t) { allTasks = allTasks.map(x => x.id === id ? {...x, done:!x.done} : x); renderDailyTasks(); }
+  renderWeekly();
+}
+
+// ══════════════════════════════════════════════
+// GOALS
+// ══════════════════════════════════════════════
+async function loadGoals() {
+  const mRes = await fetch(`${API}/api/goals?period_type=monthly&period_key=${getMonthKey()}`);
+  monthlyGoals = await mRes.json();
+  const qRes = await fetch(`${API}/api/goals?period_type=quarterly&period_key=${getQuarterKey()}`);
+  quarterlyGoals = await qRes.json();
+}
+
+function renderGoalsList(goals, containerId) {
+  const el = document.getElementById(containerId);
+  if (!goals.length) { el.innerHTML = '<div class="empty">No goals yet — add one above</div>'; return; }
+
+  const catDot = { pr:'c-pr', revenue:'c-revenue', personal:'c-personal' };
+  el.innerHTML = goals.map(g => {
+    const p = g.target ? pct(g.progress, g.target) : null;
+    const progressHtml = g.target ? `
+      <div class="goal-bar"><div class="goal-bar-fill" style="width:${p}%"></div></div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px">
+        <span style="font-size:11px;color:var(--muted)">${(g.unit||'')} ${(g.progress||0).toLocaleString()} / ${g.target.toLocaleString()}</span>
+        <span class="goal-pct">${p}%</span>
+      </div>` : '';
+
+    return `
+      <div class="goal-item ${g.done?'done-item':''}" id="goal-${g.id}">
+        <div class="goal-head">
+          <div>
+            <div class="goal-title">${g.title}</div>
+            <div class="goal-meta"><span class="tl-dot ${catDot[g.category]||'c-personal'}" style="display:inline-block;vertical-align:middle;margin-right:4px"></span>${g.category}</div>
+          </div>
+        </div>
+        ${progressHtml}
+        <div class="goal-actions">
+          ${g.target ? `<input class="fi" type="number" value="${g.progress||0}" style="max-width:100px" onchange="updateGoalProgress(${g.id},this.value)" placeholder="Progress">` : ''}
+          <button class="btn btn-ghost btn-sm" onclick="toggleGoalDone(${g.id})">${g.done?'↩ Reopen':'✅ Mark done'}</button>
+          <button class="btn btn-ghost btn-sm" onclick="deleteGoal(${g.id})" style="color:var(--red)">×</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderMonthly() {
+  const mKey = getMonthKey();
+  const [y, m] = mKey.split('-');
+  document.getElementById('m-month-label').textContent = `${months[parseInt(m)-1]} ${y}`;
+
+  // KPIs
+  const mDone = monthlyGoals.filter(g=>g.done).length;
+  const pipeTotal = allLeads.filter(l=>l.status!=='cold').reduce((s,l)=>s+l.value,0);
+  const closed = allLeads.filter(l=>l.status==='closed').reduce((s,l)=>s+l.value,0);
+  const habitRate = (() => {
+    const daysGone = now.getDate();
+    const completions = allHabits.reduce((s,h) => s + (h.completions||[]).filter(c => c.startsWith(mKey)).length, 0);
+    const max = allHabits.length * daysGone;
+    return max ? Math.round((completions/max)*100) : 0;
+  })();
+
+  document.getElementById('m-kpis').innerHTML = `
+    <div class="kpi"><div class="kpi-val">${mDone}/${monthlyGoals.length}</div><div class="kpi-lbl">Goals complete</div></div>
+    <div class="kpi"><div class="kpi-val" style="font-size:18px">${fmt(pipeTotal)}</div><div class="kpi-lbl">Pipeline value</div><div class="kpi-delta hi">${pct(pipeTotal,GOAL)}% of goal</div></div>
+    <div class="kpi"><div class="kpi-val" style="font-size:18px">${fmt(closed)}</div><div class="kpi-lbl">Revenue closed</div></div>
+    <div class="kpi"><div class="kpi-val">${habitRate}%</div><div class="kpi-lbl">Habit consistency</div></div>
+  `;
+
+  renderGoalsList(monthlyGoals, 'm-goals-list');
+
+  // Month habit heatmap (simplified)
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+  const mHabits = document.getElementById('m-habits');
+  mHabits.innerHTML = allHabits.map(h => {
+    const comps = (h.completions||[]).filter(c => c.startsWith(mKey));
+    const streak = comps.length;
+    return `
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;font-weight:500;margin-bottom:6px">${h.emoji} ${h.name}</div>
+        <div style="display:flex;gap:3px;flex-wrap:wrap">
+          ${Array.from({length:daysInMonth},(_,i)=>{
+            const ds = `${mKey}-${String(i+1).padStart(2,'0')}`;
+            const done = comps.includes(ds);
+            return `<div style="width:11px;height:11px;border-radius:2px;background:${done?'var(--green)':'var(--surface3)'}" title="${ds}"></div>`;
+          }).join('')}
+        </div>
+        <div style="font-size:10px;color:var(--accent);font-family:'JetBrains Mono',monospace;margin-top:5px">${streak}/${daysInMonth} days</div>
+      </div>`;
+  }).join('') || '<div class="empty">No habits yet</div>';
+}
+
+function renderQuarterly() {
+  const qKey = getQuarterKey();
+  document.getElementById('q-quarter-label').textContent = qKey;
+
+  const qDone = quarterlyGoals.filter(g=>g.done).length;
+  const pipeTotal = allLeads.filter(l=>l.status!=='cold').reduce((s,l)=>s+l.value,0);
+  const closed = allLeads.filter(l=>l.status==='closed').reduce((s,l)=>s+l.value,0);
+  const qRevGoal = quarterlyGoals.find(g=>g.category==='revenue'&&g.target);
+
+  document.getElementById('q-kpis').innerHTML = `
+    <div class="kpi"><div class="kpi-val">${qDone}/${quarterlyGoals.length}</div><div class="kpi-lbl">Quarterly goals done</div></div>
+    <div class="kpi"><div class="kpi-val" style="font-size:18px">${fmt(pipeTotal)}</div><div class="kpi-lbl">Pipeline</div></div>
+    <div class="kpi"><div class="kpi-val" style="font-size:18px">${fmt(closed)}</div><div class="kpi-lbl">Revenue closed</div><div class="kpi-delta delta-up">${qRevGoal?pct(closed,qRevGoal.target)+'% of target':''}</div></div>
+    <div class="kpi"><div class="kpi-val">${allLeads.filter(l=>l.status==='closed').length}</div><div class="kpi-lbl">Clients closed</div></div>
+  `;
+
+  renderGoalsList(quarterlyGoals, 'q-goals-list');
+
+  // Quarter summary
+  const catDot = { pr:'c-pr', revenue:'c-revenue', personal:'c-personal' };
+  document.getElementById('q-summary').innerHTML = `
+    <div class="timeline">
+      ${quarterlyGoals.map(g => {
+        const p = g.target ? pct(g.progress, g.target) : null;
+        return `
+          <div class="tl-item ${g.done?'done-item':''}">
+            <div class="tl-dot ${catDot[g.category]||'c-personal'}"></div>
+            <div>
+              <div class="tl-text">${g.title}</div>
+              <div class="tl-sub">${g.category}</div>
+            </div>
+            <div class="tl-pct">${p !== null ? p+'%' : (g.done?'✅':'—')}</div>
+          </div>`;
+      }).join('') || '<div class="empty">No quarterly goals yet</div>'}
+    </div>`;
+}
+
+function openGoalForm(type) {
+  document.getElementById('goal-form-' + type).style.display = 'block';
+}
+function closeGoalForm(type) {
+  document.getElementById('goal-form-' + type).style.display = 'none';
+}
+
+async function saveGoal(type) {
+  const pre = type === 'monthly' ? 'mg' : 'qg';
+  const title = document.getElementById(`${pre}-title`).value.trim();
+  if (!title) { toast('⚠️ Title required'); return; }
+  const body = {
+    title,
+    category:    document.getElementById(`${pre}-cat`).value,
+    period_type: type,
+    period_key:  type === 'monthly' ? getMonthKey() : getQuarterKey(),
+    target:      parseFloat(document.getElementById(`${pre}-target`).value)||null,
+    unit:        document.getElementById(`${pre}-unit`).value.trim()||null,
+  };
+  const res = await fetch(`${API}/api/goals`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  const g = await res.json();
+  if (type === 'monthly') { monthlyGoals.push(g); renderMonthly(); }
+  else { quarterlyGoals.push(g); renderQuarterly(); }
+  document.getElementById(`${pre}-title`).value = '';
+  document.getElementById(`${pre}-target`).value = '';
+  document.getElementById(`${pre}-unit`).value = '';
+  closeGoalForm(type);
+  toast('Goal added ✓');
+}
+
+async function updateGoalProgress(id, val) {
+  const progress = parseFloat(val)||0;
+  await fetch(`${API}/api/goals/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({progress}) });
+  monthlyGoals = monthlyGoals.map(g => g.id===id ? {...g,progress} : g);
+  quarterlyGoals = quarterlyGoals.map(g => g.id===id ? {...g,progress} : g);
+  toast('Progress updated ✓');
+}
+
+async function toggleGoalDone(id) {
+  const g = [...monthlyGoals,...quarterlyGoals].find(x=>x.id===id);
+  const done = !g.done;
+  await fetch(`${API}/api/goals/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({done}) });
+  monthlyGoals = monthlyGoals.map(x => x.id===id ? {...x,done} : x);
+  quarterlyGoals = quarterlyGoals.map(x => x.id===id ? {...x,done} : x);
+  if (document.getElementById('view-monthly').classList.contains('active')) renderMonthly();
+  if (document.getElementById('view-quarterly').classList.contains('active')) renderQuarterly();
+  toast(done ? '✅ Goal marked done!' : '↩ Goal reopened');
+}
+
+async function deleteGoal(id) {
+  await fetch(`${API}/api/goals/${id}`, { method:'DELETE' });
+  monthlyGoals = monthlyGoals.filter(g=>g.id!==id);
+  quarterlyGoals = quarterlyGoals.filter(g=>g.id!==id);
+  if (document.getElementById('view-monthly').classList.contains('active')) renderMonthly();
+  if (document.getElementById('view-quarterly').classList.contains('active')) renderQuarterly();
+  toast('Goal removed');
+}
+
+// ══════════════════════════════════════════════
+// REFLECTION
+// ══════════════════════════════════════════════
+function getReflectionWeekDates() {
+  const dates = getWeekDates(reflectionOffset);
+  const from = dateStr(dates[0]), to = dateStr(dates[6]);
+  const wk = getWeekKey(dates[0]);
+  return { from, to, wk, dates };
+}
+
+async function loadReflection() {
+  const { from, to, wk, dates } = getReflectionWeekDates();
+  document.getElementById('ref-week-label').textContent = `${dates[0].getDate()} ${months[dates[0].getMonth()].slice(0,3)} – ${dates[6].getDate()} ${months[dates[6].getMonth()].slice(0,3)}`;
+
+  // Stats for that week
+  const res = await fetch(`${API}/api/tasks/range?from=${from}&to=${to}`);
+  const tasks = await res.json();
+  const done = tasks.filter(t=>t.done).length;
+  const pipeTotal = allLeads.filter(l=>l.status!=='cold').reduce((s,l)=>s+l.value,0);
+  document.getElementById('ref-stats').innerHTML = `
+    <div><span style="font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--accent)">${done}/${tasks.length}</span><div style="font-size:11px;color:var(--muted);margin-top:2px">tasks done</div></div>
+    <div><span style="font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--accent)">${tasks.length?Math.round((done/tasks.length)*100):0}%</span><div style="font-size:11px;color:var(--muted);margin-top:2px">completion rate</div></div>
+    <div><span style="font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--accent)">${fmt(pipeTotal)}</span><div style="font-size:11px;color:var(--muted);margin-top:2px">pipeline</div></div>
+  `;
+
+  // Load saved reflection
+  const rRes = await fetch(`${API}/api/reflections/${wk}`);
+  const r = await rRes.json();
+  document.getElementById('ref-wins').value     = r.wins || '';
+  document.getElementById('ref-slipped').value  = r.slipped || '';
+  document.getElementById('ref-focus').value    = r.next_focus || '';
+  document.getElementById('ref-showed').value   = r.showed_up || '';
+  document.getElementById('ref-pipeline').value = r.pipeline_notes || '';
+}
+
+async function saveReflection() {
+  const { from, to, wk, dates } = getReflectionWeekDates();
+  const body = {
+    week_key:       wk,
+    week_start:     from,
+    wins:           document.getElementById('ref-wins').value,
+    slipped:        document.getElementById('ref-slipped').value,
+    next_focus:     document.getElementById('ref-focus').value,
+    showed_up:      document.getElementById('ref-showed').value,
+    pipeline_notes: document.getElementById('ref-pipeline').value,
+  };
+  await fetch(`${API}/api/reflections`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  toast('Reflection saved ✓');
+  renderPastReflections();
+}
+
+function shiftReflection(dir) {
+  reflectionOffset += dir;
+  if (reflectionOffset > 0) reflectionOffset = 0;
+  loadReflection();
+}
+
+async function renderPastReflections() {
+  const res = await fetch(`${API}/api/reflections`);
+  allReflections = await res.json();
+  const el = document.getElementById('past-reflections');
+  if (!allReflections.length) { el.innerHTML = '<div class="empty">No past reflections yet</div>'; return; }
+  el.innerHTML = allReflections.map(r => `
+    <div style="padding:12px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent)">${r.week_key}</span>
+        <span style="font-size:11px;color:var(--muted)">${r.week_start}</span>
+      </div>
+      ${r.wins ? `<div style="font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">🏆 </span>${r.wins}</div>` : ''}
+      ${r.next_focus ? `<div style="font-size:12px"><span style="color:var(--muted)">🎯 </span>${r.next_focus}</div>` : ''}
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+async function init() {
+  await Promise.all([loadTasks(), loadHabits(), loadLeads(), loadGoals()]);
+  renderDailyPipeline();
+  // Poll every 30s for WhatsApp-driven updates
+  setInterval(() => { loadTasks(); loadHabits(); }, 30000);
+}
+
+init();
+</script>
+</body>
+</html>
