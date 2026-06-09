@@ -2,8 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Maggie's Dashboard ✨</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>Maggie ♡</title>
+
+<!-- PWA -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#e91e63">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Maggie">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -747,6 +759,28 @@ body {
 .day-add { font-size:11px; color:var(--muted2); cursor:pointer; padding:4px 0; margin-top:4px; }
 .day-add:hover { color: var(--accent); }
 
+/* ── PWA install hint ── */
+.install-hint {
+  display: none;
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  background: linear-gradient(135deg, var(--accent), var(--rose));
+  color: #fff;
+  padding: 14px 16px;
+  border-radius: 14px;
+  font-size: 13px;
+  box-shadow: 0 6px 20px rgba(233,30,99,0.35);
+  z-index: 500;
+  align-items: center;
+  gap: 12px;
+}
+.install-hint.show { display: flex; }
+.install-hint button { background: rgba(255,255,255,0.25); border: none; color: #fff; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.install-hint .close { background: none; padding: 4px 8px; font-size: 18px; line-height: 1; }
+
+/* ── RESPONSIVE: tablet ── */
 @media (max-width:1000px) {
   .grid-3 { grid-template-columns:1fr; }
   .grid-2 { grid-template-columns:1fr; }
@@ -756,8 +790,231 @@ body {
   .quote-banner { padding: 16px 20px; }
   .quote-text { font-size: 15px; }
 }
-@media (max-width:600px) {
-  .quote-text { font-size: 14px; }
+
+/* ── RESPONSIVE: phones ── */
+@media (max-width:768px) {
+  body { padding: 0; }
+  .view { padding: 14px 14px calc(14px + env(safe-area-inset-bottom)); }
+
+  /* Nav: compact + scrollable */
+  .nav {
+    padding: 0 12px;
+    padding-top: env(safe-area-inset-top);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+  .nav-brand {
+    padding: 12px 4px 8px;
+    border-right: none;
+    margin-right: 0;
+    text-align: center;
+    font-size: 18px;
+  }
+  .nav-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 0 4px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-tabs::-webkit-scrollbar { display: none; }
+  .nav-tab {
+    padding: 12px 14px;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .nav-right {
+    padding: 8px 4px;
+    padding-left: 0;
+    margin-left: 0;
+    justify-content: center;
+  }
+
+  /* Quote banner: tighter */
+  .quote-banner { padding: 14px 16px; }
+  .quote-banner::before { font-size: 100px; top: -20px; }
+  .quote-text { font-size: 14px; line-height: 1.4; }
+  .quote-author { font-size: 9px; }
+
+  /* Cards: more compact */
+  .card { padding: 16px; border-radius: 14px; }
+  .card-label { font-size: 9px; margin-bottom: 12px; }
+
+  /* Page header: stack */
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .page-title { font-size: 22px; }
+  .page-sub { font-size: 9px; }
+
+  /* Task items: larger tap targets */
+  .task-item {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+  .task-check { width: 22px; height: 22px; border-width: 2px; }
+  .task-text { font-size: 14px; }
+  .task-delete { display: block !important; padding: 6px 10px; font-size: 18px; }
+
+  /* Buttons: full-width when adding */
+  .btn { padding: 9px 18px; font-size: 13px; min-height: 36px; }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+  /* Forms stack vertically */
+  .add-task-form, .add-goal-form, .add-lead-form, .add-client-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .add-task-form.open, .add-goal-form.open, .add-lead-form.open, .add-client-form.open {
+    display: flex;
+  }
+  .f-input, .f-select, .f-textarea {
+    width: 100% !important;
+    max-width: none !important;
+    font-size: 16px;  /* iOS won't zoom on focus if 16px+ */
+    padding: 10px 12px;
+    min-height: 42px;
+  }
+  .f-input.grow { width: 100%; min-width: 0; }
+  .form-row { flex-direction: column; }
+  .form-row > * { width: 100%; max-width: none !important; }
+
+  /* Habits */
+  .habit-row { padding: 14px 0; }
+  .habit-name { font-size: 14px; }
+  .habit-toggle { width: 42px; height: 24px; }
+  .habit-toggle::after { width: 18px; height: 18px; }
+  .habit-toggle.on::after { transform: translateX(18px); }
+  .dot { width: 12px; height: 12px; }
+
+  /* Kanban: full-width single column with horizontal scroll */
+  .kanban {
+    grid-template-columns: repeat(7, 88vw);
+    gap: 10px;
+    padding-bottom: 20px;
+    margin-left: -14px;
+    margin-right: -14px;
+    padding-left: 14px;
+    padding-right: 14px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+  }
+  .kanban-col { scroll-snap-align: start; }
+
+  .view-toggle button { font-size: 12px; padding: 8px 14px; }
+
+  /* Table view → cards */
+  .pipeline-table thead { display: none; }
+  .pipeline-table tr {
+    display: block;
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border);
+  }
+  .pipeline-table tr:hover td { background: transparent; }
+  .pipeline-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: none;
+    font-size: 13px;
+  }
+  .pipeline-table td:first-child {
+    flex-direction: column;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border-soft);
+    padding-bottom: 10px;
+    margin-bottom: 6px;
+  }
+
+  /* Clients: stack meta */
+  .client-card { padding: 16px; }
+  .client-meta { grid-template-columns: 1fr 1fr; padding: 10px; gap: 8px; }
+  .meta-block .meta-value { font-size: 12px; }
+  .client-actions { gap: 6px; }
+  .client-actions .btn { flex: 1; }
+
+  /* Week grid: 1 col scrolling */
+  .week-grid {
+    grid-template-columns: repeat(7, 78vw);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    margin-left: -14px;
+    margin-right: -14px;
+    padding: 0 14px 12px;
+  }
+  .day-col { scroll-snap-align: start; min-height: 200px; }
+
+  /* Month grid stays 7-col but tighter */
+  .month-grid { gap: 3px; }
+  .month-day { padding: 4px; min-height: 50px; }
+  .month-day-num { font-size: 10px; margin-bottom: 2px; }
+  .month-task-dot { width: 4px; height: 4px; }
+  .month-day-header { font-size: 8px; padding: 4px 0; }
+
+  /* Reflection */
+  .reflection-questions { gap: 12px; }
+  .q-block { padding: 14px; border-radius: 12px; }
+  .q-text { font-size: 13px; }
+  .q-answer { font-size: 16px; padding: 10px 12px; }
+  .reflection-nav { gap: 8px; }
+
+  /* Stats: 2x2 grid on mobile */
+  .stat-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .stat-box { min-width: 0; padding: 12px; }
+  .stat-num { font-size: 22px; }
+  .stat-label { font-size: 10px; }
+
+  /* Calendar events */
+  .cal-event { padding: 10px 12px; gap: 10px; }
+  .cal-event-title { font-size: 13px; }
+  .cal-event-time { font-size: 12px; min-width: 44px; }
+  .cal-event-meta { font-size: 10px; gap: 6px; }
+
+  /* Modal: full screen on mobile */
+  .modal-backdrop { padding: 0; align-items: flex-end; }
+  .modal {
+    max-height: 92vh;
+    border-radius: 18px 18px 0 0;
+    padding: 20px;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  }
+  .modal-title { font-size: 18px; }
+
+  /* Toast: lift above iOS home indicator */
+  .toast {
+    bottom: calc(20px + env(safe-area-inset-bottom));
+    left: 16px;
+    right: 16px;
+    text-align: center;
+  }
+
+  /* Goal items */
+  .goal-item { padding: 14px; }
+  .goal-actions { flex-wrap: wrap; }
+  .goal-value-input { width: 100px !important; }
+}
+
+/* Very small phones */
+@media (max-width:380px) {
+  .quote-text { font-size: 13px; }
+  .page-title { font-size: 20px; }
+  .stat-num { font-size: 20px; }
+  .nav-tab { padding: 10px 12px; font-size: 12px; }
 }
 </style>
 </head>
@@ -1067,6 +1324,15 @@ body {
     </div>
     <div id="modalClientBody"></div>
   </div>
+</div>
+
+<!-- PWA install hint (shows once on iOS Safari) -->
+<div class="install-hint" id="installHint">
+  <div style="flex:1">
+    <div style="font-weight:600;margin-bottom:2px">Install Maggie ♡</div>
+    <div style="font-size:11px;opacity:0.9" id="installHintText">Add to home screen for the full app experience</div>
+  </div>
+  <button onclick="dismissInstallHint()" class="close">×</button>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -1834,6 +2100,65 @@ loadDailyTasks();
 loadHabits();
 loadTodayActions();
 loadCalendar();
+
+// ── PWA SERVICE WORKER ──
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW failed:', err));
+  });
+}
+
+// ── INSTALL HINT ──
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  maybeShowInstallHint();
+});
+
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+function isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+function maybeShowInstallHint() {
+  if (isStandalone()) return;  // already installed
+  if (localStorage.getItem('installHintDismissed')) return;
+  if (window.innerWidth > 768) return;  // only on mobile
+
+  const hint = document.getElementById('installHint');
+  const text = document.getElementById('installHintText');
+
+  if (isIOS()) {
+    text.innerHTML = 'Tap <strong>Share</strong> → <strong>Add to Home Screen</strong>';
+    hint.classList.add('show');
+  } else if (deferredPrompt) {
+    text.textContent = 'Tap to install on your home screen';
+    hint.classList.add('show');
+    hint.onclick = async (e) => {
+      if (e.target.classList.contains('close')) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        hint.classList.remove('show');
+        localStorage.setItem('installHintDismissed', '1');
+      }
+      deferredPrompt = null;
+    };
+  }
+}
+
+function dismissInstallHint() {
+  document.getElementById('installHint').classList.remove('show');
+  localStorage.setItem('installHintDismissed', '1');
+  event.stopPropagation();
+}
+
+// Show iOS hint after a short delay so it doesn't appear instantly
+setTimeout(maybeShowInstallHint, 2500);
 
 // ── CALENDAR ──
 async function loadCalendar() {
