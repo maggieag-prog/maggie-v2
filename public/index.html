@@ -410,213 +410,82 @@ body {
 }
 .add-btn:hover { border-color: var(--accent); background: var(--surface2); }
 
-/* Habits */
-.week-label { display:flex; justify-content:flex-end; gap:4px; margin-bottom:8px; }
-.week-label span {
-  width:10px; text-align:center;
-  font-family:'JetBrains Mono',monospace;
-  font-size:9px; color:var(--muted); font-weight:600;
-}
+/* Habits — Today view (day-by-day tap) */
 .habit-row {
-  display:flex; justify-content:space-between; align-items:center;
-  padding:12px 0; border-bottom:1px solid var(--border-soft);
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-soft);
 }
-.habit-row:last-child { border-bottom:none; }
-.habit-name { font-weight:500; font-size:13px; }
+.habit-row:last-child { border-bottom: none; padding-bottom: 4px; }
+.habit-row-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.habit-row-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.habit-name { font-weight: 500; font-size: 14px; color: var(--text); }
 .habit-streak {
-  font-family:'JetBrains Mono',monospace;
-  font-size:10px; color:var(--accent); margin-top:3px; font-weight: 600;
-}
-.habit-dots { display:flex; gap:5px; }
-.dot {
-  width:11px; height:11px; border-radius:50%;
-  background: var(--surface2); border:1.5px solid var(--border);
-  transition:all .15s;
-}
-.dot.done {
-  background: linear-gradient(135deg, var(--accent), var(--rose));
-  border-color: var(--accent);
-  box-shadow: 0 1px 3px rgba(233,30,99,0.3);
-}
-.dot.today { border-color: var(--accent); border-width: 2px; }
-.habit-toggle {
-  width:36px; height:20px; border-radius:12px;
-  background: var(--surface2); border:1px solid var(--border);
-  cursor:pointer; position:relative; flex-shrink:0;
-  transition: all .2s;
-}
-.habit-toggle.on {
-  background: linear-gradient(135deg, var(--accent), var(--rose));
-  border-color: var(--accent);
-}
-.habit-toggle::after {
-  content:''; position:absolute; top:2px; left:2px;
-  width:14px; height:14px; border-radius:50%;
-  background:#fff; transition:transform .2s;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-}
-.habit-toggle.on::after { transform:translateX(16px); }
-
-/* ── FULL HABITS VIEW ── */
-.habit-full-card {
-  background: var(--surface);
-  border-radius: 16px;
-  padding: 22px;
-  border: 1px solid var(--border);
-  margin-bottom: 14px;
-  box-shadow: 0 2px 12px rgba(233,30,99,0.04);
-}
-.habit-full-header {
-  display: flex; justify-content: space-between; align-items: flex-start;
-  gap: 14px; margin-bottom: 18px;
-}
-.habit-full-left { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; }
-.habit-full-emoji {
-  width: 48px; height: 48px;
-  background: linear-gradient(135deg, #fff5f8, #ffe9ee);
-  border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 24px;
-  flex-shrink: 0;
-}
-.habit-full-info { flex: 1; min-width: 0; }
-.habit-full-name {
-  font-family: 'Playfair Display', serif;
-  font-size: 18px; font-weight: 500;
-  color: var(--text); margin-bottom: 4px;
-}
-.habit-full-target { font-size: 11px; color: var(--muted); }
-.habit-streak-badge {
-  display: flex; align-items: center; gap: 4px;
-  background: linear-gradient(135deg, #fff5f8, #ffe9ee);
-  border: 1.5px solid var(--accent-soft);
-  border-radius: 14px;
-  padding: 6px 12px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 13px; font-weight: 700;
+  font-size: 11px;
   color: var(--accent);
-  flex-shrink: 0;
+  font-weight: 600;
 }
-.habit-streak-badge.hot {
-  background: linear-gradient(135deg, #ffe9ee, #ffd1dc);
-  border-color: var(--accent);
-  color: var(--accent2);
-  animation: streak-pulse 2s ease-in-out infinite;
-}
-@keyframes streak-pulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(233,30,99,0); }
-  50% { transform: scale(1.04); box-shadow: 0 0 12px rgba(233,30,99,0.25); }
-}
+.habit-streak.none { color: var(--muted); }
 
-/* Last 7 days grid */
-.habit-week-grid {
+.habit-days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 6px;
-  margin-bottom: 18px;
 }
-.habit-day {
+.habit-day-btn {
   aspect-ratio: 1;
   border-radius: 10px;
   background: var(--surface2);
   border: 1.5px solid var(--border);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   transition: all .15s;
-  position: relative;
+  padding: 4px;
+  font-family: inherit;
+  min-width: 0;
 }
-.habit-day:hover { border-color: var(--accent-soft); transform: translateY(-1px); }
-.habit-day.done {
+.habit-day-btn:hover:not(:disabled) {
+  border-color: var(--accent-soft);
+  transform: translateY(-1px);
+}
+.habit-day-btn.done {
   background: linear-gradient(135deg, var(--accent), var(--rose));
   border-color: var(--accent);
   color: white;
   box-shadow: 0 2px 8px rgba(233,30,99,0.25);
 }
-.habit-day.today { border-color: var(--accent); border-width: 2.5px; }
-.habit-day.future { opacity: 0.4; cursor: not-allowed; }
-.habit-day:hover.future { transform: none; }
+.habit-day-btn.today {
+  border-color: var(--accent);
+  border-width: 2.5px;
+}
+.habit-day-btn.future {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.habit-day-btn:disabled { cursor: not-allowed; }
 .habit-day-dow {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 9px; font-weight: 600;
-  letter-spacing: 1px;
-  margin-bottom: 2px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
   opacity: 0.7;
+  margin-bottom: 2px;
+  text-transform: uppercase;
 }
-.habit-day.done .habit-day-dow { opacity: 0.85; }
+.habit-day-btn.done .habit-day-dow { opacity: 0.9; }
 .habit-day-num {
   font-family: 'Playfair Display', serif;
-  font-size: 15px; font-weight: 500;
-}
-
-/* Heatmap (90 days) */
-.habit-heatmap-wrap { margin-bottom: 14px; }
-.habit-heatmap-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 1px;
-  color: var(--muted);
-  margin-bottom: 6px;
-  font-weight: 600;
-}
-.habit-heatmap {
-  display: grid;
-  grid-template-columns: repeat(13, 1fr);
-  gap: 3px;
-}
-.heat-cell {
-  aspect-ratio: 1;
-  border-radius: 3px;
-  background: var(--surface2);
-  border: 1px solid var(--border-soft);
-}
-.heat-cell.done {
-  background: linear-gradient(135deg, var(--accent), var(--rose));
-  border-color: transparent;
-}
-.heat-cell.today { border-color: var(--accent); border-width: 1.5px; }
-
-/* Stats footer */
-.habit-stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border-soft);
-}
-.habit-stat { text-align: center; }
-.habit-stat-num {
-  font-family: 'Playfair Display', serif;
-  font-size: 20px;
+  font-size: 14px;
   font-weight: 500;
-  color: var(--accent);
-}
-.habit-stat-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-top: 2px;
-  font-weight: 600;
-}
-
-.habit-actions {
-  display: flex; gap: 6px; margin-top: 14px;
-  padding-top: 14px; border-top: 1px solid var(--border-soft);
-  justify-content: flex-end;
-}
-
-/* Mobile habit view */
-@media (max-width: 768px) {
-  .habit-full-card { padding: 16px; }
-  .habit-full-name { font-size: 16px; }
-  .habit-full-emoji { width: 40px; height: 40px; font-size: 20px; }
-  .habit-streak-badge { padding: 5px 10px; font-size: 12px; }
-  .habit-stats { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .habit-day-dow { font-size: 8px; }
-  .habit-day-num { font-size: 13px; }
-  .habit-heatmap { grid-template-columns: repeat(10, 1fr); }
+  line-height: 1;
 }
 
 /* ── PERFORMANCE ── */
@@ -1597,10 +1466,9 @@ body {
   /* Habits */
   .habit-row { padding: 14px 0; }
   .habit-name { font-size: 14px; }
-  .habit-toggle { width: 42px; height: 24px; }
-  .habit-toggle::after { width: 18px; height: 18px; }
-  .habit-toggle.on::after { transform: translateX(18px); }
-  .dot { width: 12px; height: 12px; }
+  .habit-days { gap: 4px; }
+  .habit-day-num { font-size: 12px; }
+  .habit-day-dow { font-size: 8px; }
 
   /* Kanban: full-width single column with horizontal scroll */
   .kanban {
@@ -1770,7 +1638,6 @@ body {
     <button class="nav-tab" data-view="weekly" onclick="switchView('weekly')">Week</button>
     <button class="nav-tab" data-view="content" onclick="switchView('content')">Content</button>
     <button class="nav-tab" data-view="reading" onclick="switchView('reading')">Reading</button>
-    <button class="nav-tab" data-view="habits" onclick="switchView('habits')">Habits</button>
     <button class="nav-tab" data-view="performance" onclick="switchView('performance')">Performance</button>
     <button class="nav-tab" data-view="pipeline" onclick="switchView('pipeline')">Pipeline</button>
     <button class="nav-tab" data-view="meetings" onclick="switchView('meetings')">Meetings</button>
@@ -1818,8 +1685,20 @@ body {
       </div>
     </div>
     <div class="card" style="grid-row:1/3">
-      <div class="card-label">Habits — This Week</div>
-      <div class="week-label"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div>
+      <div class="card-label" style="display:flex;justify-content:space-between;align-items:center">
+        <span>Habits — This Week</span>
+        <button class="btn btn-ghost btn-sm" style="font-size:10px;padding:4px 10px" onclick="toggleAddHabitInline()">+ Add</button>
+      </div>
+      <div class="add-habit-form-inline" id="addHabitFormInline" style="display:none; margin-bottom:14px; padding:12px; background:var(--surface2); border-radius:10px">
+        <div style="display:flex;gap:6px;margin-bottom:8px">
+          <input class="f-input" id="hEmojiInline" placeholder="✨" maxlength="2" style="width:48px;text-align:center;font-size:18px;padding:6px">
+          <input class="f-input grow" id="hNameInline" placeholder="Habit name" style="font-size:13px;padding:8px">
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-accent btn-sm" onclick="saveNewHabitInline()" style="flex:1">Add ♡</button>
+          <button class="btn btn-ghost btn-sm" onclick="toggleAddHabitInline()">Cancel</button>
+        </div>
+      </div>
       <div id="habitsList"><div class="loading">Loading…</div></div>
     </div>
     <div class="card col-span-2">
@@ -2041,31 +1920,6 @@ body {
     <div class="card-label" style="margin-bottom:14px">📚 Completed Books</div>
     <div id="completedBooks"></div>
   </div>
-</div>
-
-<!-- HABITS -->
-<div id="view-habits" class="view">
-  <div class="page-header">
-    <div>
-      <div class="page-title">Habits</div>
-      <div class="page-sub">Streaks · history · consistency</div>
-    </div>
-    <button class="btn btn-accent btn-sm" onclick="toggleAddHabit()">+ New Habit</button>
-  </div>
-
-  <div class="add-habit-form" id="addHabitForm" style="margin-bottom:18px; flex-direction:column; align-items:stretch; background:var(--surface); padding:20px; border-radius:14px; border:1px solid var(--border)">
-    <div class="form-row">
-      <input class="f-input" id="hEmoji" placeholder="✨" maxlength="2" style="max-width:60px; text-align:center; font-size:20px">
-      <input class="f-input grow" id="hName" placeholder="Habit name (e.g. Morning yoga, Read 10 mins)">
-      <input class="f-input" id="hTarget" type="number" placeholder="Days per week" value="7" min="1" max="7" style="max-width:140px">
-    </div>
-    <div style="display:flex; gap:8px; margin-top:10px">
-      <button class="btn btn-accent" onclick="saveNewHabit()">Save Habit ♡</button>
-      <button class="btn btn-ghost" onclick="toggleAddHabit()">Cancel</button>
-    </div>
-  </div>
-
-  <div id="habitsFullList"><div class="loading">Loading…</div></div>
 </div>
 
 <!-- PERFORMANCE -->
@@ -2551,7 +2405,6 @@ function switchView(name) {
   if (name === 'weekly') loadWeeklyView();
   if (name === 'content') loadContentView();
   if (name === 'reading') loadReadingView();
-  if (name === 'habits') loadHabitsView();
   if (name === 'performance') loadPerformanceView();
   if (name === 'meetings') loadMeetingsView();
   if (name === 'pipeline') loadPipelineView();
@@ -2655,49 +2508,130 @@ async function loadHabits() {
   const habits = await res.json();
   allHabits = habits.map(h => ({ ...h, doneToday: h.done_today }));
   renderHabits();
-  // Also refresh the full view if it's open
-  if (document.getElementById('view-habits')?.classList.contains('active')) {
-    renderHabitsFullView();
-  }
 }
 
 function renderHabits() {
   const list = document.getElementById('habitsList');
   if (!list) return;
   const today = todayStr();
+
+  // Build this week's Monday-Sunday range
+  const todayDate = new Date();
+  const dow = (todayDate.getDay() + 6) % 7;  // 0 = Monday
+  const monday = new Date(todayDate);
+  monday.setDate(todayDate.getDate() - dow);
+  const weekDays = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    const ds = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Dubai' });
+    weekDays.push({
+      date: ds,
+      day_num: d.getDate(),
+      dow_letter: ['M','T','W','T','F','S','S'][i],
+      is_today: ds === today,
+      is_future: ds > today
+    });
+  }
+
+  if (allHabits.length === 0) {
+    list.innerHTML = '<div class="empty" style="padding:14px 0;font-size:12px">No habits yet — tap + Add above</div>';
+    updateScore();
+    return;
+  }
+
   list.innerHTML = allHabits.map(h => {
-    const dots = (h.last_7_days || []).map(d => {
-      const isTd = d.date === today;
-      return `<div class="dot${d.done?' done':''}${!d.done&&isTd?' today':''}"></div>`;
-    }).join('');
+    const completedDates = new Set(h.completions || []);
     const streak = h.current_streak || 0;
-    const streakText = streak > 0 ? `🔥 ${streak} day${streak===1?'':'s'}` : `${h.this_week_count}× this week`;
+    const streakText = streak > 0
+      ? `🔥 ${streak} day${streak===1?'':'s'}`
+      : `${h.this_week_count || 0}× this week`;
+
+    const days = weekDays.map(d => {
+      const done = completedDates.has(d.date);
+      const cls = [
+        'habit-day-btn',
+        done ? 'done' : '',
+        d.is_today ? 'today' : '',
+        d.is_future ? 'future' : ''
+      ].filter(Boolean).join(' ');
+      const disabled = d.is_future ? 'disabled' : '';
+      return `<button class="${cls}" ${disabled} onclick="toggleHabit(${h.id}, '${d.date}')">
+        <div class="habit-day-dow">${d.dow_letter}</div>
+        <div class="habit-day-num">${d.day_num}</div>
+      </button>`;
+    }).join('');
+
     return `<div class="habit-row">
-      <div>
-        <div class="habit-name">${h.emoji || '✨'} ${h.name}</div>
-        <div class="habit-streak">${streakText}</div>
+      <div class="habit-row-header">
+        <div class="habit-row-info">
+          <div class="habit-name">${h.emoji || '✨'} ${h.name}</div>
+          <div class="habit-streak ${streak===0?'none':''}">${streakText}</div>
+        </div>
+        <button onclick="deleteHabitInline(${h.id})" title="Delete habit"
+                style="background:none;border:none;color:var(--muted2);cursor:pointer;font-size:18px;padding:4px 8px;line-height:1">×</button>
       </div>
-      <div class="habit-dots">${dots}</div>
-      <div class="habit-toggle ${h.doneToday?'on':''}" onclick="toggleHabit(${h.id})"></div>
+      <div class="habit-days">${days}</div>
     </div>`;
   }).join('');
   updateScore();
 }
 
 async function toggleHabit(id, date = null) {
-  const body = date ? { date } : {};
+  const today = todayStr();
+  const dateToUse = date || today;
+  // Prevent future toggling
+  if (dateToUse > today) return;
+
+  const body = { date: dateToUse };
   const res = await fetch(`${API}/api/habits/${id}/toggle`, {
-    method:'POST',
+    method: 'POST',
     headers: {'Content-Type':'application/json'},
     body: JSON.stringify(body)
   });
   const result = await res.json();
-  await loadHabits();  // reload to get fresh streaks
-  if (date && date !== todayStr()) {
-    toast(result.done ? `✨ Logged for ${date}` : `↩ Unlogged`);
+  await loadHabits();
+  if (dateToUse !== today) {
+    toast(result.done ? `✨ Logged for ${dateToUse}` : `↩ Unlogged`);
   } else {
     toast(result.done ? '✨ Done!' : '↩ Unmarked');
   }
+}
+
+// Inline add-habit on Today view
+let addHabitInlineOpen = false;
+function toggleAddHabitInline() {
+  addHabitInlineOpen = !addHabitInlineOpen;
+  document.getElementById('addHabitFormInline').style.display = addHabitInlineOpen ? 'block' : 'none';
+  if (addHabitInlineOpen) {
+    setTimeout(() => document.getElementById('hNameInline')?.focus(), 50);
+  } else {
+    document.getElementById('hEmojiInline').value = '';
+    document.getElementById('hNameInline').value = '';
+  }
+}
+
+async function saveNewHabitInline() {
+  const name = document.getElementById('hNameInline').value.trim();
+  const emoji = document.getElementById('hEmojiInline').value.trim() || '✨';
+  if (!name) { toast('⚠️ Name required'); return; }
+  await fetch(`${API}/api/habits`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ name, emoji, target_per_week: 7 })
+  });
+  toggleAddHabitInline();
+  toast('Habit added ♡');
+  loadHabits();
+}
+
+async function deleteHabitInline(id) {
+  const h = allHabits.find(x => x.id === id);
+  if (!h) return;
+  if (!confirm(`Delete "${h.name}" and all its history?`)) return;
+  await fetch(`${API}/api/habits/${id}`, { method: 'DELETE' });
+  toast('Habit deleted');
+  loadHabits();
 }
 
 // ══════════════════════════════════════════
@@ -2955,158 +2889,6 @@ async function deleteSnapshot(id) {
   closeClientModal();
   toast('Removed');
   loadPerformanceView();
-}
-
-// ══════════════════════════════════════════
-//  HABITS FULL VIEW
-// ══════════════════════════════════════════
-let addHabitOpen = false;
-
-async function loadHabitsView() {
-  await loadHabits();
-  renderHabitsFullView();
-}
-
-function renderHabitsFullView() {
-  const wrap = document.getElementById('habitsFullList');
-  if (!wrap) return;
-  if (!allHabits || allHabits.length === 0) {
-    wrap.innerHTML = '<div class="empty">No habits yet — add one above ♡</div>';
-    return;
-  }
-  wrap.innerHTML = allHabits.map(renderHabitFullCard).join('');
-}
-
-function renderHabitFullCard(h) {
-  const today = todayStr();
-  const streak = h.current_streak || 0;
-  const streakClass = streak >= 7 ? 'hot' : '';
-
-  // Last 7 days grid
-  const dayOfWeekLetters = ['M','T','W','T','F','S','S'];
-  const last7 = (h.last_7_days || []).map(d => {
-    const dt = new Date(d.date + 'T00:00:00');
-    const dow = (dt.getDay() + 6) % 7;
-    const isTd = d.date === today;
-    return `<div class="habit-day ${d.done?'done':''} ${isTd?'today':''}" onclick="toggleHabit(${h.id}, '${d.date}')">
-      <div class="habit-day-dow">${dayOfWeekLetters[dow]}</div>
-      <div class="habit-day-num">${dt.getDate()}</div>
-    </div>`;
-  }).join('');
-
-  // 90-day heatmap
-  const heatmap = build90DayHeatmap(h.completions || []);
-
-  return `<div class="habit-full-card">
-    <div class="habit-full-header">
-      <div class="habit-full-left">
-        <div class="habit-full-emoji">${h.emoji || '✨'}</div>
-        <div class="habit-full-info">
-          <div class="habit-full-name">${h.name}</div>
-          <div class="habit-full-target">Target: ${h.target_per_week || 7}× per week</div>
-        </div>
-      </div>
-      <div class="habit-streak-badge ${streakClass}">
-        🔥 ${streak} day${streak===1?'':'s'}
-      </div>
-    </div>
-
-    <div class="habit-week-grid">${last7}</div>
-
-    <div class="habit-heatmap-wrap">
-      <div class="habit-heatmap-label">LAST 90 DAYS · tap a day to toggle</div>
-      <div class="habit-heatmap">${heatmap}</div>
-    </div>
-
-    <div class="habit-stats">
-      <div class="habit-stat">
-        <div class="habit-stat-num">${h.current_streak || 0}</div>
-        <div class="habit-stat-label">Current</div>
-      </div>
-      <div class="habit-stat">
-        <div class="habit-stat-num">${h.longest_streak || 0}</div>
-        <div class="habit-stat-label">Best</div>
-      </div>
-      <div class="habit-stat">
-        <div class="habit-stat-num">${h.this_week_count || 0}</div>
-        <div class="habit-stat-label">This Week</div>
-      </div>
-      <div class="habit-stat">
-        <div class="habit-stat-num">${h.this_month_count || 0}</div>
-        <div class="habit-stat-label">This Month</div>
-      </div>
-    </div>
-
-    <div class="habit-actions">
-      <button class="btn btn-ghost btn-sm" onclick="renameHabit(${h.id})">Rename</button>
-      <button class="btn btn-ghost btn-sm" onclick="deleteHabit(${h.id})" style="color:var(--red)">Delete</button>
-    </div>
-  </div>`;
-}
-
-function build90DayHeatmap(completions) {
-  const today = todayStr();
-  const doneSet = new Set(completions);
-  const cells = [];
-  for (let i = 89; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    const ds = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Dubai' });
-    const done = doneSet.has(ds);
-    const isToday = ds === today;
-    cells.push(`<div class="heat-cell ${done?'done':''} ${isToday?'today':''}" title="${ds}"></div>`);
-  }
-  return cells.join('');
-}
-
-function toggleAddHabit() {
-  addHabitOpen = !addHabitOpen;
-  document.getElementById('addHabitForm').classList.toggle('open', addHabitOpen);
-  if (!addHabitOpen) {
-    document.getElementById('hEmoji').value = '';
-    document.getElementById('hName').value = '';
-    document.getElementById('hTarget').value = '7';
-  } else {
-    setTimeout(() => document.getElementById('hName').focus(), 100);
-  }
-}
-
-async function saveNewHabit() {
-  const name = document.getElementById('hName').value.trim();
-  const emoji = document.getElementById('hEmoji').value.trim() || '✨';
-  const target = parseInt(document.getElementById('hTarget').value) || 7;
-  if (!name) { toast('⚠️ Name required'); return; }
-  await fetch(`${API}/api/habits`, {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ name, emoji, target_per_week: target })
-  });
-  toggleAddHabit();
-  toast('Habit added ♡');
-  loadHabitsView();
-}
-
-async function renameHabit(id) {
-  const h = allHabits.find(x => x.id === id);
-  if (!h) return;
-  const newName = prompt('Rename habit:', h.name);
-  if (!newName || newName === h.name) return;
-  await fetch(`${API}/api/habits/${id}`, {
-    method: 'PATCH',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ name: newName.trim() })
-  });
-  toast('Renamed ♡');
-  loadHabitsView();
-}
-
-async function deleteHabit(id) {
-  const h = allHabits.find(x => x.id === id);
-  if (!h) return;
-  if (!confirm(`Delete "${h.name}" and all its history? This can't be undone.`)) return;
-  await fetch(`${API}/api/habits/${id}`, { method: 'DELETE' });
-  toast('Habit deleted');
-  loadHabitsView();
 }
 
 // ══════ PIPELINE ══════
@@ -4241,7 +4023,7 @@ setInterval(() => {
 
 const urlParams = new URLSearchParams(window.location.search);
 const viewParam = urlParams.get('view');
-if (viewParam && ['weekly','content','reading','habits','performance','pipeline','meetings','clients','monthly','quarterly','reflection'].includes(viewParam)) {
+if (viewParam && ['weekly','content','reading','performance','pipeline','meetings','clients','monthly','quarterly','reflection'].includes(viewParam)) {
   switchView(viewParam);
 }
 </script>
