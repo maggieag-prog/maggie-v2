@@ -120,12 +120,7 @@ body {
   border-color: var(--accent);
   box-shadow: 0 0 0 4px rgba(233, 30, 99, 0.1);
 }
-#loginCode {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 24px;
-  letter-spacing: 8px;
-  font-weight: 600;
-}
+#loginCode { display: none; }
 .login-btn {
   width: 100%;
   padding: 14px;
@@ -1414,21 +1409,15 @@ body {
 <div class="login-overlay" id="loginOverlay">
   <div class="login-card">
     <div class="login-icon">M ♡</div>
-    <h1 class="login-title">Welcome back</h1>
+    <h1 class="login-title" id="loginTitle">Welcome back</h1>
     <p class="login-sub" id="loginSub">Sign in to your dashboard</p>
 
-    <!-- Step 1: Email -->
-    <div id="loginStep1">
-      <input class="login-input" id="loginEmail" type="email" placeholder="your@email.com" autocomplete="email">
-      <button class="login-btn" id="loginEmailBtn" onclick="sendLoginCode()">Send me a code ♡</button>
-    </div>
+    <input class="login-input" id="loginEmail" type="email" placeholder="your@email.com" autocomplete="email" autocapitalize="off">
+    <input class="login-input" id="loginPassword" type="password" placeholder="Password" autocomplete="current-password">
 
-    <!-- Step 2: Code -->
-    <div id="loginStep2" style="display:none">
-      <input class="login-input" id="loginCode" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code">
-      <button class="login-btn" id="loginCodeBtn" onclick="verifyLoginCode()">Sign in</button>
-      <button class="login-link" onclick="resetLogin()">Use a different email</button>
-    </div>
+    <button class="login-btn" id="loginBtn" onclick="signIn()">Sign in ♡</button>
+
+    <button class="login-link" id="toggleMode" onclick="toggleSignupMode()">First time? Create your account</button>
 
     <div class="login-error" id="loginError"></div>
   </div>
@@ -1949,91 +1938,94 @@ function showApp() {
 }
 
 let pendingEmail = null;
+let isSignupMode = false;
 
-async function sendLoginCode() {
-  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-  const btn = document.getElementById('loginEmailBtn');
-  const err = document.getElementById('loginError');
-  err.textContent = '';
-
-  if (!email || !email.includes('@')) {
-    err.textContent = 'Please enter a valid email';
-    return;
-  }
-
-  btn.disabled = true;
-  btn.textContent = 'Sending...';
-
-  try {
-    const { error } = await supabaseClient.auth.signInWithOtp({
-      email,
-      options: { shouldCreateUser: true }
-    });
-    if (error) throw error;
-
-    pendingEmail = email;
-    document.getElementById('loginStep1').style.display = 'none';
-    document.getElementById('loginStep2').style.display = 'block';
-    document.getElementById('loginSub').textContent = `Check ${email} for your code`;
-    setTimeout(() => document.getElementById('loginCode')?.focus(), 100);
-  } catch (e) {
-    err.textContent = e.message || 'Something went wrong. Try again.';
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Send me a code ♡';
-  }
+function toggleSignupMode() {
+  isSignupMode = !isSignupMode;
+  document.getElementById('loginTitle').textContent = isSignupMode ? 'Create your account' : 'Welcome back';
+  document.getElementById('loginSub').textContent = isSignupMode
+    ? 'Set up your dashboard password ♡'
+    : 'Sign in to your dashboard';
+  document.getElementById('loginBtn').textContent = isSignupMode ? 'Create account ♡' : 'Sign in ♡';
+  document.getElementById('toggleMode').textContent = isSignupMode
+    ? 'Already have an account? Sign in'
+    : 'First time? Create your account';
+  document.getElementById('loginPassword').setAttribute('autocomplete', isSignupMode ? 'new-password' : 'current-password');
+  document.getElementById('loginError').textContent = '';
 }
 
-async function verifyLoginCode() {
-  const code = document.getElementById('loginCode').value.trim();
-  const btn = document.getElementById('loginCodeBtn');
+async function signIn() {
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const password = document.getElementById('loginPassword').value;
+  const btn = document.getElementById('loginBtn');
   const err = document.getElementById('loginError');
   err.textContent = '';
 
-  if (!code || code.length !== 6) {
-    err.textContent = 'Enter the 6-digit code from your email';
+  if (!email || !email.includes('@')) { err.textContent = 'Please enter a valid email'; return; }
+  if (!password || password.length < 8) {
+    err.textContent = isSignupMode ? 'Password must be at least 8 characters' : 'Please enter your password';
     return;
   }
 
   btn.disabled = true;
-  btn.textContent = 'Signing in...';
+  btn.textContent = isSignupMode ? 'Creating...' : 'Signing in...';
 
   try {
-    const { data, error } = await supabaseClient.auth.verifyOtp({
-      email: pendingEmail,
-      token: code,
-      type: 'email'
-    });
-    if (error) throw error;
+    let result;
+    if (isSignupMode) {
+      result = await supabaseClient.auth.signUp({ email, password });
+    } else {
+      result = await supabaseClient.auth.signInWithPassword({ email, password });
+    }
+
+    if (result.error) throw result.error;
+    if (!result.data?.session) {
+      // Sometimes signup requires email confirmation. With our settings it shouldn't, but just in case:
+      err.textContent = 'Account created — please sign in now';
+      isSignupMode = false;
+      toggleSignupMode();
+      toggleSignupMode();  // reset back to sign-in display
+      btn.disabled = false;
+      btn.textContent = 'Sign in ♡';
+      return;
+    }
 
     // Check owner whitelist via backend
-    const testRes = await _origFetch('/api/tasks', { headers: { 'Authorization': `Bearer ${data.session.access_token}` } });
+    const testRes = await _origFetch('/api/tasks', {
+      headers: { 'Authorization': `Bearer ${result.data.session.access_token}` }
+    });
     if (testRes.status === 403) {
       err.textContent = "This email isn't authorized to use the dashboard.";
       await supabaseClient.auth.signOut();
       btn.disabled = false;
-      btn.textContent = 'Sign in';
+      btn.textContent = isSignupMode ? 'Create account ♡' : 'Sign in ♡';
       return;
     }
 
-    currentSession = data.session;
+    currentSession = result.data.session;
     showApp();
     initDashboard();
   } catch (e) {
-    err.textContent = e.message || 'Invalid code. Try again.';
+    let msg = e.message || 'Something went wrong';
+    // Friendlier error messages
+    if (msg.includes('Invalid login credentials')) msg = 'Wrong email or password';
+    if (msg.includes('already registered')) msg = 'An account with that email already exists — sign in instead';
+    if (msg.includes('User already registered')) msg = 'Account exists — switch to sign in';
+    err.textContent = msg;
     btn.disabled = false;
-    btn.textContent = 'Sign in';
+    btn.textContent = isSignupMode ? 'Create account ♡' : 'Sign in ♡';
   }
 }
 
-function resetLogin() {
-  document.getElementById('loginStep1').style.display = 'block';
-  document.getElementById('loginStep2').style.display = 'none';
-  document.getElementById('loginSub').textContent = 'Sign in to your dashboard';
-  document.getElementById('loginError').textContent = '';
-  document.getElementById('loginCode').value = '';
-  pendingEmail = null;
-}
+// Allow Enter key to submit
+document.addEventListener('DOMContentLoaded', () => {
+  const inputs = [document.getElementById('loginEmail'), document.getElementById('loginPassword')];
+  inputs.forEach(input => {
+    input?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') signIn();
+    });
+  });
+});
 
 async function signOut() {
   if (!confirm('Sign out of your dashboard?')) return;
