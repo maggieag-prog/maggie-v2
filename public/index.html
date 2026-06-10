@@ -457,6 +457,168 @@ body {
 }
 .habit-toggle.on::after { transform:translateX(16px); }
 
+/* ── FULL HABITS VIEW ── */
+.habit-full-card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  margin-bottom: 14px;
+  box-shadow: 0 2px 12px rgba(233,30,99,0.04);
+}
+.habit-full-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 14px; margin-bottom: 18px;
+}
+.habit-full-left { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; }
+.habit-full-emoji {
+  width: 48px; height: 48px;
+  background: linear-gradient(135deg, #fff5f8, #ffe9ee);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+.habit-full-info { flex: 1; min-width: 0; }
+.habit-full-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px; font-weight: 500;
+  color: var(--text); margin-bottom: 4px;
+}
+.habit-full-target { font-size: 11px; color: var(--muted); }
+.habit-streak-badge {
+  display: flex; align-items: center; gap: 4px;
+  background: linear-gradient(135deg, #fff5f8, #ffe9ee);
+  border: 1.5px solid var(--accent-soft);
+  border-radius: 14px;
+  padding: 6px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; font-weight: 700;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.habit-streak-badge.hot {
+  background: linear-gradient(135deg, #ffe9ee, #ffd1dc);
+  border-color: var(--accent);
+  color: var(--accent2);
+  animation: streak-pulse 2s ease-in-out infinite;
+}
+@keyframes streak-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(233,30,99,0); }
+  50% { transform: scale(1.04); box-shadow: 0 0 12px rgba(233,30,99,0.25); }
+}
+
+/* Last 7 days grid */
+.habit-week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.habit-day {
+  aspect-ratio: 1;
+  border-radius: 10px;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: all .15s;
+  position: relative;
+}
+.habit-day:hover { border-color: var(--accent-soft); transform: translateY(-1px); }
+.habit-day.done {
+  background: linear-gradient(135deg, var(--accent), var(--rose));
+  border-color: var(--accent);
+  color: white;
+  box-shadow: 0 2px 8px rgba(233,30,99,0.25);
+}
+.habit-day.today { border-color: var(--accent); border-width: 2.5px; }
+.habit-day.future { opacity: 0.4; cursor: not-allowed; }
+.habit-day:hover.future { transform: none; }
+.habit-day-dow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+  opacity: 0.7;
+}
+.habit-day.done .habit-day-dow { opacity: 0.85; }
+.habit-day-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 15px; font-weight: 500;
+}
+
+/* Heatmap (90 days) */
+.habit-heatmap-wrap { margin-bottom: 14px; }
+.habit-heatmap-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+.habit-heatmap {
+  display: grid;
+  grid-template-columns: repeat(13, 1fr);
+  gap: 3px;
+}
+.heat-cell {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background: var(--surface2);
+  border: 1px solid var(--border-soft);
+}
+.heat-cell.done {
+  background: linear-gradient(135deg, var(--accent), var(--rose));
+  border-color: transparent;
+}
+.heat-cell.today { border-color: var(--accent); border-width: 1.5px; }
+
+/* Stats footer */
+.habit-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-soft);
+}
+.habit-stat { text-align: center; }
+.habit-stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--accent);
+}
+.habit-stat-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 2px;
+  font-weight: 600;
+}
+
+.habit-actions {
+  display: flex; gap: 6px; margin-top: 14px;
+  padding-top: 14px; border-top: 1px solid var(--border-soft);
+  justify-content: flex-end;
+}
+
+/* Mobile habit view */
+@media (max-width: 768px) {
+  .habit-full-card { padding: 16px; }
+  .habit-full-name { font-size: 16px; }
+  .habit-full-emoji { width: 40px; height: 40px; font-size: 20px; }
+  .habit-streak-badge { padding: 5px 10px; font-size: 12px; }
+  .habit-stats { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .habit-day-dow { font-size: 8px; }
+  .habit-day-num { font-size: 13px; }
+  .habit-heatmap { grid-template-columns: repeat(10, 1fr); }
+}
+
 /* Pipeline KANBAN */
 .view-toggle {
   display:flex; gap:0;
@@ -1433,6 +1595,7 @@ body {
     <button class="nav-tab" data-view="weekly" onclick="switchView('weekly')">Week</button>
     <button class="nav-tab" data-view="content" onclick="switchView('content')">Content</button>
     <button class="nav-tab" data-view="reading" onclick="switchView('reading')">Reading</button>
+    <button class="nav-tab" data-view="habits" onclick="switchView('habits')">Habits</button>
     <button class="nav-tab" data-view="pipeline" onclick="switchView('pipeline')">Pipeline</button>
     <button class="nav-tab" data-view="meetings" onclick="switchView('meetings')">Meetings</button>
     <button class="nav-tab" data-view="clients" onclick="switchView('clients')">Clients</button>
@@ -1702,6 +1865,31 @@ body {
     <div class="card-label" style="margin-bottom:14px">📚 Completed Books</div>
     <div id="completedBooks"></div>
   </div>
+</div>
+
+<!-- HABITS -->
+<div id="view-habits" class="view">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Habits</div>
+      <div class="page-sub">Streaks · history · consistency</div>
+    </div>
+    <button class="btn btn-accent btn-sm" onclick="toggleAddHabit()">+ New Habit</button>
+  </div>
+
+  <div class="add-habit-form" id="addHabitForm" style="margin-bottom:18px; flex-direction:column; align-items:stretch; background:var(--surface); padding:20px; border-radius:14px; border:1px solid var(--border)">
+    <div class="form-row">
+      <input class="f-input" id="hEmoji" placeholder="✨" maxlength="2" style="max-width:60px; text-align:center; font-size:20px">
+      <input class="f-input grow" id="hName" placeholder="Habit name (e.g. Morning yoga, Read 10 mins)">
+      <input class="f-input" id="hTarget" type="number" placeholder="Days per week" value="7" min="1" max="7" style="max-width:140px">
+    </div>
+    <div style="display:flex; gap:8px; margin-top:10px">
+      <button class="btn btn-accent" onclick="saveNewHabit()">Save Habit ♡</button>
+      <button class="btn btn-ghost" onclick="toggleAddHabit()">Cancel</button>
+    </div>
+  </div>
+
+  <div id="habitsFullList"><div class="loading">Loading…</div></div>
 </div>
 
 <!-- MEETINGS -->
@@ -2160,6 +2348,7 @@ function switchView(name) {
   if (name === 'weekly') loadWeeklyView();
   if (name === 'content') loadContentView();
   if (name === 'reading') loadReadingView();
+  if (name === 'habits') loadHabitsView();
   if (name === 'meetings') loadMeetingsView();
   if (name === 'pipeline') loadPipelineView();
   if (name === 'clients') loadClientsView();
@@ -2260,35 +2449,203 @@ async function quickLogContact(id) {
 async function loadHabits() {
   const res = await fetch(`${API}/api/habits`);
   const habits = await res.json();
-  const today = todayStr();
-  allHabits = habits.map(h => ({ ...h, doneToday: h.completions.includes(today) }));
+  allHabits = habits.map(h => ({ ...h, doneToday: h.done_today }));
   renderHabits();
+  // Also refresh the full view if it's open
+  if (document.getElementById('view-habits')?.classList.contains('active')) {
+    renderHabitsFullView();
+  }
 }
+
 function renderHabits() {
   const list = document.getElementById('habitsList');
-  const last7 = Array.from({length:7}, (_,i) => { const d = new Date(now); d.setDate(d.getDate() - (6-i)); return d.toLocaleDateString('en-CA',{timeZone:'Asia/Dubai'}); });
+  if (!list) return;
   const today = todayStr();
   list.innerHTML = allHabits.map(h => {
-    const wk = h.completions.filter(c => last7.includes(c)).length;
-    const dots = last7.map(date => {
-      const done = h.completions.includes(date), isTd = date === today;
-      return `<div class="dot${done?' done':''}${!done&&isTd?' today':''}"></div>`;
+    const dots = (h.last_7_days || []).map(d => {
+      const isTd = d.date === today;
+      return `<div class="dot${d.done?' done':''}${!d.done&&isTd?' today':''}"></div>`;
     }).join('');
-    return `<div class="habit-row"><div><div class="habit-name">${h.emoji} ${h.name}</div><div class="habit-streak">${wk}× this week</div></div><div class="habit-dots">${dots}</div><div class="habit-toggle ${h.doneToday?'on':''}" onclick="toggleHabit(${h.id})"></div></div>`;
+    const streak = h.current_streak || 0;
+    const streakText = streak > 0 ? `🔥 ${streak} day${streak===1?'':'s'}` : `${h.this_week_count}× this week`;
+    return `<div class="habit-row">
+      <div>
+        <div class="habit-name">${h.emoji || '✨'} ${h.name}</div>
+        <div class="habit-streak">${streakText}</div>
+      </div>
+      <div class="habit-dots">${dots}</div>
+      <div class="habit-toggle ${h.doneToday?'on':''}" onclick="toggleHabit(${h.id})"></div>
+    </div>`;
   }).join('');
   updateScore();
 }
-async function toggleHabit(id) {
-  const res = await fetch(`${API}/api/habits/${id}/toggle`, {method:'POST'});
-  const {done} = await res.json();
-  const today = todayStr();
-  allHabits = allHabits.map(h => {
-    if (h.id !== id) return h;
-    const completions = done ? [...h.completions, today] : h.completions.filter(c => c !== today);
-    return {...h, completions, doneToday: done};
+
+async function toggleHabit(id, date = null) {
+  const body = date ? { date } : {};
+  const res = await fetch(`${API}/api/habits/${id}/toggle`, {
+    method:'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(body)
   });
-  renderHabits();
-  toast(done ? '✨ Done!' : '↩ Unmarked');
+  const result = await res.json();
+  await loadHabits();  // reload to get fresh streaks
+  if (date && date !== todayStr()) {
+    toast(result.done ? `✨ Logged for ${date}` : `↩ Unlogged`);
+  } else {
+    toast(result.done ? '✨ Done!' : '↩ Unmarked');
+  }
+}
+
+// ══════════════════════════════════════════
+//  HABITS FULL VIEW
+// ══════════════════════════════════════════
+let addHabitOpen = false;
+
+async function loadHabitsView() {
+  await loadHabits();
+  renderHabitsFullView();
+}
+
+function renderHabitsFullView() {
+  const wrap = document.getElementById('habitsFullList');
+  if (!wrap) return;
+  if (!allHabits || allHabits.length === 0) {
+    wrap.innerHTML = '<div class="empty">No habits yet — add one above ♡</div>';
+    return;
+  }
+  wrap.innerHTML = allHabits.map(renderHabitFullCard).join('');
+}
+
+function renderHabitFullCard(h) {
+  const today = todayStr();
+  const streak = h.current_streak || 0;
+  const streakClass = streak >= 7 ? 'hot' : '';
+
+  // Last 7 days grid
+  const dayOfWeekLetters = ['M','T','W','T','F','S','S'];
+  const last7 = (h.last_7_days || []).map(d => {
+    const dt = new Date(d.date + 'T00:00:00');
+    const dow = (dt.getDay() + 6) % 7;
+    const isTd = d.date === today;
+    return `<div class="habit-day ${d.done?'done':''} ${isTd?'today':''}" onclick="toggleHabit(${h.id}, '${d.date}')">
+      <div class="habit-day-dow">${dayOfWeekLetters[dow]}</div>
+      <div class="habit-day-num">${dt.getDate()}</div>
+    </div>`;
+  }).join('');
+
+  // 90-day heatmap
+  const heatmap = build90DayHeatmap(h.completions || []);
+
+  return `<div class="habit-full-card">
+    <div class="habit-full-header">
+      <div class="habit-full-left">
+        <div class="habit-full-emoji">${h.emoji || '✨'}</div>
+        <div class="habit-full-info">
+          <div class="habit-full-name">${h.name}</div>
+          <div class="habit-full-target">Target: ${h.target_per_week || 7}× per week</div>
+        </div>
+      </div>
+      <div class="habit-streak-badge ${streakClass}">
+        🔥 ${streak} day${streak===1?'':'s'}
+      </div>
+    </div>
+
+    <div class="habit-week-grid">${last7}</div>
+
+    <div class="habit-heatmap-wrap">
+      <div class="habit-heatmap-label">LAST 90 DAYS · tap a day to toggle</div>
+      <div class="habit-heatmap">${heatmap}</div>
+    </div>
+
+    <div class="habit-stats">
+      <div class="habit-stat">
+        <div class="habit-stat-num">${h.current_streak || 0}</div>
+        <div class="habit-stat-label">Current</div>
+      </div>
+      <div class="habit-stat">
+        <div class="habit-stat-num">${h.longest_streak || 0}</div>
+        <div class="habit-stat-label">Best</div>
+      </div>
+      <div class="habit-stat">
+        <div class="habit-stat-num">${h.this_week_count || 0}</div>
+        <div class="habit-stat-label">This Week</div>
+      </div>
+      <div class="habit-stat">
+        <div class="habit-stat-num">${h.this_month_count || 0}</div>
+        <div class="habit-stat-label">This Month</div>
+      </div>
+    </div>
+
+    <div class="habit-actions">
+      <button class="btn btn-ghost btn-sm" onclick="renameHabit(${h.id})">Rename</button>
+      <button class="btn btn-ghost btn-sm" onclick="deleteHabit(${h.id})" style="color:var(--red)">Delete</button>
+    </div>
+  </div>`;
+}
+
+function build90DayHeatmap(completions) {
+  const today = todayStr();
+  const doneSet = new Set(completions);
+  const cells = [];
+  for (let i = 89; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const ds = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Dubai' });
+    const done = doneSet.has(ds);
+    const isToday = ds === today;
+    cells.push(`<div class="heat-cell ${done?'done':''} ${isToday?'today':''}" title="${ds}"></div>`);
+  }
+  return cells.join('');
+}
+
+function toggleAddHabit() {
+  addHabitOpen = !addHabitOpen;
+  document.getElementById('addHabitForm').classList.toggle('open', addHabitOpen);
+  if (!addHabitOpen) {
+    document.getElementById('hEmoji').value = '';
+    document.getElementById('hName').value = '';
+    document.getElementById('hTarget').value = '7';
+  } else {
+    setTimeout(() => document.getElementById('hName').focus(), 100);
+  }
+}
+
+async function saveNewHabit() {
+  const name = document.getElementById('hName').value.trim();
+  const emoji = document.getElementById('hEmoji').value.trim() || '✨';
+  const target = parseInt(document.getElementById('hTarget').value) || 7;
+  if (!name) { toast('⚠️ Name required'); return; }
+  await fetch(`${API}/api/habits`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ name, emoji, target_per_week: target })
+  });
+  toggleAddHabit();
+  toast('Habit added ♡');
+  loadHabitsView();
+}
+
+async function renameHabit(id) {
+  const h = allHabits.find(x => x.id === id);
+  if (!h) return;
+  const newName = prompt('Rename habit:', h.name);
+  if (!newName || newName === h.name) return;
+  await fetch(`${API}/api/habits/${id}`, {
+    method: 'PATCH',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ name: newName.trim() })
+  });
+  toast('Renamed ♡');
+  loadHabitsView();
+}
+
+async function deleteHabit(id) {
+  const h = allHabits.find(x => x.id === id);
+  if (!h) return;
+  if (!confirm(`Delete "${h.name}" and all its history? This can't be undone.`)) return;
+  await fetch(`${API}/api/habits/${id}`, { method: 'DELETE' });
+  toast('Habit deleted');
+  loadHabitsView();
 }
 
 // ══════ PIPELINE ══════
@@ -3423,7 +3780,7 @@ setInterval(() => {
 
 const urlParams = new URLSearchParams(window.location.search);
 const viewParam = urlParams.get('view');
-if (viewParam && ['weekly','content','reading','pipeline','meetings','clients','monthly','quarterly','reflection'].includes(viewParam)) {
+if (viewParam && ['weekly','content','reading','habits','pipeline','meetings','clients','monthly','quarterly','reflection'].includes(viewParam)) {
   switchView(viewParam);
 }
 </script>

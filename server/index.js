@@ -655,17 +655,96 @@ app.delete('/api/tasks/:id', async (req, res) => {
 
 app.get('/api/habits', async (req, res) => {
   const { data: habits } = await supabase.from('habits').select('*').order('id');
-  const since = new Date(); since.setDate(since.getDate() - 30);
+  // Load 90 days for streaks + heatmap
+  const since = new Date(); since.setDate(since.getDate() - 90);
   const sinceStr = since.toLocaleDateString('en-CA', { timeZone: 'Asia/Dubai' });
   const { data: completions } = await supabase.from('habit_completions').select('*').gte('date', sinceStr);
-  res.json(habits.map(h => ({ ...h, completions: (completions || []).filter(c => c.habit_id === h.id).map(c => c.date) })));
+  const today = todayUAE();
+  res.json(habits.map(h => {
+    const dates = (completions || []).filter(c => c.habit_id === h.id).map(c => c.date).sort();
+    // Calculate current streak (consecutive days ending today or yesterday)
+    let currentStreak = 0;
+    const datesSet = new Set(dates);
+    let checkDate = new Date();
+    // If today not done, start from yesterday to allow grace
+    if (!datesSet.has(today)) checkDate.setDate(checkDate.getDate() - 1);
+    while (true) {
+      const ds = checkDate.toLocaleDateString('en-CA', { timeZone: 'Asia/Dubai' });
+      if (datesSet.has(ds)) {
+        currentStreak++;
+        checkDate.setDate(checkDate.getDate() - 1);
+      } else break;
+    }
+    // Longest streak in this 90-day window
+    let longestStreak = 0, runStreak = 0, prevDate = null;
+    dates.forEach(d => {
+      if (prevDate) {
+        const prev = new Date(prevDate); prev.setDate(prev.getDate() + 1);
+        const expected = prev.toLocaleDateString('en-CA');
+        if (d === expected) runStreak++; else runStreak = 1;
+      } else runStreak = 1;
+      if (runStreak > longestStreak) longestStreak = runStreak;
+      prevDate = d;
+    });
+    // Last 7 days completion
+    const last7 = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      const ds = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Dubai' });
+      last7.push({ date: ds, done: datesSet.has(ds) });
+    }
+    // This week / month counts
+    const weekStart = new Date(); weekStart.setDate(weekStart.getDate() - (weekStart.getDay() + 6) % 7);
+    const weekStartStr = weekStart.toLocaleDateString('en-CA', { timeZone: 'Asia/Dubai' });
+    const monthStartStr = today.slice(0, 7) + '-01';
+    const thisWeek = dates.filter(d => d >= weekStartStr).length;
+    const thisMonth = dates.filter(d => d >= monthStartStr).length;
+    return {
+      ...h,
+      completions: dates,
+      done_today: datesSet.has(today),
+      current_streak: currentStreak,
+      longest_streak: longestStreak,
+      last_7_days: last7,
+      this_week_count: thisWeek,
+      this_month_count: thisMonth,
+    };
+  }));
 });
+
+// Toggle completion for a specific date (default today)
 app.post('/api/habits/:id/toggle', async (req, res) => {
-  const date = todayUAE();
+  const date = req.body?.date || todayUAE();
   const habitId = parseInt(req.params.id);
   const { data: existing } = await supabase.from('habit_completions').select('id').eq('habit_id', habitId).eq('date', date).single();
-  if (existing) { await supabase.from('habit_completions').delete().eq('id', existing.id); res.json({ done: false }); }
-  else { await supabase.from('habit_completions').insert({ habit_id: habitId, date }); res.json({ done: true }); }
+  if (existing) { await supabase.from('habit_completions').delete().eq('id', existing.id); res.json({ done: false, date }); }
+  else { await supabase.from('habit_completions').insert({ habit_id: habitId, date }); res.json({ done: true, date }); }
+});
+
+// Add new habit
+app.post('/api/habits', async (req, res) => {
+  const { name, emoji, color, target_per_week } = req.body;
+  if (!name) return res.status(400).json({ error: 'name required' });
+  const { data, error } = await supabase.from('habits').insert({
+    name, emoji: emoji || '✨', color: color || '#e91e63',
+    target_per_week: target_per_week || 7
+  }).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+// Update habit
+app.patch('/api/habits/:id', async (req, res) => {
+  const { data, error } = await supabase.from('habits').update(req.body).eq('id', req.params.id).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+// Delete habit
+app.delete('/api/habits/:id', async (req, res) => {
+  await supabase.from('habit_completions').delete().eq('habit_id', req.params.id);
+  await supabase.from('habits').delete().eq('id', req.params.id);
+  res.json({ ok: true });
 });
 
 app.get('/api/leads', async (req, res) => {
