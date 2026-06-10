@@ -225,58 +225,146 @@ body {
 }
 .score-pill span { font-weight:700; font-family:'JetBrains Mono',monospace; }
 
-/* ── QUOTE BANNER ── */
-.quote-banner {
-  background: linear-gradient(135deg, #fff0f5 0%, #ffe1eb 100%);
-  border-bottom: 1px solid var(--border);
-  padding: 20px 32px;
+/* ── TODAY VIEW — Compact grid layout ── */
+.today-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 16px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.today-header-left { flex: 1; min-width: 0; }
+.today-greeting {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+.today-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+}
+.today-score {
+  display: flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, var(--accent), var(--rose));
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  box-shadow: 0 4px 14px rgba(233,30,99,0.25);
+  flex-shrink: 0;
+}
+.today-score-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  opacity: 0.95;
+  font-weight: 600;
+}
+.today-score-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.today-quote {
+  background: linear-gradient(135deg, #fff5f8, #ffe9ee);
+  border-radius: 14px;
+  padding: 14px 20px;
+  margin-bottom: 16px;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 15px;
+  color: var(--text);
+  line-height: 1.4;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
   position: relative;
   overflow: hidden;
 }
-.quote-banner::before {
+.today-quote::before {
   content: '"';
   position: absolute;
   font-family: 'Playfair Display', serif;
-  font-size: 140px;
+  font-size: 80px;
   color: var(--accent);
-  opacity: 0.08;
-  top: -30px;
-  left: 20px;
+  opacity: 0.1;
+  top: -20px;
+  right: 16px;
   line-height: 1;
   font-style: italic;
 }
-.quote-banner::after {
-  content: '✨';
-  position: absolute;
-  font-size: 80px;
-  opacity: 0.08;
-  bottom: -20px;
-  right: 20px;
-  transform: rotate(15deg);
-}
-.quote-content {
-  position: relative;
-  z-index: 1;
-  max-width: 900px;
-  margin: 0 auto;
-  text-align: center;
-}
-.quote-text {
-  font-family: 'Playfair Display', serif;
-  font-style: italic;
-  font-size: 18px;
-  color: var(--text);
-  font-weight: 400;
-  line-height: 1.5;
-  margin-bottom: 6px;
-}
-.quote-author {
+.today-quote-text { flex: 1; min-width: 0; position: relative; z-index: 1; }
+.today-quote-author {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 2px;
+  font-size: 9px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--accent);
+  font-weight: 600;
+  font-style: normal;
+  white-space: nowrap;
+  position: relative;
+  z-index: 1;
+}
+
+/* Stats row */
+.today-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.today-stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 12px;
+  text-align: center;
+  transition: all .15s;
+}
+.today-stat:hover {
+  border-color: var(--accent-soft);
+  transform: translateY(-1px);
+}
+.today-stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
   font-weight: 500;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.today-stat-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* 2-column grid */
+.today-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  align-items: start;
+}
+.today-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
 }
 
 /* ── VIEWS ── */
@@ -1366,8 +1454,8 @@ body {
   .col-span-2 { grid-column:1; }
   .kanban { grid-template-columns:repeat(7,270px); }
   .week-grid { grid-template-columns:repeat(3,1fr); }
-  .quote-banner { padding: 16px 20px; }
-  .quote-text { font-size: 15px; }
+  /* New today layout: stack columns under each other on tablet */
+  .today-grid { grid-template-columns: 1fr; }
 }
 
 /* ── RESPONSIVE: phones ── */
@@ -1411,11 +1499,21 @@ body {
     justify-content: center;
   }
 
-  /* Quote banner: tighter */
-  .quote-banner { padding: 14px 16px; }
-  .quote-banner::before { font-size: 100px; top: -20px; }
-  .quote-text { font-size: 14px; line-height: 1.4; }
-  .quote-author { font-size: 9px; }
+  /* Today view: compact mobile */
+  .today-header { gap: 12px; margin-bottom: 14px; }
+  .today-greeting { font-size: 22px; }
+  .today-date { font-size: 9px; }
+  .today-score { padding: 6px 12px; }
+  .today-score-value { font-size: 14px; }
+  .today-quote { padding: 12px 16px; font-size: 13px; gap: 8px; margin-bottom: 14px; }
+  .today-quote::before { font-size: 60px; top: -15px; }
+  .today-quote-author { font-size: 8px; letter-spacing: 1px; }
+  .today-stats { grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 14px; }
+  .today-stat { padding: 12px 10px; border-radius: 12px; }
+  .today-stat-num { font-size: 22px; }
+  .today-stat-lbl { font-size: 8px; }
+  .today-grid { grid-template-columns: 1fr; gap: 12px; }
+  .today-col { gap: 12px; }
 
   /* Cards: more compact */
   .card { padding: 16px; border-radius: 14px; }
@@ -1601,7 +1699,9 @@ body {
 
 /* Very small phones */
 @media (max-width:380px) {
-  .quote-text { font-size: 13px; }
+  .today-quote { font-size: 12px; }
+  .today-greeting { font-size: 20px; }
+  .today-stat-num { font-size: 20px; }
   .page-title { font-size: 20px; }
   .stat-num { font-size: 20px; }
   .nav-tab { padding: 10px 12px; font-size: 12px; }
@@ -1638,13 +1738,13 @@ body {
     <button class="nav-tab" data-view="weekly" onclick="switchView('weekly')">Week</button>
     <button class="nav-tab" data-view="content" onclick="switchView('content')">Content</button>
     <button class="nav-tab" data-view="reading" onclick="switchView('reading')">Reading</button>
-    <button class="nav-tab" data-view="performance" onclick="switchView('performance')">Performance</button>
     <button class="nav-tab" data-view="pipeline" onclick="switchView('pipeline')">Pipeline</button>
     <button class="nav-tab" data-view="meetings" onclick="switchView('meetings')">Meetings</button>
     <button class="nav-tab" data-view="clients" onclick="switchView('clients')">Clients</button>
     <button class="nav-tab" data-view="monthly" onclick="switchView('monthly')">Monthly</button>
     <button class="nav-tab" data-view="quarterly" onclick="switchView('quarterly')">Quarterly</button>
     <button class="nav-tab" data-view="reflection" onclick="switchView('reflection')">Reflection</button>
+    <button class="nav-tab" data-view="performance" onclick="switchView('performance')">Performance</button>
   </div>
   <div class="nav-right">
     <div class="live-dot" title="Live"></div>
@@ -1653,64 +1753,99 @@ body {
   </div>
 </nav>
 
-<!-- DAILY QUOTE BANNER -->
-<div class="quote-banner">
-  <div class="quote-content">
-    <div class="quote-text" id="quoteText">Loading your daily dose of inspiration…</div>
-    <div class="quote-author" id="quoteAuthor"></div>
-  </div>
-</div>
-
 <!-- DAILY -->
 <div id="view-daily" class="view active">
-  <div class="page-header">
-    <div>
-      <div class="page-title" id="dailyGreeting">Good morning, beautiful.</div>
-      <div class="page-sub" id="dailyDate"></div>
+  <!-- Compact header with greeting + score pill -->
+  <div class="today-header">
+    <div class="today-header-left">
+      <div class="today-greeting" id="dailyGreeting">Good morning, beautiful.</div>
+      <div class="today-date" id="dailyDate"></div>
+    </div>
+    <div class="today-score" id="todayScorePill">
+      <span class="today-score-label">Today</span>
+      <span class="today-score-value" id="todayScoreValue">—</span>
     </div>
   </div>
-  <div class="grid-3">
-    <div class="card col-span-2">
-      <div class="card-label">Today's Priorities
-        <button class="add-btn" onclick="toggleAddTask('daily')">+ Add task</button>
-      </div>
-      <div class="tasks-list" id="dailyTasksList"><div class="loading">Loading…</div></div>
-      <div class="add-task-form" id="addTaskFormDaily">
-        <input class="f-input grow" id="newTaskInputDaily" placeholder="What needs to happen today, queen…" onkeydown="if(event.key==='Enter')saveTask('daily')">
-        <select class="f-select" id="newTaskTagDaily">
-          <option value="pr">PR</option><option value="personal">Personal</option><option value="urgent">Urgent</option>
-        </select>
-        <button class="btn btn-accent" onclick="saveTask('daily')">Add</button>
-        <button class="btn btn-ghost" onclick="toggleAddTask('daily')">Cancel</button>
-      </div>
+
+  <!-- Quote in subtle pill -->
+  <div class="today-quote">
+    <span class="today-quote-text" id="quoteText">Loading your daily dose of inspiration…</span>
+    <span class="today-quote-author" id="quoteAuthor"></span>
+  </div>
+
+  <!-- Stats row -->
+  <div class="today-stats">
+    <div class="today-stat" id="statTasks">
+      <div class="today-stat-num">—</div>
+      <div class="today-stat-lbl">Tasks done</div>
     </div>
-    <div class="card" style="grid-row:1/3">
-      <div class="card-label" style="display:flex;justify-content:space-between;align-items:center">
-        <span>Habits — This Week</span>
-        <button class="btn btn-ghost btn-sm" style="font-size:10px;padding:4px 10px" onclick="toggleAddHabitInline()">+ Add</button>
-      </div>
-      <div class="add-habit-form-inline" id="addHabitFormInline" style="display:none; margin-bottom:14px; padding:12px; background:var(--surface2); border-radius:10px">
-        <div style="display:flex;gap:6px;margin-bottom:8px">
-          <input class="f-input" id="hEmojiInline" placeholder="✨" maxlength="2" style="width:48px;text-align:center;font-size:18px;padding:6px">
-          <input class="f-input grow" id="hNameInline" placeholder="Habit name" style="font-size:13px;padding:8px">
+    <div class="today-stat" id="statMeetings">
+      <div class="today-stat-num">—</div>
+      <div class="today-stat-lbl">Meetings</div>
+    </div>
+    <div class="today-stat" id="statStreaks">
+      <div class="today-stat-num">—</div>
+      <div class="today-stat-lbl">Streaks 🔥</div>
+    </div>
+    <div class="today-stat" id="statPipeline">
+      <div class="today-stat-num">—</div>
+      <div class="today-stat-lbl">Pipeline AED</div>
+    </div>
+  </div>
+
+  <!-- 2 column grid -->
+  <div class="today-grid">
+    <!-- Left column -->
+    <div class="today-col">
+      <div class="card">
+        <div class="card-label">
+          Today's Priorities
+          <button class="add-btn" onclick="toggleAddTask('daily')">+ Add</button>
         </div>
-        <div style="display:flex;gap:6px">
-          <button class="btn btn-accent btn-sm" onclick="saveNewHabitInline()" style="flex:1">Add ♡</button>
-          <button class="btn btn-ghost btn-sm" onclick="toggleAddHabitInline()">Cancel</button>
+        <div class="tasks-list" id="dailyTasksList"><div class="loading">Loading…</div></div>
+        <div class="add-task-form" id="addTaskFormDaily">
+          <input class="f-input grow" id="newTaskInputDaily" placeholder="What needs to happen today, queen…" onkeydown="if(event.key==='Enter')saveTask('daily')">
+          <select class="f-select" id="newTaskTagDaily">
+            <option value="pr">PR</option><option value="personal">Personal</option><option value="urgent">Urgent</option>
+          </select>
+          <button class="btn btn-accent" onclick="saveTask('daily')">Add</button>
+          <button class="btn btn-ghost" onclick="toggleAddTask('daily')">Cancel</button>
         </div>
       </div>
-      <div id="habitsList"><div class="loading">Loading…</div></div>
-    </div>
-    <div class="card col-span-2">
-      <div class="card-label">Today's Pipeline & Client Actions</div>
-      <div id="todayActions"><div class="loading">Loading…</div></div>
-    </div>
-    <div class="card col-span-2" id="calendarCard">
-      <div class="card-label">
-        📅 Today's Calendar
-        <span id="calendarStatus" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0">Checking connection…</span>
+
+      <div class="card">
+        <div class="card-label">Pipeline & Client Actions</div>
+        <div id="todayActions"><div class="loading">Loading…</div></div>
       </div>
-      <div id="calendarToday"><div class="loading">Loading…</div></div>
+    </div>
+
+    <!-- Right column -->
+    <div class="today-col">
+      <div class="card" id="calendarCard">
+        <div class="card-label">
+          📅 Today's Calendar
+          <span id="calendarStatus" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0">Checking…</span>
+        </div>
+        <div id="calendarToday"><div class="loading">Loading…</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-label" style="display:flex;justify-content:space-between;align-items:center">
+          <span>Habits — This Week</span>
+          <button class="btn btn-ghost btn-sm" style="font-size:10px;padding:4px 10px" onclick="toggleAddHabitInline()">+ Add</button>
+        </div>
+        <div class="add-habit-form-inline" id="addHabitFormInline" style="display:none; margin-bottom:14px; padding:12px; background:var(--surface2); border-radius:10px">
+          <div style="display:flex;gap:6px;margin-bottom:8px">
+            <input class="f-input" id="hEmojiInline" placeholder="✨" maxlength="2" style="width:48px;text-align:center;font-size:18px;padding:6px">
+            <input class="f-input grow" id="hNameInline" placeholder="Habit name" style="font-size:13px;padding:8px">
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-accent btn-sm" onclick="saveNewHabitInline()" style="flex:1">Add ♡</button>
+            <button class="btn btn-ghost btn-sm" onclick="toggleAddHabitInline()">Cancel</button>
+          </div>
+        </div>
+        <div id="habitsList"><div class="loading">Loading…</div></div>
+      </div>
     </div>
   </div>
 </div>
@@ -2470,15 +2605,57 @@ async function saveTask(view) {
 }
 function updateScore() {
   const done = allTasks.filter(t => t.done).length;
-  const hDone = allHabits.filter(h => h.doneToday).length;
+  const hDoneToday = allHabits.filter(h => h.doneToday).length;
   const total = allTasks.length + allHabits.length;
-  document.getElementById('scoreDisplay').textContent = (total === 0 ? 0 : Math.round(((done + hDone) / total) * 100)) + '%';
+  const pct = total === 0 ? 0 : Math.round(((done + hDoneToday) / total) * 100);
+
+  // Legacy score pill (in nav)
+  const nav = document.getElementById('scoreDisplay');
+  if (nav) nav.textContent = pct + '%';
+
+  // New Today stats
+  const todayScore = document.getElementById('todayScoreValue');
+  if (todayScore) todayScore.textContent = pct + '%';
+
+  // Stat cards
+  const statTasks = document.getElementById('statTasks');
+  if (statTasks) {
+    statTasks.querySelector('.today-stat-num').textContent = `${done}/${allTasks.length}`;
+  }
+
+  const statStreaks = document.getElementById('statStreaks');
+  if (statStreaks) {
+    const longestStreak = Math.max(0, ...allHabits.map(h => h.current_streak || 0));
+    statStreaks.querySelector('.today-stat-num').textContent = longestStreak;
+  }
+
+  // Pipeline + meetings stats updated separately (see loadTodayActions / loadCalendar)
+}
+
+function updateMeetingsStat(count) {
+  const el = document.getElementById('statMeetings');
+  if (el) el.querySelector('.today-stat-num').textContent = count;
+}
+
+function updatePipelineStat(value) {
+  const el = document.getElementById('statPipeline');
+  if (el) {
+    const num = value >= 1000 ? `${Math.round(value/1000)}K` : value;
+    el.querySelector('.today-stat-num').textContent = num;
+  }
 }
 
 async function loadTodayActions() {
   if (!allLeads.length) { const r = await fetch(`${API}/api/leads`); allLeads = await r.json(); }
   if (!allClients.length) { const r = await fetch(`${API}/api/clients`); allClients = await r.json(); }
   const today = todayStr();
+
+  // Update pipeline stat — total value of active pipeline
+  const activeValue = allLeads
+    .filter(l => !['closed_won','closed_lost'].includes(l.stage))
+    .reduce((s, l) => s + (l.value || 0), 0);
+  updatePipelineStat(activeValue);
+
   const leadActions = allLeads.filter(l => l.next_action_date === today && !['closed_won','closed_lost'].includes(l.stage));
   const clientFollowups = allClients.filter(c => c.status === 'active' && c.next_followup && c.next_followup <= today);
   const el = document.getElementById('todayActions');
@@ -3970,6 +4147,7 @@ async function loadCalendar() {
 
     if (!data.connected) {
       statusEl.textContent = '· not connected';
+      updateMeetingsStat(0);
       listEl.innerHTML = `
         <div class="cal-connect-prompt">
           <h3>Connect your Google Calendar ♡</h3>
@@ -3980,6 +4158,7 @@ async function loadCalendar() {
     }
 
     statusEl.textContent = `· ${data.events.length} event${data.events.length===1?'':'s'} today`;
+    updateMeetingsStat(data.events.length);
 
     if (data.events.length === 0) {
       listEl.innerHTML = '<div class="empty">Calendar is clear today ✨</div>';
