@@ -17,6 +17,46 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SER
 const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 // ══════════════════════════════════════════
+//  AUTH MIDDLEWARE
+// ══════════════════════════════════════════
+// Only the email in OWNER_EMAIL can use the app.
+// Webhooks (Twilio) and OAuth callbacks (Google) bypass auth.
+
+const OWNER_EMAIL = (process.env.OWNER_EMAIL || '').toLowerCase().trim();
+
+async function requireAuth(req, res, next) {
+  const authHeader = req.headers.authorization || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+
+  if (!token) return res.status(401).json({ error: 'auth required' });
+
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+    if (error || !user) return res.status(401).json({ error: 'invalid session' });
+
+    // Whitelist: only the owner's email can use the app
+    if (OWNER_EMAIL && user.email?.toLowerCase() !== OWNER_EMAIL) {
+      console.warn(`[Auth] Blocked non-owner login attempt: ${user.email}`);
+      return res.status(403).json({ error: 'not authorized' });
+    }
+
+    req.user = user;
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: 'auth failed' });
+  }
+}
+
+// Public endpoints (no auth needed):
+//   GET /         - serves the login/dashboard HTML
+//   POST /webhook/whatsapp - Twilio webhook
+//   GET /auth/google, /auth/google/callback - OAuth dance
+//   GET /health
+//   /icons/*, /manifest.json, /sw.js - static assets
+//   GET /api/config - returns Supabase URL + anon key for frontend
+
+
+// ══════════════════════════════════════════
 //  GOOGLE OAUTH SETUP
 // ══════════════════════════════════════════
 
@@ -98,6 +138,24 @@ app.get('/auth/google/callback', async (req, res) => {
 app.get('/auth/google/status', async (req, res) => {
   const { data } = await supabase.from('google_auth').select('id').limit(1).single();
   res.json({ connected: !!data });
+});
+
+// ══════════════════════════════════════════
+//  PUBLIC ENDPOINT: /api/config
+//  Returns the Supabase URL + anon key for frontend auth.
+//  These are PUBLIC by design — anon key is meant to be exposed.
+// ══════════════════════════════════════════
+app.get('/api/config', (req, res) => {
+  res.json({
+    supabaseUrl: process.env.SUPABASE_URL,
+    supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+  });
+});
+
+// Apply auth to all /api routes EXCEPT /api/config
+app.use('/api', (req, res, next) => {
+  if (req.path === '/config') return next();
+  return requireAuth(req, res, next);
 });
 
 // ══════════════════════════════════════════

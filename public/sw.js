@@ -1,5 +1,5 @@
 // Maggie Dashboard - Service Worker
-const CACHE_NAME = 'maggie-v5';
+const CACHE_NAME = 'maggie-v7';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',

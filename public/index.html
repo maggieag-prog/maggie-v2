@@ -16,6 +16,9 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
 
+<!-- Supabase JS for auth -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -53,6 +56,129 @@ body {
   font-size: 14px;
   min-height: 100vh;
 }
+
+/* ── LOGIN SCREEN ── */
+.login-overlay {
+  position: fixed; inset: 0;
+  background: var(--bg-grad);
+  background-attachment: fixed;
+  z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.login-overlay.hidden { display: none; }
+.login-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 40px 32px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 12px 48px rgba(233, 30, 99, 0.15);
+  text-align: center;
+}
+.login-icon {
+  width: 72px; height: 72px;
+  margin: 0 auto 20px;
+  background: linear-gradient(135deg, var(--accent), var(--rose));
+  border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  color: white;
+  font-weight: 500;
+  box-shadow: 0 8px 24px rgba(233, 30, 99, 0.3);
+}
+.login-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.login-sub {
+  font-size: 13px;
+  color: var(--text-soft);
+  margin-bottom: 28px;
+}
+.login-input {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  font-size: 16px;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  text-align: center;
+  margin-bottom: 12px;
+  transition: all .15s;
+}
+.login-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(233, 30, 99, 0.1);
+}
+#loginCode {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 24px;
+  letter-spacing: 8px;
+  font-weight: 600;
+}
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--accent), var(--rose));
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all .15s;
+  box-shadow: 0 4px 16px rgba(233, 30, 99, 0.25);
+}
+.login-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(233, 30, 99, 0.35);
+}
+.login-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.login-link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 12px;
+  margin-top: 14px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  text-decoration: underline;
+}
+.login-link:hover { color: var(--accent2); }
+.login-error {
+  color: var(--red);
+  font-size: 13px;
+  margin-top: 14px;
+  min-height: 18px;
+}
+
+/* Sign out button in nav */
+.signout-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 5px 12px;
+  border-radius: 16px;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all .15s;
+}
+.signout-btn:hover { border-color: var(--accent); color: var(--accent); }
 
 /* ── NAV ── */
 .nav {
@@ -1284,6 +1410,33 @@ body {
 </head>
 <body>
 
+<!-- ── LOGIN OVERLAY ── -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-card">
+    <div class="login-icon">M ♡</div>
+    <h1 class="login-title">Welcome back</h1>
+    <p class="login-sub" id="loginSub">Sign in to your dashboard</p>
+
+    <!-- Step 1: Email -->
+    <div id="loginStep1">
+      <input class="login-input" id="loginEmail" type="email" placeholder="your@email.com" autocomplete="email">
+      <button class="login-btn" id="loginEmailBtn" onclick="sendLoginCode()">Send me a code ♡</button>
+    </div>
+
+    <!-- Step 2: Code -->
+    <div id="loginStep2" style="display:none">
+      <input class="login-input" id="loginCode" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="6-digit code" autocomplete="one-time-code">
+      <button class="login-btn" id="loginCodeBtn" onclick="verifyLoginCode()">Sign in</button>
+      <button class="login-link" onclick="resetLogin()">Use a different email</button>
+    </div>
+
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- ── APP (hidden until logged in) ── -->
+<div id="app" style="display:none">
+
 <nav class="nav">
   <div class="nav-brand">Maggie</div>
   <div class="nav-tabs">
@@ -1301,6 +1454,7 @@ body {
   <div class="nav-right">
     <div class="live-dot" title="Live"></div>
     <div class="score-pill">Today <span id="scoreDisplay">—</span></div>
+    <button class="signout-btn" onclick="signOut()" title="Sign out">Sign out</button>
   </div>
 </nav>
 
@@ -1739,8 +1893,182 @@ body {
 
 <div class="toast" id="toast"></div>
 
+</div> <!-- /#app -->
+
 <script>
 const API = '';
+
+// ══════════════════════════════════════════
+//  AUTH BOOTSTRAP
+// ══════════════════════════════════════════
+let supabaseClient = null;
+let currentSession = null;
+
+async function initAuth() {
+  const configRes = await fetch('/api/config');
+  const config = await configRes.json();
+
+  supabaseClient = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      storage: window.localStorage,
+      storageKey: 'maggie-auth-session',
+    }
+  });
+
+  const { data: { session } } = await supabaseClient.auth.getSession();
+
+  if (session) {
+    currentSession = session;
+    showApp();
+    initDashboard();
+  } else {
+    showLogin();
+  }
+
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT') {
+      currentSession = null;
+      window.location.reload();
+    } else if (session) {
+      currentSession = session;
+    }
+  });
+}
+
+function showLogin() {
+  document.getElementById('loginOverlay').classList.remove('hidden');
+  document.getElementById('app').style.display = 'none';
+  setTimeout(() => document.getElementById('loginEmail')?.focus(), 100);
+}
+
+function showApp() {
+  document.getElementById('loginOverlay').classList.add('hidden');
+  document.getElementById('app').style.display = 'block';
+}
+
+let pendingEmail = null;
+
+async function sendLoginCode() {
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const btn = document.getElementById('loginEmailBtn');
+  const err = document.getElementById('loginError');
+  err.textContent = '';
+
+  if (!email || !email.includes('@')) {
+    err.textContent = 'Please enter a valid email';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  try {
+    const { error } = await supabaseClient.auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser: true }
+    });
+    if (error) throw error;
+
+    pendingEmail = email;
+    document.getElementById('loginStep1').style.display = 'none';
+    document.getElementById('loginStep2').style.display = 'block';
+    document.getElementById('loginSub').textContent = `Check ${email} for your code`;
+    setTimeout(() => document.getElementById('loginCode')?.focus(), 100);
+  } catch (e) {
+    err.textContent = e.message || 'Something went wrong. Try again.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Send me a code ♡';
+  }
+}
+
+async function verifyLoginCode() {
+  const code = document.getElementById('loginCode').value.trim();
+  const btn = document.getElementById('loginCodeBtn');
+  const err = document.getElementById('loginError');
+  err.textContent = '';
+
+  if (!code || code.length !== 6) {
+    err.textContent = 'Enter the 6-digit code from your email';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Signing in...';
+
+  try {
+    const { data, error } = await supabaseClient.auth.verifyOtp({
+      email: pendingEmail,
+      token: code,
+      type: 'email'
+    });
+    if (error) throw error;
+
+    // Check owner whitelist via backend
+    const testRes = await _origFetch('/api/tasks', { headers: { 'Authorization': `Bearer ${data.session.access_token}` } });
+    if (testRes.status === 403) {
+      err.textContent = "This email isn't authorized to use the dashboard.";
+      await supabaseClient.auth.signOut();
+      btn.disabled = false;
+      btn.textContent = 'Sign in';
+      return;
+    }
+
+    currentSession = data.session;
+    showApp();
+    initDashboard();
+  } catch (e) {
+    err.textContent = e.message || 'Invalid code. Try again.';
+    btn.disabled = false;
+    btn.textContent = 'Sign in';
+  }
+}
+
+function resetLogin() {
+  document.getElementById('loginStep1').style.display = 'block';
+  document.getElementById('loginStep2').style.display = 'none';
+  document.getElementById('loginSub').textContent = 'Sign in to your dashboard';
+  document.getElementById('loginError').textContent = '';
+  document.getElementById('loginCode').value = '';
+  pendingEmail = null;
+}
+
+async function signOut() {
+  if (!confirm('Sign out of your dashboard?')) return;
+  await supabaseClient.auth.signOut();
+}
+
+// Patch fetch to auto-attach auth header
+const _origFetch = window.fetch.bind(window);
+window.fetch = async function(url, options = {}) {
+  const isApi = typeof url === 'string' && url.startsWith('/api/') && url !== '/api/config';
+  if (isApi && currentSession?.access_token) {
+    options.headers = {
+      ...(options.headers || {}),
+      'Authorization': `Bearer ${currentSession.access_token}`,
+    };
+  }
+  const res = await _origFetch(url, options);
+  if (isApi && res.status === 401) {
+    console.warn('[Auth] Session expired');
+    await supabaseClient.auth.signOut();
+  }
+  return res;
+};
+
+function initDashboard() {
+  renderDailyQuote();
+  initDateHeader();
+  loadDailyTasks();
+  loadHabits();
+  loadTodayActions();
+  loadCalendar();
+}
+
+// Start auth flow on load
+initAuth();
 
 // ── DAILY QUOTES (cycles through, one per day) ──
 const QUOTES = [
@@ -2973,13 +3301,13 @@ async function deleteMeeting(id) {
   toast('Removed');
 }
 
-// ── INIT ──
-renderDailyQuote();
-initDateHeader();
-loadDailyTasks();
-loadHabits();
-loadTodayActions();
-loadCalendar();
+// ── INIT ── (now called from initDashboard() after auth)
+// renderDailyQuote();
+// initDateHeader();
+// loadDailyTasks();
+// loadHabits();
+// loadTodayActions();
+// loadCalendar();
 
 // ── PWA SERVICE WORKER ──
 if ('serviceWorker' in navigator) {
