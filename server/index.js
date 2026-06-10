@@ -721,6 +721,363 @@ app.post('/api/habits/:id/toggle', async (req, res) => {
   else { await supabase.from('habit_completions').insert({ habit_id: habitId, date }); res.json({ done: true, date }); }
 });
 
+// ══════════════════════════════════════════
+//  PERFORMANCE COMPUTATION
+// ══════════════════════════════════════════
+
+// Compute stats for a given date range [from, to] (inclusive YYYY-MM-DD strings)
+async function computePerformance(fromDate, toDate) {
+  // Tasks
+  const { data: tasks } = await supabase.from('tasks')
+    .select('*').gte('date', fromDate).lte('date', toDate);
+  const tasksTotal = (tasks || []).length;
+  const tasksDone = (tasks || []).filter(t => t.done).length;
+  const tasksByTag = {};
+  (tasks || []).forEach(t => {
+    const tag = t.tag || 'personal';
+    tasksByTag[tag] = (tasksByTag[tag] || 0) + (t.done ? 1 : 0);
+  });
+
+  // Habits
+  const { data: habits } = await supabase.from('habits').select('*');
+  const { data: habitCompletions } = await supabase.from('habit_completions')
+    .select('*').gte('date', fromDate).lte('date', toDate);
+  const habitsCount = (habits || []).length;
+  const habitTotal = (habitCompletions || []).length;
+  const perfectDays = (() => {
+    if (habitsCount === 0) return 0;
+    const byDate = {};
+    (habitCompletions || []).forEach(c => {
+      byDate[c.date] = (byDate[c.date] || 0) + 1;
+    });
+    return Object.values(byDate).filter(c => c >= habitsCount).length;
+  })();
+  // Top habit
+  const habitCounts = {};
+  (habitCompletions || []).forEach(c => {
+    habitCounts[c.habit_id] = (habitCounts[c.habit_id] || 0) + 1;
+  });
+  const topHabitId = Object.keys(habitCounts).sort((a,b) => habitCounts[b] - habitCounts[a])[0];
+  const topHabit = (habits || []).find(h => h.id == topHabitId);
+
+  // Pipeline / leads
+  const { data: leads } = await supabase.from('leads').select('*');
+  const leadsCreated = (leads || []).filter(l => l.created_at >= fromDate + 'T00:00:00' && l.created_at <= toDate + 'T23:59:59').length;
+  const wonInPeriod = (leads || []).filter(l => l.stage === 'closed_won' && (l.updated_at || '') >= fromDate + 'T00:00:00' && (l.updated_at || '') <= toDate + 'T23:59:59');
+  const lostInPeriod = (leads || []).filter(l => l.stage === 'closed_lost' && (l.updated_at || '') >= fromDate + 'T00:00:00' && (l.updated_at || '') <= toDate + 'T23:59:59');
+  const wonValue = wonInPeriod.reduce((s, l) => s + (l.value || 0), 0);
+  const activePipelineValue = (leads || []).filter(l => !['closed_won','closed_lost'].includes(l.stage)).reduce((s, l) => s + (l.value || 0), 0);
+
+  // Clients
+  const { data: clients } = await supabase.from('clients').select('*');
+  const activeClients = (clients || []).filter(c => c.status === 'active').length;
+  const totalMRR = (clients || []).filter(c => c.status === 'active').reduce((s, c) => s + (c.retainer_value || 0), 0);
+  const { data: interactions } = await supabase.from('client_interactions')
+    .select('*').gte('date', fromDate).lte('date', toDate);
+  const clientContactsLogged = (interactions || []).length;
+
+  // Meetings
+  const { data: meetings } = await supabase.from('meetings').select('*')
+    .gte('meeting_date', fromDate).lte('meeting_date', toDate);
+  const meetingsTotal = (meetings || []).length;
+  const meetingsCompleted = (meetings || []).filter(m => m.status === 'completed').length;
+  const meetingsScheduled = (meetings || []).filter(m => m.status === 'scheduled').length;
+  const meetingsCancelled = (meetings || []).filter(m => m.status === 'cancelled' || m.status === 'no_show').length;
+
+  // Content
+  const { data: contentIdeas } = await supabase.from('content_ideas').select('*');
+  const contentCreatedThisPeriod = (contentIdeas || []).filter(c => c.created_at >= fromDate + 'T00:00:00' && c.created_at <= toDate + 'T23:59:59');
+  const contentPublishedThisPeriod = (contentIdeas || []).filter(c => c.published_date >= fromDate && c.published_date <= toDate);
+  const contentByBrand = { personal: 0, pr_circle: 0 };
+  contentPublishedThisPeriod.forEach(c => { contentByBrand[c.brand] = (contentByBrand[c.brand] || 0) + 1; });
+
+  // Reading
+  const { data: books } = await supabase.from('books').select('*');
+  const booksCompletedInPeriod = (books || []).filter(b => b.completed_at >= fromDate && b.completed_at <= toDate);
+  const { data: reflections } = await supabase.from('book_reflections')
+    .select('*').gte('created_at', fromDate + 'T00:00:00').lte('created_at', toDate + 'T23:59:59');
+  const reflectionsLogged = (reflections || []).length;
+
+  // Goals progress (currently-active monthly goals)
+  const { data: monthlyGoals } = await supabase.from('monthly_goals').select('*');
+  const goalsCompleted = (monthlyGoals || []).filter(g => g.done).length;
+  const goalsTotal = (monthlyGoals || []).length;
+
+  return {
+    period: { from: fromDate, to: toDate },
+    tasks: { total: tasksTotal, done: tasksDone, completion_rate: tasksTotal ? Math.round((tasksDone/tasksTotal)*100) : 0, by_tag: tasksByTag },
+    habits: { total_completions: habitTotal, perfect_days: perfectDays, habits_count: habitsCount, top_habit: topHabit ? { name: topHabit.name, emoji: topHabit.emoji, count: habitCounts[topHabitId] } : null },
+    pipeline: { leads_added: leadsCreated, won_count: wonInPeriod.length, lost_count: lostInPeriod.length, won_value: wonValue, active_value: activePipelineValue, won_deals: wonInPeriod.map(l => ({ name: l.name, value: l.value })) },
+    clients: { active: activeClients, mrr: totalMRR, contacts_logged: clientContactsLogged },
+    meetings: { total: meetingsTotal, completed: meetingsCompleted, scheduled: meetingsScheduled, cancelled_or_noshow: meetingsCancelled },
+    content: { created: contentCreatedThisPeriod.length, published: contentPublishedThisPeriod.length, by_brand: contentByBrand },
+    reading: { books_finished: booksCompletedInPeriod.length, books: booksCompletedInPeriod.map(b => ({ title: b.title, author: b.author })), reflections_logged: reflectionsLogged },
+    goals: { completed: goalsCompleted, total: goalsTotal }
+  };
+}
+
+// Build encouraging highlights from stats
+function generateHighlights(stats, prev = null) {
+  const wins = [];
+  const focus = [];
+
+  // Tasks
+  if (stats.tasks.completion_rate >= 80) wins.push(`💪 ${stats.tasks.completion_rate}% of tasks done — exceptional follow-through`);
+  else if (stats.tasks.completion_rate >= 60) wins.push(`✨ ${stats.tasks.done}/${stats.tasks.total} tasks done`);
+  if (prev && stats.tasks.done > prev.tasks.done) {
+    const diff = stats.tasks.done - prev.tasks.done;
+    wins.push(`📈 ${diff} more tasks done than last period`);
+  }
+
+  // Habits
+  if (stats.habits.perfect_days >= 3) wins.push(`🔥 ${stats.habits.perfect_days} perfect habit day${stats.habits.perfect_days===1?'':'s'} — consistency queen`);
+  else if (stats.habits.perfect_days >= 1) wins.push(`✨ ${stats.habits.perfect_days} perfect day on habits`);
+  if (stats.habits.top_habit) {
+    wins.push(`${stats.habits.top_habit.emoji || '✨'} Most consistent: ${stats.habits.top_habit.name} (${stats.habits.top_habit.count}×)`);
+  }
+
+  // Pipeline
+  if (stats.pipeline.won_count > 0) {
+    wins.push(`🎉 ${stats.pipeline.won_count} deal${stats.pipeline.won_count===1?'':'s'} closed — AED ${stats.pipeline.won_value.toLocaleString()}`);
+  }
+  if (stats.pipeline.leads_added > 0) {
+    wins.push(`🌸 ${stats.pipeline.leads_added} new lead${stats.pipeline.leads_added===1?'':'s'} added`);
+  }
+
+  // Meetings
+  if (stats.meetings.completed >= 5) wins.push(`🤝 ${stats.meetings.completed} meetings completed — building real relationships`);
+  else if (stats.meetings.completed > 0) wins.push(`☕ ${stats.meetings.completed} meeting${stats.meetings.completed===1?'':'s'} done`);
+
+  // Content
+  if (stats.content.published > 0) wins.push(`📝 ${stats.content.published} piece${stats.content.published===1?'':'s'} of content published`);
+  if (stats.content.created > 0 && stats.content.published === 0) focus.push(`💡 ${stats.content.created} ideas captured — pick one to ship next`);
+
+  // Reading
+  if (stats.reading.books_finished > 0) {
+    const titles = stats.reading.books.map(b => b.title).join(', ');
+    wins.push(`📚 Finished: ${titles}`);
+  }
+  if (stats.reading.reflections_logged >= 5) wins.push(`📝 ${stats.reading.reflections_logged} reading reflections — your future self will thank you`);
+
+  // Clients
+  if (stats.clients.contacts_logged > 0) wins.push(`💕 Checked in with clients ${stats.clients.contacts_logged} time${stats.clients.contacts_logged===1?'':'s'}`);
+
+  // Gentle focus areas
+  if (stats.tasks.completion_rate < 40 && stats.tasks.total > 3) focus.push(`Tasks moving slowly — maybe simplify the list next period?`);
+  if (stats.habits.perfect_days === 0 && stats.habits.habits_count > 0) focus.push(`No perfect habit days — consider trimming to fewer, more achievable habits`);
+  if (stats.meetings.cancelled_or_noshow > stats.meetings.completed && stats.meetings.total > 2) focus.push(`More meetings missed than done — review the scheduling`);
+
+  return { wins, focus };
+}
+
+// Helper: date helpers
+function getWeekRange(d = new Date()) {
+  const monday = new Date(d);
+  const dow = (monday.getDay() + 6) % 7;
+  monday.setDate(monday.getDate() - dow);
+  monday.setHours(0,0,0,0);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  return {
+    from: monday.toLocaleDateString('en-CA', { timeZone: 'Asia/Dubai' }),
+    to: sunday.toLocaleDateString('en-CA', { timeZone: 'Asia/Dubai' }),
+    label: `Week ${getISOWeek(monday)}, ${monday.getFullYear()}`
+  };
+}
+function getMonthRange(d = new Date()) {
+  const year = d.getFullYear();
+  const month = d.getMonth();
+  const first = new Date(year, month, 1);
+  const last = new Date(year, month + 1, 0);
+  const monthName = first.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+  return {
+    from: first.toLocaleDateString('en-CA'),
+    to: last.toLocaleDateString('en-CA'),
+    label: monthName
+  };
+}
+function getPrevWeekRange(d = new Date()) {
+  const prev = new Date(d);
+  prev.setDate(prev.getDate() - 7);
+  return getWeekRange(prev);
+}
+function getPrevMonthRange(d = new Date()) {
+  const prev = new Date(d.getFullYear(), d.getMonth() - 1, 15);
+  return getMonthRange(prev);
+}
+
+// ══════════════════════════════════════════
+//  PERFORMANCE API
+// ══════════════════════════════════════════
+
+// Live current week + month with comparisons to previous periods
+app.get('/api/performance/live', async (req, res) => {
+  try {
+    const thisWeek = getWeekRange();
+    const lastWeek = getPrevWeekRange();
+    const thisMonth = getMonthRange();
+    const lastMonth = getPrevMonthRange();
+
+    const [tw, lw, tm, lm] = await Promise.all([
+      computePerformance(thisWeek.from, thisWeek.to),
+      computePerformance(lastWeek.from, lastWeek.to),
+      computePerformance(thisMonth.from, thisMonth.to),
+      computePerformance(lastMonth.from, lastMonth.to),
+    ]);
+
+    res.json({
+      week: { label: thisWeek.label, range: thisWeek, stats: tw, previous: lw, highlights: generateHighlights(tw, lw) },
+      month: { label: thisMonth.label, range: thisMonth, stats: tm, previous: lm, highlights: generateHighlights(tm, lm) }
+    });
+  } catch (err) {
+    console.error('[Performance/live] error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// List saved snapshots
+app.get('/api/performance/snapshots', async (req, res) => {
+  const type = req.query.type;  // 'week' | 'month' | undefined
+  let q = supabase.from('performance_snapshots').select('*').order('period_start', { ascending: false }).limit(50);
+  if (type) q = q.eq('period_type', type);
+  const { data, error } = await q;
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data || []);
+});
+
+// Generate a snapshot for a given week/month (manual or cron-triggered)
+async function generateSnapshot(periodType, baseDate = new Date()) {
+  const range = periodType === 'week' ? getWeekRange(baseDate) : getMonthRange(baseDate);
+  const stats = await computePerformance(range.from, range.to);
+  const prevRange = periodType === 'week' ? getPrevWeekRange(baseDate) : getPrevMonthRange(baseDate);
+  const prevStats = await computePerformance(prevRange.from, prevRange.to);
+  const highlights = generateHighlights(stats, prevStats);
+
+  // Linked Friday reflection (if any) for week
+  let reflection = null;
+  if (periodType === 'week') {
+    const week = getISOWeek(new Date(range.from + 'T00:00:00'));
+    const year = new Date(range.from + 'T00:00:00').getFullYear();
+    const { data: ref } = await supabase.from('reflections').select('*').eq('year', year).eq('week', week).single();
+    if (ref?.answers) reflection = JSON.stringify(ref.answers);
+  }
+
+  const { data, error } = await supabase.from('performance_snapshots').upsert({
+    period_type: periodType,
+    period_start: range.from,
+    period_end: range.to,
+    period_label: range.label,
+    stats,
+    highlights,
+    reflection
+  }, { onConflict: 'period_type,period_start' }).select().single();
+
+  if (error) console.error('[Snapshot] error:', error);
+  return data;
+}
+
+app.post('/api/performance/snapshot', async (req, res) => {
+  const type = req.body?.type || 'week';
+  try {
+    const snap = await generateSnapshot(type);
+    res.json({ ok: true, snapshot: snap });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/performance/snapshots/:id', async (req, res) => {
+  await supabase.from('performance_snapshots').delete().eq('id', req.params.id);
+  res.json({ ok: true });
+});
+
+// ── WHATSAPP WEEKLY SUMMARY ──
+async function sendWeeklySummary() {
+  try {
+    const snap = await generateSnapshot('week');
+    if (!snap) return;
+    const s = snap.stats;
+    const h = snap.highlights;
+
+    let body = `✨ *Your Week in Review*\n_${snap.period_label}_\n\n`;
+
+    // Header line
+    if (s.tasks.completion_rate >= 70) body += `🌟 *What a week, beautiful!*\n\n`;
+    else if (s.pipeline.won_count > 0) body += `🎉 *Wins this week!*\n\n`;
+    else body += `💕 *Here's your week:*\n\n`;
+
+    body += `📊 *The numbers*\n`;
+    body += `• Tasks: ${s.tasks.done}/${s.tasks.total} (${s.tasks.completion_rate}%)\n`;
+    body += `• Habit completions: ${s.habits.total_completions}${s.habits.perfect_days > 0 ? ` · ${s.habits.perfect_days} perfect day${s.habits.perfect_days===1?'':'s'}` : ''}\n`;
+    if (s.meetings.total > 0) body += `• Meetings: ${s.meetings.completed}/${s.meetings.total} completed\n`;
+    if (s.pipeline.leads_added > 0 || s.pipeline.won_count > 0) {
+      body += `• Pipeline: ${s.pipeline.leads_added} new · ${s.pipeline.won_count} won (AED ${s.pipeline.won_value.toLocaleString()})\n`;
+    }
+    if (s.content.published > 0) body += `• Content published: ${s.content.published}\n`;
+    if (s.reading.books_finished > 0) body += `• Books finished: ${s.reading.books_finished}\n`;
+
+    if (h.wins.length > 0) {
+      body += `\n💖 *Wins to celebrate*\n`;
+      h.wins.slice(0, 5).forEach(w => body += `${w}\n`);
+    }
+
+    if (h.focus.length > 0) {
+      body += `\n🌸 *Gentle focus for next week*\n`;
+      h.focus.slice(0, 2).forEach(f => body += `• ${f}\n`);
+    }
+
+    body += `\n🔗 ${process.env.APP_URL}?view=performance`;
+
+    await sendWA(body);
+    console.log('[Cron] Weekly summary sent + snapshot saved');
+  } catch (err) {
+    console.error('[Cron] Weekly summary failed:', err.message);
+  }
+}
+
+async function sendMonthlySummary() {
+  try {
+    // Generate snapshot for previous month (since this runs on the 1st)
+    const lastMonth = new Date();
+    lastMonth.setDate(0); // go to last day of previous month
+    const snap = await generateSnapshot('month', lastMonth);
+    if (!snap) return;
+    const s = snap.stats;
+    const h = snap.highlights;
+
+    let body = `🌙 *Your Month in Review*\n_${snap.period_label}_\n\n`;
+    body += `💕 *Here's the month that was:*\n\n`;
+
+    body += `📊 *The big picture*\n`;
+    body += `• Tasks completed: ${s.tasks.done} (${s.tasks.completion_rate}%)\n`;
+    body += `• Habit completions: ${s.habits.total_completions} · ${s.habits.perfect_days} perfect days\n`;
+    body += `• Meetings: ${s.meetings.completed} completed\n`;
+    if (s.pipeline.won_count > 0 || s.pipeline.leads_added > 0) {
+      body += `• Pipeline: ${s.pipeline.leads_added} added · ${s.pipeline.won_count} won (AED ${s.pipeline.won_value.toLocaleString()})\n`;
+    }
+    body += `• Active MRR: AED ${s.clients.mrr.toLocaleString()}\n`;
+    if (s.content.published > 0) body += `• Content shipped: ${s.content.published}\n`;
+    if (s.reading.books_finished > 0) body += `• Books finished: ${s.reading.books_finished}\n`;
+
+    if (h.wins.length > 0) {
+      body += `\n✨ *Highlights*\n`;
+      h.wins.slice(0, 6).forEach(w => body += `${w}\n`);
+    }
+
+    body += `\n🔗 ${process.env.APP_URL}?view=performance`;
+    await sendWA(body);
+    console.log('[Cron] Monthly summary sent + snapshot saved');
+  } catch (err) {
+    console.error('[Cron] Monthly summary failed:', err.message);
+  }
+}
+
+// Friday 8pm UAE = 16:00 UTC (we already have Friday 12 UTC for reflection)
+cron.schedule(process.env.CRON_WEEKLY_SUMMARY || '0 16 * * 5', sendWeeklySummary, { timezone: 'UTC' });
+// 1st of month at 10am UAE = 06:00 UTC
+cron.schedule(process.env.CRON_MONTHLY_SUMMARY || '0 6 1 * *', sendMonthlySummary, { timezone: 'UTC' });
+console.log('[Cron] Performance summaries scheduled (Fri 8pm + 1st of month 10am UAE)');
+
 // Add new habit
 app.post('/api/habits', async (req, res) => {
   const { name, emoji, color, target_per_week } = req.body;

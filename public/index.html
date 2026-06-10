@@ -619,6 +619,181 @@ body {
   .habit-heatmap { grid-template-columns: repeat(10, 1fr); }
 }
 
+/* ── PERFORMANCE ── */
+.perf-hero {
+  background: linear-gradient(135deg, var(--accent), var(--rose));
+  border-radius: 18px;
+  padding: 26px 24px;
+  color: white;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(233,30,99,0.2);
+}
+.perf-hero::before {
+  content: '✨';
+  position: absolute;
+  top: -10px; right: -10px;
+  font-size: 120px;
+  opacity: 0.1;
+}
+.perf-hero-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.85;
+  margin-bottom: 4px;
+}
+.perf-hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.perf-hero-message {
+  font-size: 14px;
+  opacity: 0.95;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.perf-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.perf-metric {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  position: relative;
+}
+.perf-metric-icon {
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+.perf-metric-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.perf-metric-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.1;
+}
+.perf-metric-sub {
+  font-size: 11px;
+  color: var(--text-soft);
+  margin-top: 4px;
+}
+.perf-metric-trend {
+  position: absolute;
+  top: 16px; right: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 10px;
+}
+.trend-up { background: #e0f2e9; color: #2e7d32; }
+.trend-down { background: #ffebee; color: #c62828; }
+.trend-flat { background: var(--surface3); color: var(--muted); }
+
+.perf-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.perf-section-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+.perf-win-list { display: flex; flex-direction: column; gap: 10px; }
+.perf-win {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #fff, #fff5f8);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.perf-focus {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px;
+  background: #fff8e1;
+  border-left: 3px solid #f57c00;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #5d4037;
+}
+
+/* Archive */
+.snapshot-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.snapshot-card:hover { border-color: var(--accent-soft); transform: translateY(-1px); }
+.snapshot-card-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 10px;
+}
+.snapshot-card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+}
+.snapshot-card-type {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.snap-type-week { background: #fce4ec; color: var(--accent2); }
+.snap-type-month { background: #e8eaf6; color: #3f51b5; }
+.snapshot-quick-stats {
+  display: flex; gap: 14px; flex-wrap: wrap;
+  font-size: 11px;
+  color: var(--text-soft);
+}
+.snapshot-quick-stats span { display: flex; align-items: center; gap: 4px; }
+
+@media (max-width: 768px) {
+  .perf-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .perf-metric { padding: 14px; }
+  .perf-metric-value { font-size: 22px; }
+  .perf-hero { padding: 20px 18px; }
+  .perf-hero-title { font-size: 22px; }
+  .snapshot-quick-stats { gap: 10px; font-size: 10px; }
+}
+
 /* Pipeline KANBAN */
 .view-toggle {
   display:flex; gap:0;
@@ -1596,6 +1771,7 @@ body {
     <button class="nav-tab" data-view="content" onclick="switchView('content')">Content</button>
     <button class="nav-tab" data-view="reading" onclick="switchView('reading')">Reading</button>
     <button class="nav-tab" data-view="habits" onclick="switchView('habits')">Habits</button>
+    <button class="nav-tab" data-view="performance" onclick="switchView('performance')">Performance</button>
     <button class="nav-tab" data-view="pipeline" onclick="switchView('pipeline')">Pipeline</button>
     <button class="nav-tab" data-view="meetings" onclick="switchView('meetings')">Meetings</button>
     <button class="nav-tab" data-view="clients" onclick="switchView('clients')">Clients</button>
@@ -1890,6 +2066,33 @@ body {
   </div>
 
   <div id="habitsFullList"><div class="loading">Loading…</div></div>
+</div>
+
+<!-- PERFORMANCE -->
+<div id="view-performance" class="view">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Performance</div>
+      <div class="page-sub">Live view · saved snapshots · how you're really doing</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" onclick="generateSnapshotNow('week')">📸 Save week</button>
+      <button class="btn btn-ghost btn-sm" onclick="generateSnapshotNow('month')">📸 Save month</button>
+    </div>
+  </div>
+
+  <!-- Period toggle -->
+  <div class="view-toggle" style="margin-bottom:18px; display:inline-flex">
+    <button class="active" id="perfWeekToggle" onclick="setPerfPeriod('week')">This Week</button>
+    <button id="perfMonthToggle" onclick="setPerfPeriod('month')">This Month</button>
+  </div>
+
+  <div id="performanceLive"><div class="loading">Loading…</div></div>
+
+  <div style="margin-top:32px">
+    <div class="card-label" style="margin-bottom:14px">📚 Archive — past snapshots</div>
+    <div id="performanceArchive"><div class="loading">Loading…</div></div>
+  </div>
 </div>
 
 <!-- MEETINGS -->
@@ -2349,6 +2552,7 @@ function switchView(name) {
   if (name === 'content') loadContentView();
   if (name === 'reading') loadReadingView();
   if (name === 'habits') loadHabitsView();
+  if (name === 'performance') loadPerformanceView();
   if (name === 'meetings') loadMeetingsView();
   if (name === 'pipeline') loadPipelineView();
   if (name === 'clients') loadClientsView();
@@ -2494,6 +2698,263 @@ async function toggleHabit(id, date = null) {
   } else {
     toast(result.done ? '✨ Done!' : '↩ Unmarked');
   }
+}
+
+// ══════════════════════════════════════════
+//  PERFORMANCE VIEW
+// ══════════════════════════════════════════
+let perfData = null;
+let perfPeriod = 'week';
+
+async function loadPerformanceView() {
+  const live = document.getElementById('performanceLive');
+  const archive = document.getElementById('performanceArchive');
+  live.innerHTML = '<div class="loading">Loading…</div>';
+  archive.innerHTML = '<div class="loading">Loading…</div>';
+
+  try {
+    const [liveRes, snapsRes] = await Promise.all([
+      fetch(`${API}/api/performance/live`),
+      fetch(`${API}/api/performance/snapshots`)
+    ]);
+    perfData = await liveRes.json();
+    const snapshots = await snapsRes.json();
+    renderPerformanceLive();
+    renderArchive(snapshots);
+  } catch (err) {
+    live.innerHTML = `<div class="empty">Couldn't load — ${err.message}</div>`;
+    archive.innerHTML = '';
+  }
+}
+
+function setPerfPeriod(p) {
+  perfPeriod = p;
+  document.getElementById('perfWeekToggle').classList.toggle('active', p === 'week');
+  document.getElementById('perfMonthToggle').classList.toggle('active', p === 'month');
+  renderPerformanceLive();
+}
+
+function renderPerformanceLive() {
+  if (!perfData) return;
+  const data = perfPeriod === 'week' ? perfData.week : perfData.month;
+  const s = data.stats;
+  const prev = data.previous;
+  const h = data.highlights;
+
+  // Compose hero message
+  let message = '';
+  if (s.tasks.completion_rate >= 80) message = 'Exceptional follow-through — you are showing up for yourself ♡';
+  else if (s.tasks.completion_rate >= 60) message = 'Steady progress, beautiful — keep this pace.';
+  else if (s.pipeline.won_count > 0) message = 'Real wins on the business front — that\'s what counts.';
+  else if (s.habits.perfect_days >= 3) message = 'Consistency is your superpower this period ♡';
+  else if (s.tasks.total === 0 && s.habits.total_completions === 0) message = 'A fresh page — start where you are.';
+  else message = 'Progress over perfection, queen.';
+
+  // Helper for trend pills
+  const trend = (curr, prev, label) => {
+    if (prev === 0 && curr === 0) return '';
+    if (prev === 0) return `<div class="perf-metric-trend trend-up">NEW</div>`;
+    const diff = Math.round(((curr - prev) / prev) * 100);
+    if (diff > 5) return `<div class="perf-metric-trend trend-up">↑ ${diff}%</div>`;
+    if (diff < -5) return `<div class="perf-metric-trend trend-down">↓ ${Math.abs(diff)}%</div>`;
+    return `<div class="perf-metric-trend trend-flat">→</div>`;
+  };
+
+  const html = `
+    <div class="perf-hero">
+      <div class="perf-hero-label">${perfPeriod === 'week' ? 'This Week' : 'This Month'} · ${data.label}</div>
+      <div class="perf-hero-title">${getHeroHeadline(s)}</div>
+      <div class="perf-hero-message">${message}</div>
+    </div>
+
+    <div class="perf-grid">
+      <div class="perf-metric">
+        ${trend(s.tasks.done, prev.tasks.done, 'tasks')}
+        <div class="perf-metric-icon">✅</div>
+        <div class="perf-metric-label">Tasks Done</div>
+        <div class="perf-metric-value">${s.tasks.done}</div>
+        <div class="perf-metric-sub">of ${s.tasks.total} · ${s.tasks.completion_rate}% rate</div>
+      </div>
+      <div class="perf-metric">
+        ${trend(s.habits.total_completions, prev.habits.total_completions, 'habits')}
+        <div class="perf-metric-icon">🔥</div>
+        <div class="perf-metric-label">Habit Wins</div>
+        <div class="perf-metric-value">${s.habits.total_completions}</div>
+        <div class="perf-metric-sub">${s.habits.perfect_days} perfect day${s.habits.perfect_days===1?'':'s'}</div>
+      </div>
+      <div class="perf-metric">
+        ${trend(s.meetings.completed, prev.meetings.completed, 'meetings')}
+        <div class="perf-metric-icon">🤝</div>
+        <div class="perf-metric-label">Meetings</div>
+        <div class="perf-metric-value">${s.meetings.completed}</div>
+        <div class="perf-metric-sub">of ${s.meetings.total} scheduled</div>
+      </div>
+      <div class="perf-metric">
+        ${trend(s.pipeline.won_value, prev.pipeline.won_value, 'pipeline')}
+        <div class="perf-metric-icon">💰</div>
+        <div class="perf-metric-label">Deals Won</div>
+        <div class="perf-metric-value">${s.pipeline.won_count}</div>
+        <div class="perf-metric-sub">AED ${s.pipeline.won_value.toLocaleString()}</div>
+      </div>
+      <div class="perf-metric">
+        ${trend(s.content.published, prev.content.published, 'content')}
+        <div class="perf-metric-icon">📝</div>
+        <div class="perf-metric-label">Content Shipped</div>
+        <div class="perf-metric-value">${s.content.published}</div>
+        <div class="perf-metric-sub">${s.content.created} new ideas</div>
+      </div>
+      <div class="perf-metric">
+        ${trend(s.reading.books_finished, prev.reading.books_finished, 'reading')}
+        <div class="perf-metric-icon">📚</div>
+        <div class="perf-metric-label">Books</div>
+        <div class="perf-metric-value">${s.reading.books_finished}</div>
+        <div class="perf-metric-sub">${s.reading.reflections_logged} reflections logged</div>
+      </div>
+    </div>
+
+    ${h.wins.length > 0 ? `
+      <div class="perf-section">
+        <div class="perf-section-title">💖 Wins to celebrate</div>
+        <div class="perf-win-list">
+          ${h.wins.map(w => `<div class="perf-win">${w}</div>`).join('')}
+        </div>
+      </div>
+    ` : ''}
+
+    ${h.focus.length > 0 ? `
+      <div class="perf-section">
+        <div class="perf-section-title">🌸 Gentle focus</div>
+        <div class="perf-win-list">
+          ${h.focus.map(f => `<div class="perf-focus">${f}</div>`).join('')}
+        </div>
+      </div>
+    ` : ''}
+
+    <div class="perf-section">
+      <div class="perf-section-title">📊 The whole picture</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;color:var(--text-soft);line-height:1.7">
+        <div><strong>Pipeline:</strong> ${s.pipeline.leads_added} new leads, ${s.pipeline.won_count} won, ${s.pipeline.lost_count} lost</div>
+        <div><strong>Active pipeline:</strong> AED ${s.pipeline.active_value.toLocaleString()}</div>
+        <div><strong>Clients:</strong> ${s.clients.active} active, ${s.clients.contacts_logged} contacts logged</div>
+        <div><strong>Active MRR:</strong> AED ${s.clients.mrr.toLocaleString()}</div>
+        <div><strong>Goals:</strong> ${s.goals.completed}/${s.goals.total} complete</div>
+        <div><strong>Top habit:</strong> ${s.habits.top_habit ? `${s.habits.top_habit.emoji || '✨'} ${s.habits.top_habit.name} (${s.habits.top_habit.count}×)` : 'none yet'}</div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('performanceLive').innerHTML = html;
+}
+
+function getHeroHeadline(s) {
+  if (s.pipeline.won_count > 0) return `${s.pipeline.won_count} deal${s.pipeline.won_count===1?'':'s'} closed ✨`;
+  if (s.tasks.completion_rate >= 80) return 'You\'re on fire';
+  if (s.habits.perfect_days >= 5) return 'Consistency queen';
+  if (s.tasks.done >= 10) return 'Showing up & shipping';
+  if (s.meetings.completed >= 5) return 'Building real relationships';
+  if (s.tasks.total === 0) return 'A blank canvas';
+  return 'Progress over perfection ♡';
+}
+
+function renderArchive(snapshots) {
+  const wrap = document.getElementById('performanceArchive');
+  if (!snapshots || snapshots.length === 0) {
+    wrap.innerHTML = '<div class="empty" style="font-size:12px">Your archive is empty — Friday 8pm and the 1st of each month will start filling it ♡<br/><br/>Or hit "Save week" / "Save month" above to take a snapshot right now.</div>';
+    return;
+  }
+  wrap.innerHTML = snapshots.map(snap => {
+    const s = snap.stats;
+    return `<div class="snapshot-card" onclick="openSnapshot(${snap.id})">
+      <div class="snapshot-card-header">
+        <div class="snapshot-card-title">${snap.period_label}</div>
+        <span class="snapshot-card-type snap-type-${snap.period_type}">${snap.period_type}</span>
+      </div>
+      <div class="snapshot-quick-stats">
+        <span>✅ ${s.tasks.done}/${s.tasks.total} tasks</span>
+        <span>🔥 ${s.habits.total_completions} habits</span>
+        ${s.pipeline.won_count > 0 ? `<span>💰 ${s.pipeline.won_count} won</span>` : ''}
+        ${s.meetings.completed > 0 ? `<span>🤝 ${s.meetings.completed} meetings</span>` : ''}
+        ${s.content.published > 0 ? `<span>📝 ${s.content.published} published</span>` : ''}
+        ${s.reading.books_finished > 0 ? `<span>📚 ${s.reading.books_finished} books</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function openSnapshot(id) {
+  const res = await fetch(`${API}/api/performance/snapshots`);
+  const all = await res.json();
+  const snap = all.find(s => s.id === id);
+  if (!snap) return;
+  const s = snap.stats;
+  const h = snap.highlights || { wins: [], focus: [] };
+
+  document.getElementById('modalClientName').textContent = `📸 ${snap.period_label}`;
+  document.getElementById('modalClientBody').innerHTML = `
+    <div class="perf-hero" style="margin-top:0">
+      <div class="perf-hero-label">${snap.period_type === 'week' ? 'Weekly snapshot' : 'Monthly snapshot'}</div>
+      <div class="perf-hero-title">${getHeroHeadline(s)}</div>
+      <div class="perf-hero-message">${snap.period_start} → ${snap.period_end}</div>
+    </div>
+
+    <div class="perf-grid">
+      <div class="perf-metric">
+        <div class="perf-metric-icon">✅</div>
+        <div class="perf-metric-label">Tasks Done</div>
+        <div class="perf-metric-value">${s.tasks.done}</div>
+        <div class="perf-metric-sub">of ${s.tasks.total} · ${s.tasks.completion_rate}%</div>
+      </div>
+      <div class="perf-metric">
+        <div class="perf-metric-icon">🔥</div>
+        <div class="perf-metric-label">Habit Wins</div>
+        <div class="perf-metric-value">${s.habits.total_completions}</div>
+        <div class="perf-metric-sub">${s.habits.perfect_days} perfect days</div>
+      </div>
+      <div class="perf-metric">
+        <div class="perf-metric-icon">🤝</div>
+        <div class="perf-metric-label">Meetings</div>
+        <div class="perf-metric-value">${s.meetings.completed}</div>
+        <div class="perf-metric-sub">of ${s.meetings.total}</div>
+      </div>
+      <div class="perf-metric">
+        <div class="perf-metric-icon">💰</div>
+        <div class="perf-metric-label">Deals Won</div>
+        <div class="perf-metric-value">${s.pipeline.won_count}</div>
+        <div class="perf-metric-sub">AED ${s.pipeline.won_value.toLocaleString()}</div>
+      </div>
+    </div>
+
+    ${h.wins && h.wins.length > 0 ? `
+      <div style="margin-top:18px">
+        <div class="perf-section-title" style="margin-bottom:10px">💖 Wins</div>
+        ${h.wins.map(w => `<div class="perf-win" style="margin-bottom:6px">${w}</div>`).join('')}
+      </div>
+    ` : ''}
+
+    <div style="margin-top:18px;display:flex;justify-content:flex-end;gap:8px">
+      <button class="btn btn-ghost btn-sm" onclick="deleteSnapshot(${snap.id})" style="color:var(--red)">Delete</button>
+    </div>
+  `;
+  document.getElementById('clientModal').classList.add('open');
+}
+
+async function generateSnapshotNow(type) {
+  toast(`Saving ${type} snapshot…`);
+  await fetch(`${API}/api/performance/snapshot`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ type })
+  });
+  toast(`📸 ${type === 'week' ? 'Week' : 'Month'} snapshot saved`);
+  loadPerformanceView();
+}
+
+async function deleteSnapshot(id) {
+  if (!confirm('Delete this snapshot?')) return;
+  await fetch(`${API}/api/performance/snapshots/${id}`, { method: 'DELETE' });
+  closeClientModal();
+  toast('Removed');
+  loadPerformanceView();
 }
 
 // ══════════════════════════════════════════
@@ -3780,7 +4241,7 @@ setInterval(() => {
 
 const urlParams = new URLSearchParams(window.location.search);
 const viewParam = urlParams.get('view');
-if (viewParam && ['weekly','content','reading','habits','pipeline','meetings','clients','monthly','quarterly','reflection'].includes(viewParam)) {
+if (viewParam && ['weekly','content','reading','habits','performance','pipeline','meetings','clients','monthly','quarterly','reflection'].includes(viewParam)) {
   switchView(viewParam);
 }
 </script>
