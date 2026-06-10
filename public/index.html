@@ -759,6 +759,258 @@ body {
 .day-add { font-size:11px; color:var(--muted2); cursor:pointer; padding:4px 0; margin-top:4px; }
 .day-add:hover { color: var(--accent); }
 
+/* ── CONTENT STUDIO ── */
+.content-filter {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  transition: all .15s;
+}
+.content-filter:hover { border-color: var(--accent-soft); }
+.content-filter.active {
+  background: linear-gradient(135deg, var(--accent), var(--rose));
+  color: #fff; border-color: transparent;
+  box-shadow: 0 2px 8px rgba(233,30,99,0.25);
+}
+
+.content-board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+.content-col {
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  min-height: 200px;
+}
+.content-col-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.content-col-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+}
+.content-col-count {
+  background: var(--surface3);
+  color: var(--text-soft);
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+}
+.content-card {
+  background: linear-gradient(135deg, #fff, var(--surface2));
+  border-radius: 10px;
+  padding: 12px;
+  border: 1px solid var(--border-soft);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.content-card:hover {
+  border-color: var(--accent-soft);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(233,30,99,0.1);
+}
+.content-card-title { font-weight: 600; font-size: 13px; margin-bottom: 6px; color: var(--text); line-height: 1.3; }
+.content-card-hook { font-size: 11px; color: var(--text-soft); font-style: italic; margin-bottom: 8px; line-height: 1.4; }
+.content-card-meta {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.content-pill {
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.brand-personal { background: #fce4ec; color: var(--accent2); }
+.brand-pr_circle { background: #e8eaf6; color: #3f51b5; }
+.platform-linkedin { background: #e3eafd; color: #0a66c2; }
+.platform-tiktok { background: #f3e5f5; color: #000; }
+.platform-instagram { background: linear-gradient(135deg, #fde2e4, #ffd1dc); color: #c2185b; }
+.type-carousel { background: #fff8e1; color: #f57c00; }
+.type-reel { background: #ffebee; color: #c2185b; }
+.type-image { background: #e8f5e9; color: #2e7d32; }
+.type-text { background: #f3e5f5; color: #6a1b9a; }
+.type-article { background: #e0f7fa; color: #00838f; }
+.type-story { background: #fce4ec; color: #ad1457; }
+
+/* ── READING ── */
+.book-card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  margin-bottom: 14px;
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 18px;
+  box-shadow: 0 2px 12px rgba(233,30,99,0.05);
+}
+.book-cover {
+  width: 100%;
+  aspect-ratio: 2/3;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(45,27,46,0.2);
+  background: var(--surface2);
+}
+.book-cover-placeholder {
+  width: 100%;
+  aspect-ratio: 2/3;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent), var(--rose));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  box-shadow: 0 4px 14px rgba(45,27,46,0.2);
+}
+.book-info { display: flex; flex-direction: column; }
+.book-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 3px;
+  line-height: 1.2;
+}
+.book-author { font-size: 12px; color: var(--muted); margin-bottom: 12px; font-style: italic; }
+.book-progress-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+.book-progress-bar { height: 6px; background: var(--surface2); border-radius: 4px; overflow: hidden; margin-bottom: 12px; }
+.book-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--rose));
+  border-radius: 4px;
+  transition: width .6s;
+}
+.book-actions { display: flex; gap: 6px; margin-top: auto; flex-wrap: wrap; }
+.book-search-result {
+  display: grid;
+  grid-template-columns: 50px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px;
+  background: var(--surface2);
+  border-radius: 8px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all .15s;
+  border: 1px solid transparent;
+}
+.book-search-result:hover { border-color: var(--accent-soft); background: var(--surface3); }
+.book-search-result img { width: 50px; height: 70px; object-fit: cover; border-radius: 4px; }
+.book-search-result-info { display: flex; flex-direction: column; gap: 3px; }
+.book-search-result-title { font-weight: 600; font-size: 13px; }
+.book-search-result-author { font-size: 11px; color: var(--muted); }
+.book-search-result-meta { font-size: 10px; color: var(--accent); font-family: 'JetBrains Mono', monospace; }
+
+.reflection-card {
+  background: linear-gradient(135deg, #fff, var(--surface2));
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  border-left: 3px solid var(--accent);
+}
+.reflection-card-prompt {
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.5px;
+}
+.reflection-card-answer { font-size: 13px; color: var(--text); line-height: 1.5; }
+.reflection-card-date { font-size: 10px; color: var(--muted); margin-top: 5px; font-family: 'JetBrains Mono', monospace; }
+
+/* ── MEETINGS ── */
+.meeting-card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  margin-bottom: 10px;
+  transition: all .2s;
+}
+.meeting-card:hover { border-color: var(--accent-soft); }
+.meeting-card.today { border-color: var(--accent); box-shadow: 0 2px 12px rgba(233,30,99,0.1); }
+.meeting-card.overdue { border-color: var(--red); }
+.meeting-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+.meeting-contact { font-weight: 600; font-size: 14px; color: var(--text); }
+.meeting-company { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.meeting-status-pill {
+  font-size: 10px;
+  padding: 3px 9px;
+  border-radius: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+}
+.ms-scheduled { background: #e3eafd; color: #3f51b5; }
+.ms-completed { background: #e0f2e9; color: #2e7d32; }
+.ms-cancelled { background: #f5f5f5; color: #616161; }
+.ms-no_show { background: #ffebee; color: #c62828; }
+
+.meeting-meta {
+  display: flex;
+  gap: 14px;
+  font-size: 11px;
+  color: var(--text-soft);
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.meeting-meta span { display: flex; align-items: center; gap: 4px; }
+.meeting-purpose { font-size: 13px; color: var(--text); margin-bottom: 8px; font-style: italic; }
+.meeting-followup {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  margin-top: 8px;
+  border-left: 3px solid var(--accent);
+}
+.meeting-followup-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: var(--accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+.meeting-actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+
 /* ── PWA install hint ── */
 .install-hint {
   display: none;
@@ -1007,6 +1259,18 @@ body {
   .goal-item { padding: 14px; }
   .goal-actions { flex-wrap: wrap; }
   .goal-value-input { width: 100px !important; }
+
+  /* Content board on mobile - stack cols */
+  .content-board { grid-template-columns: 1fr; gap: 12px; }
+  .content-col { min-height: 0; }
+  .content-filter { padding: 8px 14px; font-size: 13px; }
+
+  /* Books mobile */
+  .book-card { grid-template-columns: 70px 1fr; gap: 12px; padding: 14px; }
+  .book-title { font-size: 15px; }
+  .book-cover-placeholder { font-size: 24px; }
+  .book-search-result { grid-template-columns: 40px 1fr auto; gap: 10px; }
+  .book-search-result img { width: 40px; height: 56px; }
 }
 
 /* Very small phones */
@@ -1024,8 +1288,11 @@ body {
   <div class="nav-brand">Maggie</div>
   <div class="nav-tabs">
     <button class="nav-tab active" data-view="daily" onclick="switchView('daily')">Today</button>
-    <button class="nav-tab" data-view="weekly" onclick="switchView('weekly')">This Week</button>
+    <button class="nav-tab" data-view="weekly" onclick="switchView('weekly')">Week</button>
+    <button class="nav-tab" data-view="content" onclick="switchView('content')">Content</button>
+    <button class="nav-tab" data-view="reading" onclick="switchView('reading')">Reading</button>
     <button class="nav-tab" data-view="pipeline" onclick="switchView('pipeline')">Pipeline</button>
+    <button class="nav-tab" data-view="meetings" onclick="switchView('meetings')">Meetings</button>
     <button class="nav-tab" data-view="clients" onclick="switchView('clients')">Clients</button>
     <button class="nav-tab" data-view="monthly" onclick="switchView('monthly')">Monthly</button>
     <button class="nav-tab" data-view="quarterly" onclick="switchView('quarterly')">Quarterly</button>
@@ -1206,6 +1473,141 @@ body {
   </div>
 
   <div id="clientsList"><div class="loading">Loading…</div></div>
+</div>
+
+<!-- CONTENT -->
+<div id="view-content" class="view">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Content Studio</div>
+      <div class="page-sub">Ideas · drafts · scheduled posts</div>
+    </div>
+    <button class="btn btn-accent btn-sm" onclick="toggleAddContent()">+ New Idea</button>
+  </div>
+
+  <!-- Brand filter -->
+  <div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap">
+    <button class="content-filter active" data-brand="all" onclick="filterContent('all')">All ♡</button>
+    <button class="content-filter" data-brand="personal" onclick="filterContent('personal')">Personal</button>
+    <button class="content-filter" data-brand="pr_circle" onclick="filterContent('pr_circle')">The PR Circle</button>
+  </div>
+
+  <div class="add-content-form" id="addContentForm" style="margin-bottom:18px; flex-direction:column; align-items:stretch; background:var(--surface); padding:20px; border-radius:14px; border:1px solid var(--border)">
+    <div class="form-row">
+      <input class="f-input grow" id="cnTitle" placeholder="Idea title / topic *">
+      <select class="f-select" id="cnBrand">
+        <option value="personal">Personal</option>
+        <option value="pr_circle">The PR Circle</option>
+      </select>
+    </div>
+    <div class="form-row" style="margin-top:8px">
+      <select class="f-select" id="cnPlatform">
+        <option value="linkedin">LinkedIn</option>
+        <option value="tiktok">TikTok</option>
+        <option value="instagram">Instagram</option>
+      </select>
+      <select class="f-select" id="cnType">
+        <option value="text">Text post</option>
+        <option value="carousel">Carousel</option>
+        <option value="reel">Reel / Short video</option>
+        <option value="image">Single image</option>
+        <option value="article">Article / long-form</option>
+        <option value="story">Story</option>
+      </select>
+      <select class="f-select" id="cnStatus">
+        <option value="idea">Idea</option>
+        <option value="drafting">Drafting</option>
+        <option value="scheduled">Scheduled</option>
+        <option value="published">Published</option>
+      </select>
+      <input class="f-input" id="cnScheduled" type="date" placeholder="Scheduled date">
+    </div>
+    <input class="f-input" id="cnHook" placeholder="Hook / opening line (the scroll-stopper)" style="margin-top:8px;width:100%">
+    <textarea class="f-textarea" id="cnNotes" placeholder="Full notes, outline, or draft…" style="margin-top:8px;min-height:100px"></textarea>
+    <div style="display:flex; gap:8px; margin-top:10px">
+      <button class="btn btn-accent" onclick="saveContent()">Save Idea</button>
+      <button class="btn btn-ghost" onclick="toggleAddContent()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Kanban-style columns by status -->
+  <div class="content-board" id="contentBoard"><div class="loading">Loading…</div></div>
+</div>
+
+<!-- READING -->
+<div id="view-reading" class="view">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Reading Room</div>
+      <div class="page-sub">Currently reading · reflections · shelf</div>
+    </div>
+    <button class="btn btn-accent btn-sm" onclick="toggleAddBook()">+ Add Book</button>
+  </div>
+
+  <div class="add-book-form" id="addBookForm" style="margin-bottom:18px; flex-direction:column; align-items:stretch; background:var(--surface); padding:20px; border-radius:14px; border:1px solid var(--border)">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+      <input class="f-input grow" id="bookSearchInput" placeholder="Search for a book by title…" onkeydown="if(event.key==='Enter')searchBooks()">
+      <button class="btn btn-accent" onclick="searchBooks()">🔍 Search</button>
+      <button class="btn btn-ghost" onclick="toggleAddBook()">Cancel</button>
+    </div>
+    <div id="bookSearchResults"></div>
+  </div>
+
+  <div id="currentlyReading"><div class="loading">Loading…</div></div>
+
+  <div style="margin-top:24px">
+    <div class="card-label" style="margin-bottom:14px">📚 Completed Books</div>
+    <div id="completedBooks"></div>
+  </div>
+</div>
+
+<!-- MEETINGS -->
+<div id="view-meetings" class="view">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Meetings</div>
+      <div class="page-sub">Scheduled · completed · follow-ups</div>
+    </div>
+    <button class="btn btn-accent btn-sm" onclick="toggleAddMeeting()">+ Schedule Meeting</button>
+  </div>
+
+  <div class="stat-row" id="meetingsStats"></div>
+
+  <div class="add-meeting-form" id="addMeetingForm" style="margin-bottom:18px; flex-direction:column; align-items:stretch; background:var(--surface); padding:20px; border-radius:14px; border:1px solid var(--border)">
+    <div class="form-row">
+      <input class="f-input grow" id="mContactName" placeholder="Contact name *">
+      <input class="f-input" id="mCompany" placeholder="Company" style="max-width:180px">
+    </div>
+    <div class="form-row" style="margin-top:8px">
+      <input class="f-input" id="mDate" type="date" style="max-width:160px">
+      <input class="f-input" id="mTime" type="time" style="max-width:140px">
+      <input class="f-input grow" id="mPurpose" placeholder="Purpose (e.g. Discovery call, Pitch)">
+    </div>
+    <div class="form-row" style="margin-top:8px">
+      <input class="f-input grow" id="mLocation" placeholder="Location or video link">
+      <select class="f-select" id="mLinkLead" style="max-width:200px">
+        <option value="">Link to lead (optional)</option>
+      </select>
+      <select class="f-select" id="mLinkClient" style="max-width:200px">
+        <option value="">Link to client (optional)</option>
+      </select>
+    </div>
+    <div style="display:flex; gap:8px; margin-top:12px">
+      <button class="btn btn-accent" onclick="saveMeeting()">Schedule Meeting</button>
+      <button class="btn btn-ghost" onclick="toggleAddMeeting()">Cancel</button>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div>
+      <div class="card-label" style="margin-bottom:14px">📅 Upcoming</div>
+      <div id="upcomingMeetings"><div class="loading">Loading…</div></div>
+    </div>
+    <div>
+      <div class="card-label" style="margin-bottom:14px">✅ Recent</div>
+      <div id="recentMeetings"><div class="loading">Loading…</div></div>
+    </div>
+  </div>
 </div>
 
 <!-- MONTHLY -->
@@ -1436,6 +1838,9 @@ function switchView(name) {
   document.getElementById('view-' + name).classList.add('active');
   document.querySelector(`.nav-tab[data-view="${name}"]`)?.classList.add('active');
   if (name === 'weekly') loadWeeklyView();
+  if (name === 'content') loadContentView();
+  if (name === 'reading') loadReadingView();
+  if (name === 'meetings') loadMeetingsView();
   if (name === 'pipeline') loadPipelineView();
   if (name === 'clients') loadClientsView();
   if (name === 'monthly') loadMonthlyView();
@@ -2093,6 +2498,481 @@ function changeReflectionWeek(dir) {
   updateReflectionHeader(); loadCurrentReflection();
 }
 
+// ══════════════════════════════════════════
+//  CONTENT STUDIO
+// ══════════════════════════════════════════
+const CONTENT_STATUSES = [
+  { key: 'idea', label: 'Ideas', emoji: '💡' },
+  { key: 'drafting', label: 'Drafting', emoji: '✍️' },
+  { key: 'scheduled', label: 'Scheduled', emoji: '📅' },
+  { key: 'published', label: 'Published', emoji: '✨' },
+];
+let allContent = [];
+let contentBrandFilter = 'all';
+let editingContentId = null;
+let addContentOpen = false;
+
+async function loadContentView() {
+  const res = await fetch(`${API}/api/content`);
+  allContent = await res.json();
+  renderContentBoard();
+}
+
+function filterContent(brand) {
+  contentBrandFilter = brand;
+  document.querySelectorAll('.content-filter').forEach(b => b.classList.toggle('active', b.dataset.brand === brand));
+  renderContentBoard();
+}
+
+function renderContentBoard() {
+  const filtered = contentBrandFilter === 'all' ? allContent : allContent.filter(c => c.brand === contentBrandFilter);
+  const board = document.getElementById('contentBoard');
+  board.innerHTML = CONTENT_STATUSES.map(s => {
+    const items = filtered.filter(c => c.status === s.key);
+    const cards = items.map(c => {
+      const brandLabel = c.brand === 'pr_circle' ? 'PR Circle' : 'Personal';
+      return `<div class="content-card" onclick="editContent(${c.id})">
+        <div class="content-card-title">${c.title}</div>
+        ${c.hook ? `<div class="content-card-hook">"${c.hook}"</div>` : ''}
+        <div class="content-card-meta">
+          <span class="content-pill brand-${c.brand}">${brandLabel}</span>
+          <span class="content-pill platform-${c.platform}">${c.platform}</span>
+          <span class="content-pill type-${c.content_type}">${c.content_type}</span>
+          ${c.scheduled_date ? `<span style="font-size:10px;color:var(--accent);font-family:'JetBrains Mono',monospace;font-weight:600">${c.scheduled_date}</span>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+    return `<div class="content-col">
+      <div class="content-col-header">
+        <div class="content-col-title">${s.emoji} ${s.label}</div>
+        <div class="content-col-count">${items.length}</div>
+      </div>
+      ${cards || '<div class="empty" style="padding:8px 0;font-size:11px">—</div>'}
+    </div>`;
+  }).join('');
+}
+
+function toggleAddContent() {
+  addContentOpen = !addContentOpen;
+  document.getElementById('addContentForm').classList.toggle('open', addContentOpen);
+  if (!addContentOpen) {
+    editingContentId = null;
+    ['cnTitle','cnHook','cnNotes','cnScheduled'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('cnBrand').value = 'personal';
+    document.getElementById('cnPlatform').value = 'linkedin';
+    document.getElementById('cnType').value = 'text';
+    document.getElementById('cnStatus').value = 'idea';
+  }
+}
+
+function editContent(id) {
+  const c = allContent.find(x => x.id === id);
+  if (!c) return;
+  editingContentId = id;
+  document.getElementById('cnTitle').value = c.title || '';
+  document.getElementById('cnBrand').value = c.brand || 'personal';
+  document.getElementById('cnPlatform').value = c.platform || 'linkedin';
+  document.getElementById('cnType').value = c.content_type || 'text';
+  document.getElementById('cnStatus').value = c.status || 'idea';
+  document.getElementById('cnHook').value = c.hook || '';
+  document.getElementById('cnNotes').value = c.notes || '';
+  document.getElementById('cnScheduled').value = c.scheduled_date || '';
+  if (!addContentOpen) toggleAddContent();
+}
+
+async function saveContent() {
+  const body = {
+    title: document.getElementById('cnTitle').value.trim(),
+    brand: document.getElementById('cnBrand').value,
+    platform: document.getElementById('cnPlatform').value,
+    content_type: document.getElementById('cnType').value,
+    status: document.getElementById('cnStatus').value,
+    hook: document.getElementById('cnHook').value.trim() || null,
+    notes: document.getElementById('cnNotes').value.trim() || null,
+    scheduled_date: document.getElementById('cnScheduled').value || null,
+  };
+  if (!body.title) { toast('⚠️ Title required'); return; }
+  if (editingContentId) {
+    await fetch(`${API}/api/content/${editingContentId}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    toast('Updated ♡');
+  } else {
+    await fetch(`${API}/api/content`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    toast('Idea saved ✨');
+  }
+  toggleAddContent();
+  loadContentView();
+}
+
+// ══════════════════════════════════════════
+//  READING ROOM
+// ══════════════════════════════════════════
+let allBooks = [];
+let addBookOpen = false;
+
+async function loadReadingView() {
+  const res = await fetch(`${API}/api/books`);
+  allBooks = await res.json();
+  renderBooks();
+}
+
+function renderBooks() {
+  const reading = allBooks.filter(b => b.status === 'reading' || b.status === 'paused');
+  const completed = allBooks.filter(b => b.status === 'completed');
+
+  const readingEl = document.getElementById('currentlyReading');
+  if (reading.length === 0) {
+    readingEl.innerHTML = '<div class="empty">No books on your reading list yet — add one above ♡</div>';
+  } else {
+    readingEl.innerHTML = '<div class="card-label" style="margin-bottom:14px">📖 Currently Reading</div>' + reading.map(renderBookCard).join('');
+  }
+
+  const completedEl = document.getElementById('completedBooks');
+  if (completed.length === 0) {
+    completedEl.innerHTML = '<div class="empty" style="font-size:12px">Books you finish will appear here ♡</div>';
+  } else {
+    completedEl.innerHTML = completed.map(renderBookCard).join('');
+  }
+}
+
+function renderBookCard(b) {
+  const pct = b.total_pages ? Math.round((b.current_page / b.total_pages) * 100) : 0;
+  const cover = b.cover_url
+    ? `<img class="book-cover" src="${b.cover_url}" alt="${b.title}">`
+    : `<div class="book-cover-placeholder">${b.title[0]}</div>`;
+  const isReading = b.status === 'reading' || b.status === 'paused';
+  return `<div class="book-card" data-book-id="${b.id}">
+    ${cover}
+    <div class="book-info">
+      <div class="book-title">${b.title}</div>
+      ${b.author ? `<div class="book-author">by ${b.author}</div>` : ''}
+      ${isReading && b.total_pages ? `
+        <div class="book-progress-text">Page ${b.current_page} of ${b.total_pages} · ${pct}%</div>
+        <div class="book-progress-bar"><div class="book-progress-fill" style="width:${pct}%"></div></div>
+      ` : ''}
+      ${b.status === 'completed' ? `<div style="font-size:12px;color:var(--green);margin-bottom:10px">✨ Completed${b.completed_at?` on ${b.completed_at}`:''}</div>` : ''}
+      <div class="book-actions">
+        ${isReading ? `<button class="btn btn-accent btn-sm" onclick="openBookProgress(${b.id})">Update Progress</button>` : ''}
+        <button class="btn btn-ghost btn-sm" onclick="openBookReflections(${b.id})">📝 Reflections</button>
+        ${b.status === 'reading' ? `<button class="btn btn-ghost btn-sm" onclick="markBookComplete(${b.id})">✓ Mark complete</button>` : ''}
+        <button style="background:none;border:none;color:var(--muted2);cursor:pointer;font-size:16px;margin-left:auto" onclick="deleteBook(${b.id})">×</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleAddBook() {
+  addBookOpen = !addBookOpen;
+  document.getElementById('addBookForm').classList.toggle('open', addBookOpen);
+  if (addBookOpen) document.getElementById('bookSearchInput').focus();
+  else { document.getElementById('bookSearchInput').value = ''; document.getElementById('bookSearchResults').innerHTML = ''; }
+}
+
+async function searchBooks() {
+  const q = document.getElementById('bookSearchInput').value.trim();
+  if (!q) return;
+  const resultsEl = document.getElementById('bookSearchResults');
+  resultsEl.innerHTML = '<div class="loading">Searching…</div>';
+  try {
+    const res = await fetch(`${API}/api/books/search?q=${encodeURIComponent(q)}`);
+    const results = await res.json();
+    if (!results.length) { resultsEl.innerHTML = '<div class="empty">No books found. Try a different search.</div>'; return; }
+    resultsEl.innerHTML = '<div class="card-label" style="margin:10px 0">Pick your book ↓</div>' + results.map(r => `
+      <div class="book-search-result" onclick='addBookFromSearch(${JSON.stringify(r).replace(/'/g, "&apos;")})'>
+        ${r.cover_url ? `<img src="${r.cover_url}">` : `<div style="width:50px;height:70px;background:var(--surface3);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:600">${r.title[0]}</div>`}
+        <div class="book-search-result-info">
+          <div class="book-search-result-title">${r.title}</div>
+          <div class="book-search-result-author">${r.author || 'Unknown author'}</div>
+          ${r.total_pages ? `<div class="book-search-result-meta">${r.total_pages} pages</div>` : ''}
+        </div>
+        <button class="btn btn-accent btn-sm">+ Add</button>
+      </div>`).join('');
+  } catch (err) {
+    resultsEl.innerHTML = `<div class="empty">Search failed: ${err.message}</div>`;
+  }
+}
+
+async function addBookFromSearch(book) {
+  await fetch(`${API}/api/books`, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ ...book, current_page: 0, status: 'reading' })
+  });
+  toggleAddBook();
+  toast(`Added "${book.title}" ♡`);
+  loadReadingView();
+}
+
+async function deleteBook(id) {
+  if (!confirm('Delete this book and its reflections?')) return;
+  await fetch(`${API}/api/books/${id}`, { method: 'DELETE' });
+  loadReadingView();
+  toast('Removed');
+}
+
+async function markBookComplete(id) {
+  await fetch(`${API}/api/books/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ status: 'completed' }) });
+  loadReadingView();
+  toast('🎉 Congrats on finishing!');
+}
+
+const REFLECTION_PROMPTS = [
+  "What's the biggest idea from this chapter?",
+  "What did you learn that you didn't know before?",
+  "How could you apply this to your life or work?",
+  "What's one thing you want to remember?",
+  "Was there anything you disagreed with? Why?",
+  "What surprised you in this section?",
+  "If you had to summarise this chapter in one sentence, what would it be?",
+  "What questions do you have after reading this?",
+];
+
+function pickRandomPrompt() {
+  return REFLECTION_PROMPTS[Math.floor(Math.random() * REFLECTION_PROMPTS.length)];
+}
+
+async function openBookProgress(id) {
+  const book = allBooks.find(b => b.id === id);
+  if (!book) return;
+  const prompt = pickRandomPrompt();
+  document.getElementById('modalClientName').textContent = `📖 ${book.title}`;
+  document.getElementById('modalClientBody').innerHTML = `
+    <div style="margin-bottom:14px">
+      <div class="card-label">Update progress</div>
+      <div style="display:flex;gap:8px;margin-top:6px;align-items:center;flex-wrap:wrap">
+        <input class="f-input" id="updatePage" type="number" value="${book.current_page}" style="max-width:120px" placeholder="Current page">
+        <span style="color:var(--muted);font-size:12px">of ${book.total_pages || '?'}</span>
+        <input class="f-input" id="updateChapter" placeholder="Current chapter (optional)" style="flex:1;min-width:160px">
+      </div>
+      <button class="btn btn-accent" style="margin-top:10px" onclick="saveBookProgress(${id})">Save progress</button>
+    </div>
+    <div style="margin-top:18px;padding-top:18px;border-top:1px solid var(--border-soft)">
+      <div class="card-label">📝 Reflection prompt</div>
+      <div style="font-family:'Playfair Display',serif;font-size:15px;font-style:italic;color:var(--text);margin:10px 0">"${prompt}"</div>
+      <textarea class="f-textarea" id="reflectionAnswer" placeholder="Write what you learned, thought, or felt…" style="min-height:100px"></textarea>
+      <button class="btn btn-accent" style="margin-top:10px" onclick="saveBookReflection(${id}, '${prompt.replace(/'/g, "\\'")}')">Save reflection ♡</button>
+    </div>
+  `;
+  document.getElementById('clientModal').classList.add('open');
+}
+
+async function saveBookProgress(id) {
+  const current_page = parseInt(document.getElementById('updatePage').value) || 0;
+  const current_chapter = document.getElementById('updateChapter').value.trim() || null;
+  await fetch(`${API}/api/books/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ current_page, current_chapter }) });
+  toast('Progress saved ♡');
+  loadReadingView();
+}
+
+async function saveBookReflection(bookId, prompt) {
+  const answer = document.getElementById('reflectionAnswer').value.trim();
+  if (!answer) { toast('⚠️ Write something first'); return; }
+  const book = allBooks.find(b => b.id === bookId);
+  await fetch(`${API}/api/books/${bookId}/reflections`, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ prompt, answer, chapter: book?.current_chapter, page_at_time: book?.current_page })
+  });
+  document.getElementById('reflectionAnswer').value = '';
+  toast('Reflection saved ✨');
+}
+
+async function openBookReflections(id) {
+  const book = allBooks.find(b => b.id === id);
+  if (!book) return;
+  document.getElementById('modalClientName').textContent = `📝 Reflections — ${book.title}`;
+  const body = document.getElementById('modalClientBody');
+  body.innerHTML = '<div class="loading">Loading…</div>';
+  document.getElementById('clientModal').classList.add('open');
+  const res = await fetch(`${API}/api/books/${id}/reflections`);
+  const reflections = await res.json();
+  if (!reflections.length) {
+    body.innerHTML = '<div class="empty">No reflections yet. Update progress to get a prompt ♡</div>';
+    return;
+  }
+  body.innerHTML = reflections.map(r => `
+    <div class="reflection-card">
+      <div class="reflection-card-prompt">"${r.prompt}"</div>
+      <div class="reflection-card-answer">${r.answer}</div>
+      <div class="reflection-card-date">${r.chapter ? r.chapter + ' · ' : ''}${r.page_at_time ? 'page ' + r.page_at_time + ' · ' : ''}${new Date(r.created_at).toLocaleDateString('en-GB')}</div>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════════
+//  MEETINGS
+// ══════════════════════════════════════════
+let allMeetings = [];
+let addMeetingOpen = false;
+
+async function loadMeetingsView() {
+  // Make sure leads/clients are loaded for dropdowns
+  if (!allLeads.length) { const r = await fetch(`${API}/api/leads`); allLeads = await r.json(); }
+  if (!allClients.length) { const r = await fetch(`${API}/api/clients`); allClients = await r.json(); }
+
+  const res = await fetch(`${API}/api/meetings`);
+  allMeetings = await res.json();
+  populateMeetingDropdowns();
+  renderMeetingStats();
+  renderMeetings();
+}
+
+function populateMeetingDropdowns() {
+  const leadSel = document.getElementById('mLinkLead');
+  const clientSel = document.getElementById('mLinkClient');
+  leadSel.innerHTML = '<option value="">Link to lead (optional)</option>' +
+    allLeads.filter(l => !['closed_won','closed_lost'].includes(l.stage))
+      .map(l => `<option value="${l.id}">${l.name}${l.company?` — ${l.company}`:''}</option>`).join('');
+  clientSel.innerHTML = '<option value="">Link to client (optional)</option>' +
+    allClients.filter(c => c.status === 'active')
+      .map(c => `<option value="${c.id}">${c.name}${c.company?` — ${c.company}`:''}</option>`).join('');
+}
+
+function renderMeetingStats() {
+  const today = todayStr();
+  const upcoming = allMeetings.filter(m => m.status === 'scheduled' && m.meeting_date >= today).length;
+  const completed = allMeetings.filter(m => m.status === 'completed').length;
+  const needsFollowup = allMeetings.filter(m => m.status === 'completed' && m.followup_date && m.followup_date <= today).length;
+  const todayCount = allMeetings.filter(m => m.meeting_date === today).length;
+
+  document.getElementById('meetingsStats').innerHTML = `
+    <div class="stat-box"><div class="stat-num">${todayCount}</div><div class="stat-label">Today</div></div>
+    <div class="stat-box"><div class="stat-num">${upcoming}</div><div class="stat-label">Upcoming</div></div>
+    <div class="stat-box"><div class="stat-num">${completed}</div><div class="stat-label">Completed</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:${needsFollowup>0?'var(--red)':'var(--green)'}">${needsFollowup}</div><div class="stat-label">Follow-ups due</div></div>
+  `;
+}
+
+function renderMeetings() {
+  const today = todayStr();
+  const upcoming = allMeetings.filter(m => m.status === 'scheduled' && m.meeting_date >= today).sort((a,b) => a.meeting_date.localeCompare(b.meeting_date));
+  const past = allMeetings.filter(m => m.status !== 'scheduled' || m.meeting_date < today).sort((a,b) => b.meeting_date.localeCompare(a.meeting_date)).slice(0, 10);
+
+  document.getElementById('upcomingMeetings').innerHTML = upcoming.length === 0
+    ? '<div class="empty">No upcoming meetings</div>'
+    : upcoming.map(m => renderMeetingCard(m, true)).join('');
+
+  document.getElementById('recentMeetings').innerHTML = past.length === 0
+    ? '<div class="empty">No past meetings</div>'
+    : past.map(m => renderMeetingCard(m, false)).join('');
+}
+
+function renderMeetingCard(m, isUpcoming) {
+  const today = todayStr();
+  const isToday = m.meeting_date === today;
+  const isOverdue = isUpcoming && m.meeting_date < today;
+  const cardCls = isToday ? 'today' : (isOverdue ? 'overdue' : '');
+  return `<div class="meeting-card ${cardCls}">
+    <div class="meeting-header">
+      <div>
+        <div class="meeting-contact">${m.contact_name}</div>
+        ${m.company ? `<div class="meeting-company">${m.company}</div>` : ''}
+      </div>
+      <span class="meeting-status-pill ms-${m.status}">${m.status.replace('_', ' ')}</span>
+    </div>
+    <div class="meeting-meta">
+      <span>📅 ${m.meeting_date}${isToday ? ' (today)' : ''}</span>
+      ${m.meeting_time ? `<span>⏰ ${m.meeting_time.slice(0,5)}</span>` : ''}
+      ${m.location ? `<span>📍 ${m.location}</span>` : ''}
+    </div>
+    ${m.purpose ? `<div class="meeting-purpose">"${m.purpose}"</div>` : ''}
+    ${m.discussion_notes ? `<div style="font-size:12px;color:var(--text-soft);margin-top:8px;padding:8px;background:var(--surface2);border-radius:6px">${m.discussion_notes}</div>` : ''}
+    ${m.followup_action ? `<div class="meeting-followup">
+      <div class="meeting-followup-label">Follow-up ${m.followup_date ? `by ${m.followup_date}` : ''}</div>
+      ${m.followup_action}
+    </div>` : ''}
+    <div class="meeting-actions">
+      ${m.status === 'scheduled' ? `<button class="btn btn-accent btn-sm" onclick="completeMeeting(${m.id})">✓ Mark complete</button>` : ''}
+      <button class="btn btn-ghost btn-sm" onclick="editMeeting(${m.id})">Edit</button>
+      <button style="background:none;border:none;color:var(--muted2);cursor:pointer;font-size:14px;margin-left:auto" onclick="deleteMeeting(${m.id})">×</button>
+    </div>
+  </div>`;
+}
+
+function toggleAddMeeting() {
+  addMeetingOpen = !addMeetingOpen;
+  document.getElementById('addMeetingForm').classList.toggle('open', addMeetingOpen);
+  if (!addMeetingOpen) {
+    ['mContactName','mCompany','mDate','mTime','mPurpose','mLocation'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('mLinkLead').value = '';
+    document.getElementById('mLinkClient').value = '';
+  }
+}
+
+async function saveMeeting() {
+  const body = {
+    contact_name: document.getElementById('mContactName').value.trim(),
+    company: document.getElementById('mCompany').value.trim() || null,
+    meeting_date: document.getElementById('mDate').value,
+    meeting_time: document.getElementById('mTime').value || null,
+    purpose: document.getElementById('mPurpose').value.trim() || null,
+    location: document.getElementById('mLocation').value.trim() || null,
+    lead_id: document.getElementById('mLinkLead').value ? parseInt(document.getElementById('mLinkLead').value) : null,
+    client_id: document.getElementById('mLinkClient').value ? parseInt(document.getElementById('mLinkClient').value) : null,
+    status: 'scheduled'
+  };
+  if (!body.contact_name) { toast('⚠️ Contact name required'); return; }
+  if (!body.meeting_date) { toast('⚠️ Date required'); return; }
+  await fetch(`${API}/api/meetings`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  toast('Meeting scheduled ✨');
+  toggleAddMeeting();
+  loadMeetingsView();
+}
+
+async function completeMeeting(id) {
+  const m = allMeetings.find(x => x.id === id);
+  if (!m) return;
+  document.getElementById('modalClientName').textContent = `✅ Complete meeting with ${m.contact_name}`;
+  document.getElementById('modalClientBody').innerHTML = `
+    <div style="margin-bottom:14px">
+      <div class="card-label">What was discussed?</div>
+      <textarea class="f-textarea" id="discussionNotes" placeholder="Key points, decisions, what they said…" style="margin-top:6px;min-height:90px"></textarea>
+    </div>
+    <div style="margin-bottom:14px">
+      <div class="card-label">Follow-up action</div>
+      <input class="f-input" id="followupAction" placeholder="e.g. Send revised proposal" style="margin-top:6px;width:100%">
+    </div>
+    <div style="margin-bottom:14px">
+      <div class="card-label">Follow-up by</div>
+      <input class="f-input" id="followupDate" type="date" style="margin-top:6px;width:100%">
+    </div>
+    <button class="btn btn-accent" style="width:100%;padding:12px" onclick="saveCompleteMeeting(${id})">Save & Mark Complete ♡</button>
+  `;
+  document.getElementById('clientModal').classList.add('open');
+}
+
+async function saveCompleteMeeting(id) {
+  const body = {
+    status: 'completed',
+    discussion_notes: document.getElementById('discussionNotes').value.trim() || null,
+    followup_action: document.getElementById('followupAction').value.trim() || null,
+    followup_date: document.getElementById('followupDate').value || null,
+  };
+  await fetch(`${API}/api/meetings/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  closeClientModal();
+  toast('Meeting logged ✨');
+  loadMeetingsView();
+}
+
+async function editMeeting(id) {
+  const m = allMeetings.find(x => x.id === id);
+  if (!m) return;
+  document.getElementById('mContactName').value = m.contact_name || '';
+  document.getElementById('mCompany').value = m.company || '';
+  document.getElementById('mDate').value = m.meeting_date || '';
+  document.getElementById('mTime').value = m.meeting_time || '';
+  document.getElementById('mPurpose').value = m.purpose || '';
+  document.getElementById('mLocation').value = m.location || '';
+  document.getElementById('mLinkLead').value = m.lead_id || '';
+  document.getElementById('mLinkClient').value = m.client_id || '';
+  if (!addMeetingOpen) toggleAddMeeting();
+  toast('Editing — save to update');
+}
+
+async function deleteMeeting(id) {
+  if (!confirm('Delete this meeting?')) return;
+  await fetch(`${API}/api/meetings/${id}`, { method: 'DELETE' });
+  loadMeetingsView();
+  toast('Removed');
+}
+
 // ── INIT ──
 renderDailyQuote();
 initDateHeader();
@@ -2223,7 +3103,7 @@ setInterval(() => {
 
 const urlParams = new URLSearchParams(window.location.search);
 const viewParam = urlParams.get('view');
-if (viewParam && ['weekly','pipeline','clients','monthly','quarterly','reflection'].includes(viewParam)) {
+if (viewParam && ['weekly','content','reading','pipeline','meetings','clients','monthly','quarterly','reflection'].includes(viewParam)) {
   switchView(viewParam);
 }
 </script>

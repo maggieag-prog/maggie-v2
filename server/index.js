@@ -734,6 +734,190 @@ app.post('/api/reflections', async (req, res) => {
   res.json(data);
 });
 
+// ══════════════════════════════════════════
+//  CONTENT IDEAS API
+// ══════════════════════════════════════════
+
+app.get('/api/content', async (req, res) => {
+  const { brand, status } = req.query;
+  let query = supabase.from('content_ideas').select('*');
+  if (brand) query = query.eq('brand', brand);
+  if (status) query = query.eq('status', status);
+  const { data, error } = await query.order('updated_at', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data || []);
+});
+
+app.post('/api/content', async (req, res) => {
+  const b = req.body;
+  if (!b.title) return res.status(400).json({ error: 'title required' });
+  const { data, error } = await supabase.from('content_ideas').insert({
+    title: b.title,
+    brand: b.brand || 'personal',
+    platform: b.platform || 'linkedin',
+    content_type: b.content_type || 'text',
+    status: b.status || 'idea',
+    hook: b.hook,
+    notes: b.notes,
+    scheduled_date: b.scheduled_date,
+    published_date: b.published_date,
+    link: b.link
+  }).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.patch('/api/content/:id', async (req, res) => {
+  const { data, error } = await supabase.from('content_ideas').update(req.body).eq('id', req.params.id).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.delete('/api/content/:id', async (req, res) => {
+  await supabase.from('content_ideas').delete().eq('id', req.params.id);
+  res.json({ ok: true });
+});
+
+// ══════════════════════════════════════════
+//  BOOKS API
+// ══════════════════════════════════════════
+
+app.get('/api/books', async (req, res) => {
+  const status = req.query.status;
+  let query = supabase.from('books').select('*');
+  if (status) query = query.eq('status', status);
+  const { data, error } = await query.order('updated_at', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data || []);
+});
+
+// Search Google Books (free, no auth needed)
+app.get('/api/books/search', async (req, res) => {
+  const q = req.query.q;
+  if (!q) return res.status(400).json({ error: 'query required' });
+  try {
+    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=8&printType=books`;
+    const fetchRes = await fetch(url);
+    const data = await fetchRes.json();
+    const results = (data.items || []).map(item => ({
+      google_books_id: item.id,
+      title: item.volumeInfo.title,
+      author: (item.volumeInfo.authors || []).join(', '),
+      cover_url: (item.volumeInfo.imageLinks?.thumbnail || '').replace('http://', 'https://'),
+      total_pages: item.volumeInfo.pageCount || null,
+      description: item.volumeInfo.description?.slice(0, 200) || ''
+    }));
+    res.json(results);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/books', async (req, res) => {
+  const b = req.body;
+  if (!b.title) return res.status(400).json({ error: 'title required' });
+  const { data, error } = await supabase.from('books').insert({
+    title: b.title, author: b.author, cover_url: b.cover_url,
+    total_pages: b.total_pages, current_page: b.current_page || 0,
+    current_chapter: b.current_chapter, status: b.status || 'reading',
+    rating: b.rating, google_books_id: b.google_books_id
+  }).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.patch('/api/books/:id', async (req, res) => {
+  const body = { ...req.body };
+  // If marking complete, set completed_at
+  if (body.status === 'completed' && !body.completed_at) {
+    body.completed_at = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Dubai' });
+  }
+  const { data, error } = await supabase.from('books').update(body).eq('id', req.params.id).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.delete('/api/books/:id', async (req, res) => {
+  await supabase.from('books').delete().eq('id', req.params.id);
+  res.json({ ok: true });
+});
+
+// ── Book reflections ──
+app.get('/api/books/:id/reflections', async (req, res) => {
+  const { data, error } = await supabase.from('book_reflections')
+    .select('*').eq('book_id', req.params.id).order('created_at', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data || []);
+});
+
+app.post('/api/books/:id/reflections', async (req, res) => {
+  const { chapter, page_at_time, prompt, answer } = req.body;
+  if (!prompt || !answer) return res.status(400).json({ error: 'prompt and answer required' });
+  const { data, error } = await supabase.from('book_reflections').insert({
+    book_id: parseInt(req.params.id),
+    chapter, page_at_time, prompt, answer
+  }).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+// ══════════════════════════════════════════
+//  MEETINGS API
+// ══════════════════════════════════════════
+
+app.get('/api/meetings', async (req, res) => {
+  const { status, lead_id, client_id } = req.query;
+  let query = supabase.from('meetings').select('*');
+  if (status) query = query.eq('status', status);
+  if (lead_id) query = query.eq('lead_id', lead_id);
+  if (client_id) query = query.eq('client_id', client_id);
+  const { data, error } = await query.order('meeting_date', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data || []);
+});
+
+app.post('/api/meetings', async (req, res) => {
+  const b = req.body;
+  if (!b.contact_name || !b.meeting_date) return res.status(400).json({ error: 'contact_name and meeting_date required' });
+  const { data, error } = await supabase.from('meetings').insert({
+    lead_id: b.lead_id || null,
+    client_id: b.client_id || null,
+    contact_name: b.contact_name,
+    company: b.company,
+    meeting_date: b.meeting_date,
+    meeting_time: b.meeting_time,
+    purpose: b.purpose,
+    location: b.location,
+    status: b.status || 'scheduled',
+    discussion_notes: b.discussion_notes,
+    followup_action: b.followup_action,
+    followup_date: b.followup_date
+  }).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.patch('/api/meetings/:id', async (req, res) => {
+  const body = { ...req.body };
+  // Auto-update linked lead's next_action when meeting is completed with followup
+  const { data, error } = await supabase.from('meetings').update(body).eq('id', req.params.id).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+
+  // If meeting completed with a followup, push that to the linked lead
+  if (body.status === 'completed' && body.followup_action && data.lead_id) {
+    await supabase.from('leads').update({
+      next_action: body.followup_action,
+      next_action_date: body.followup_date
+    }).eq('id', data.lead_id);
+  }
+  res.json(data);
+});
+
+app.delete('/api/meetings/:id', async (req, res) => {
+  await supabase.from('meetings').delete().eq('id', req.params.id);
+  res.json({ ok: true });
+});
+
 app.post('/api/trigger/morning',     async (req, res) => { await sendMorningCheckin(); res.json({ ok: true }); });
 app.post('/api/trigger/afternoon',   async (req, res) => { await sendAfternoonCheckin(); res.json({ ok: true }); });
 app.post('/api/trigger/evening',     async (req, res) => { await sendEveningCalendarPreview(); res.json({ ok: true }); });
