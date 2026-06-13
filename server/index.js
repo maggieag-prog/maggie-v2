@@ -277,8 +277,13 @@ async function sendMorningCheckin() {
       body += `📋 *Today's priorities:*\n`;
       pending.forEach((t, i) => {
         const emoji = t.tag === 'pr' ? '🟣' : t.tag === 'urgent' ? '🔴' : '🟡';
-        body += `${emoji} *${i + 1}.* ${t.text}\n`;
+        const rolledIndicator = (t.rollover_count || 0) >= 3 ? ' ⚠️' : (t.rollover_count > 0 ? ` _(rolled ${t.rollover_count}×)_` : '');
+        body += `${emoji} *${i + 1}.* ${t.text}${rolledIndicator}\n`;
       });
+      const stuckCount = pending.filter(t => (t.rollover_count || 0) >= 3).length;
+      if (stuckCount > 0) {
+        body += `\n⚠️ _${stuckCount} task${stuckCount===1?'':'s'} rolled 3+ days — decide today or delete_\n`;
+      }
     }
 
     if (leads?.length > 0) {
@@ -393,11 +398,54 @@ async function sendWeeklyReflection() {
   } catch (err) { console.error('[Cron] Reflection failed:', err.message); }
 }
 
+// ══════════════════════════════════════════
+//  TASK ROLLOVER (incomplete tasks → tomorrow)
+// ══════════════════════════════════════════
+async function rolloverIncompleteTasks() {
+  try {
+    const today = todayUAE();
+    // Find all incomplete tasks dated BEFORE today
+    const { data: stragglers, error } = await supabase
+      .from('tasks')
+      .select('*')
+      .lt('date', today)
+      .eq('done', false);
+
+    if (error) { console.error('[Rollover] fetch error:', error); return; }
+    if (!stragglers || stragglers.length === 0) {
+      console.log('[Rollover] No incomplete tasks to roll over');
+      return;
+    }
+
+    // Bump each: new date = today, rollover_count + 1, original_date preserved
+    const updates = stragglers.map(t => ({
+      id: t.id,
+      date: today,
+      rollover_count: (t.rollover_count || 0) + 1,
+      original_date: t.original_date || t.date,  // first rollover sets original_date
+    }));
+
+    for (const u of updates) {
+      await supabase.from('tasks').update({
+        date: u.date,
+        rollover_count: u.rollover_count,
+        original_date: u.original_date,
+      }).eq('id', u.id);
+    }
+
+    console.log(`[Rollover] Moved ${stragglers.length} task${stragglers.length===1?'':'s'} to ${today}`);
+  } catch (err) {
+    console.error('[Rollover] failed:', err.message);
+  }
+}
+
 cron.schedule(process.env.CRON_MORNING     || '0 6 * * *',  sendMorningCheckin, { timezone: 'UTC' });
 cron.schedule(process.env.CRON_AFTERNOON   || '0 11 * * *', sendAfternoonCheckin, { timezone: 'UTC' });
 cron.schedule(process.env.CRON_EVENING     || '0 15 * * *', sendEveningCalendarPreview, { timezone: 'UTC' });
 cron.schedule(process.env.CRON_WEEKLY_REFLECTION || '0 12 * * 5', sendWeeklyReflection, { timezone: 'UTC' });
-console.log('[Cron] Schedules: morning 10am, afternoon 3pm, evening 7pm, Friday reflection 4pm (UAE)');
+// 5 mins past UAE midnight = 20:05 UTC (UAE is UTC+4)
+cron.schedule(process.env.CRON_ROLLOVER || '5 20 * * *', rolloverIncompleteTasks, { timezone: 'UTC' });
+console.log('[Cron] Schedules: morning 10am, afternoon 3pm, evening 7pm, Friday reflection 4pm, rollover at midnight (UAE)');
 
 // ══════════════════════════════════════════
 //  WHATSAPP WEBHOOK (with new "agenda" command)
@@ -1413,6 +1461,26 @@ app.delete('/api/meetings/:id', async (req, res) => {
 });
 
 app.post('/api/trigger/morning',     async (req, res) => { await sendMorningCheckin(); res.json({ ok: true }); });
+app.post('/api/trigger/rollover',    async (req, res) => { await rolloverIncompleteTasks(); res.json({ ok: true }); });
+
+// Roll over a single task to tomorrow (manual)
+app.post('/api/tasks/:id/rollover', async (req, res) => {
+  const { data: task } = await supabase.from('tasks').select('*').eq('id', req.params.id).single();
+  if (!task) return res.status(404).json({ error: 'task not found' });
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toLocaleDateString('en-CA', { timeZone: 'Asia/Dubai' });
+
+  const { data, error } = await supabase.from('tasks').update({
+    date: tomorrowStr,
+    rollover_count: (task.rollover_count || 0) + 1,
+    original_date: task.original_date || task.date,
+  }).eq('id', req.params.id).select().single();
+
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
 app.post('/api/trigger/afternoon',   async (req, res) => { await sendAfternoonCheckin(); res.json({ ok: true }); });
 app.post('/api/trigger/evening',     async (req, res) => { await sendEveningCalendarPreview(); res.json({ ok: true }); });
 app.post('/api/trigger/reflection',  async (req, res) => { await sendWeeklyReflection(); res.json({ ok: true }); });

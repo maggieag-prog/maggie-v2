@@ -432,6 +432,29 @@ body {
 }
 .task-text { flex:1; font-size:13.5px; color: var(--text); }
 
+/* Rollover badge */
+.rollover-badge {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  padding: 2px 7px;
+  margin-left: 8px;
+  border-radius: 10px;
+  background: var(--surface3);
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
+}
+.rollover-badge.stuck {
+  background: #ffe9ee;
+  color: var(--accent2);
+}
+.task-item.stuck {
+  background: linear-gradient(135deg, #fff5f8, var(--surface2));
+  border-color: #ffd6e0;
+}
+
 .task-tag {
   font-size:10px; padding:3px 9px; border-radius:12px;
   font-family:'JetBrains Mono',monospace;
@@ -2558,13 +2581,19 @@ async function loadDailyTasks() {
 function renderDailyTasks() {
   const list = document.getElementById('dailyTasksList');
   if (!allTasks.length) { list.innerHTML = '<div class="empty">A fresh start ✨ — add your first task</div>'; updateScore(); return; }
-  list.innerHTML = allTasks.map(t => `
-    <div class="task-item ${t.done?'done':''}" onclick="toggleTask(${t.id},'daily')">
+  list.innerHTML = allTasks.map(t => {
+    const rc = t.rollover_count || 0;
+    const stuck = rc >= 3;
+    const rolloverBadge = rc > 0
+      ? `<span class="rollover-badge ${stuck?'stuck':''}" title="${stuck?'Rolled '+rc+' days — decide today or delete':'Rolled over '+rc+(rc===1?' day':' days')}">↪ ${rc}${stuck?' ⚠️':''}</span>`
+      : '';
+    return `<div class="task-item ${t.done?'done':''} ${stuck?'stuck':''}" onclick="toggleTask(${t.id},'daily')">
       <div class="task-check">${t.done?'✓':''}</div>
-      <div class="task-text">${t.text}</div>
+      <div class="task-text">${t.text}${rolloverBadge}</div>
       <span class="task-tag ${tagCls(t.tag)}">${tagLabel(t.tag)}</span>
-      <button class="task-delete" onclick="deleteTask(${t.id},event,'daily')">×</button>
-    </div>`).join('');
+      <button class="task-delete" onclick="deleteTask(${t.id},event,'daily')" title="Delete">×</button>
+    </div>`;
+  }).join('');
   updateScore();
 }
 async function toggleTask(id, view) {
