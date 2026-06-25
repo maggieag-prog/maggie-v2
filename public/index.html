@@ -774,6 +774,106 @@ body {
   .snapshot-quick-stats { gap: 10px; font-size: 10px; }
 }
 
+/* ── BENCH ── */
+.bench-card {
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  margin-bottom: 12px;
+  transition: all .15s;
+}
+.bench-card:hover { border-color: var(--accent-soft); }
+.bench-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.bench-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+.bench-job {
+  font-size: 12px;
+  color: var(--text-soft);
+  font-style: italic;
+}
+.bench-status {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.bs-available { background: #e0f2e9; color: #2e7d32; }
+.bs-busy { background: #fff8e1; color: #f57c00; }
+.bs-inactive { background: #f5f5f5; color: #616161; }
+
+.bench-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 8px;
+  background: var(--surface2);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: var(--text-soft);
+}
+.bench-meta a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+.bench-meta a:hover { text-decoration: underline; }
+.bench-meta-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: var(--muted);
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.bench-skills {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.bench-skill-pill {
+  font-size: 10px;
+  padding: 3px 9px;
+  border-radius: 10px;
+  background: #fce4ec;
+  color: var(--accent2);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+}
+.bench-notes {
+  font-size: 12px;
+  color: var(--text-soft);
+  line-height: 1.5;
+  padding: 10px 12px;
+  background: var(--surface2);
+  border-radius: 8px;
+  border-left: 3px solid var(--accent-soft);
+  margin-bottom: 10px;
+}
+.bench-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
 /* Pipeline KANBAN */
 .view-toggle {
   display:flex; gap:0;
@@ -1764,6 +1864,7 @@ body {
     <button class="nav-tab" data-view="pipeline" onclick="switchView('pipeline')">Pipeline</button>
     <button class="nav-tab" data-view="meetings" onclick="switchView('meetings')">Meetings</button>
     <button class="nav-tab" data-view="clients" onclick="switchView('clients')">Clients</button>
+    <button class="nav-tab" data-view="bench" onclick="switchView('bench')">Bench</button>
     <button class="nav-tab" data-view="monthly" onclick="switchView('monthly')">Monthly</button>
     <button class="nav-tab" data-view="quarterly" onclick="switchView('quarterly')">Quarterly</button>
     <button class="nav-tab" data-view="reflection" onclick="switchView('reflection')">Reflection</button>
@@ -2154,6 +2255,53 @@ body {
       <div id="recentMeetings"><div class="loading">Loading…</div></div>
     </div>
   </div>
+</div>
+
+<!-- BENCH -->
+<div id="view-bench" class="view">
+  <div class="page-header">
+    <div>
+      <div class="page-title">The Bench</div>
+      <div class="page-sub">Your freelancer roster · who's available when you need them</div>
+    </div>
+    <button class="btn btn-accent btn-sm" onclick="toggleAddBench()">+ Add Freelancer</button>
+  </div>
+
+  <!-- Status filter -->
+  <div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap">
+    <button class="content-filter active" data-bench="all" onclick="filterBench('all')">All</button>
+    <button class="content-filter" data-bench="available" onclick="filterBench('available')">🟢 Available</button>
+    <button class="content-filter" data-bench="busy" onclick="filterBench('busy')">🟡 Busy</button>
+    <button class="content-filter" data-bench="inactive" onclick="filterBench('inactive')">⚫ Inactive</button>
+  </div>
+
+  <div class="add-bench-form" id="addBenchForm" style="margin-bottom:18px; flex-direction:column; align-items:stretch; background:var(--surface); padding:20px; border-radius:14px; border:1px solid var(--border)">
+    <div class="form-row">
+      <input class="f-input grow" id="bName" placeholder="Name *">
+      <input class="f-input" id="bJobTitle" placeholder="Job title / role" style="max-width:220px">
+    </div>
+    <div class="form-row" style="margin-top:8px">
+      <input class="f-input grow" id="bLinkedin" placeholder="LinkedIn URL">
+      <input class="f-input" id="bEmail" placeholder="Email" style="max-width:200px">
+      <input class="f-input" id="bPhone" placeholder="Phone" style="max-width:160px">
+    </div>
+    <div class="form-row" style="margin-top:8px">
+      <input class="f-input" id="bRate" placeholder="Rate (e.g. 500/day)" style="max-width:160px">
+      <input class="f-input grow" id="bSkills" placeholder="Skills (e.g. graphic design, copywriting, video)">
+      <select class="f-select" id="bStatus" style="max-width:140px">
+        <option value="available">🟢 Available</option>
+        <option value="busy">🟡 Busy</option>
+        <option value="inactive">⚫ Inactive</option>
+      </select>
+    </div>
+    <textarea class="f-textarea" id="bNotes" placeholder="Notes (work quality, reliability, past projects…)" style="margin-top:8px;min-height:80px"></textarea>
+    <div style="display:flex; gap:8px; margin-top:10px">
+      <button class="btn btn-accent" id="saveBenchBtn" onclick="saveBench()">Add to Bench ♡</button>
+      <button class="btn btn-ghost" onclick="toggleAddBench()">Cancel</button>
+    </div>
+  </div>
+
+  <div id="benchList"><div class="loading">Loading…</div></div>
 </div>
 
 <!-- MONTHLY -->
@@ -2567,6 +2715,7 @@ function switchView(name) {
   if (name === 'meetings') loadMeetingsView();
   if (name === 'pipeline') loadPipelineView();
   if (name === 'clients') loadClientsView();
+  if (name === 'bench') loadBenchView();
   if (name === 'monthly') loadMonthlyView();
   if (name === 'quarterly') loadQuarterlyView();
   if (name === 'reflection') loadReflectionView();
@@ -2838,6 +2987,139 @@ async function deleteHabitInline(id) {
   await fetch(`${API}/api/habits/${id}`, { method: 'DELETE' });
   toast('Habit deleted');
   loadHabits();
+}
+
+// ══════════════════════════════════════════
+//  BENCH (FREELANCERS)
+// ══════════════════════════════════════════
+let allBench = [];
+let benchFilter = 'all';
+let addBenchOpen = false;
+let editingBenchId = null;
+
+async function loadBenchView() {
+  const res = await fetch(`${API}/api/bench`);
+  allBench = await res.json();
+  renderBench();
+}
+
+function filterBench(status) {
+  benchFilter = status;
+  document.querySelectorAll('[data-bench]').forEach(b => b.classList.toggle('active', b.dataset.bench === status));
+  renderBench();
+}
+
+function renderBench() {
+  const filtered = benchFilter === 'all' ? allBench : allBench.filter(b => b.status === benchFilter);
+  const wrap = document.getElementById('benchList');
+
+  if (filtered.length === 0) {
+    wrap.innerHTML = '<div class="empty">No freelancers on the bench yet — add your first one above ♡</div>';
+    return;
+  }
+
+  wrap.innerHTML = filtered.map(b => {
+    const statusCls = `bs-${b.status}`;
+    const statusLabel = b.status === 'available' ? '🟢 Available' : b.status === 'busy' ? '🟡 Busy' : '⚫ Inactive';
+    const skills = (b.skills || '').split(',').map(s => s.trim()).filter(Boolean);
+
+    return `<div class="bench-card">
+      <div class="bench-header">
+        <div>
+          <div class="bench-name">${b.name}</div>
+          ${b.job_title ? `<div class="bench-job">${b.job_title}</div>` : ''}
+        </div>
+        <span class="bench-status ${statusCls}">${statusLabel}</span>
+      </div>
+
+      <div class="bench-meta">
+        ${b.linkedin ? `<div><div class="bench-meta-label">LinkedIn</div><a href="${b.linkedin.startsWith('http') ? b.linkedin : 'https://'+b.linkedin}" target="_blank">${b.linkedin.replace(/https?:\/\/(www\.)?linkedin\.com\/in\//,'').replace(/\/$/,'') || 'View profile'}</a></div>` : ''}
+        ${b.email ? `<div><div class="bench-meta-label">Email</div><a href="mailto:${b.email}">${b.email}</a></div>` : ''}
+        ${b.phone ? `<div><div class="bench-meta-label">Phone</div>${b.phone}</div>` : ''}
+        ${b.rate ? `<div><div class="bench-meta-label">Rate</div>${b.rate} ${b.currency || 'AED'}</div>` : ''}
+        ${b.rating ? `<div><div class="bench-meta-label">Rating</div>${'★'.repeat(b.rating)}${'☆'.repeat(5 - b.rating)}</div>` : ''}
+      </div>
+
+      ${skills.length > 0 ? `<div class="bench-skills">${skills.map(s => `<span class="bench-skill-pill">${s}</span>`).join('')}</div>` : ''}
+
+      ${b.notes ? `<div class="bench-notes">${b.notes}</div>` : ''}
+
+      <div class="bench-actions">
+        <button class="btn btn-ghost btn-sm" onclick="editBench(${b.id})">Edit</button>
+        <button class="btn btn-ghost btn-sm" onclick="toggleBenchStatus(${b.id})">${b.status === 'available' ? 'Mark busy' : b.status === 'busy' ? 'Mark available' : 'Reactivate'}</button>
+        <button class="btn btn-ghost btn-sm" onclick="deleteBench(${b.id})" style="color:var(--red)">Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleAddBench() {
+  addBenchOpen = !addBenchOpen;
+  document.getElementById('addBenchForm').classList.toggle('open', addBenchOpen);
+  if (!addBenchOpen) {
+    editingBenchId = null;
+    ['bName','bJobTitle','bLinkedin','bEmail','bPhone','bRate','bSkills','bNotes'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('bStatus').value = 'available';
+    document.getElementById('saveBenchBtn').textContent = 'Add to Bench ♡';
+  }
+}
+
+function editBench(id) {
+  const b = allBench.find(x => x.id === id);
+  if (!b) return;
+  editingBenchId = id;
+  document.getElementById('bName').value = b.name || '';
+  document.getElementById('bJobTitle').value = b.job_title || '';
+  document.getElementById('bLinkedin').value = b.linkedin || '';
+  document.getElementById('bEmail').value = b.email || '';
+  document.getElementById('bPhone').value = b.phone || '';
+  document.getElementById('bRate').value = b.rate || '';
+  document.getElementById('bSkills').value = b.skills || '';
+  document.getElementById('bNotes').value = b.notes || '';
+  document.getElementById('bStatus').value = b.status || 'available';
+  document.getElementById('saveBenchBtn').textContent = 'Update ♡';
+  if (!addBenchOpen) toggleAddBench();
+}
+
+async function saveBench() {
+  const body = {
+    name: document.getElementById('bName').value.trim(),
+    job_title: document.getElementById('bJobTitle').value.trim() || null,
+    linkedin: document.getElementById('bLinkedin').value.trim() || null,
+    email: document.getElementById('bEmail').value.trim() || null,
+    phone: document.getElementById('bPhone').value.trim() || null,
+    rate: document.getElementById('bRate').value.trim() || null,
+    skills: document.getElementById('bSkills').value.trim() || null,
+    notes: document.getElementById('bNotes').value.trim() || null,
+    status: document.getElementById('bStatus').value,
+  };
+  if (!body.name) { toast('⚠️ Name required'); return; }
+
+  if (editingBenchId) {
+    await fetch(`${API}/api/bench/${editingBenchId}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    toast('Updated ♡');
+  } else {
+    await fetch(`${API}/api/bench`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    toast('Added to the bench ✨');
+  }
+  toggleAddBench();
+  loadBenchView();
+}
+
+async function toggleBenchStatus(id) {
+  const b = allBench.find(x => x.id === id);
+  if (!b) return;
+  const newStatus = b.status === 'available' ? 'busy' : 'available';
+  await fetch(`${API}/api/bench/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ status: newStatus }) });
+  toast(newStatus === 'available' ? '🟢 Available' : '🟡 Busy');
+  loadBenchView();
+}
+
+async function deleteBench(id) {
+  if (!confirm('Remove this freelancer from the bench?')) return;
+  await fetch(`${API}/api/bench/${id}`, { method:'DELETE' });
+  toast('Removed');
+  loadBenchView();
 }
 
 // ══════════════════════════════════════════
@@ -3249,6 +3531,30 @@ async function loadClientsView() {
   const res = await fetch(`${API}/api/clients`);
   allClients = await res.json();
   renderClientStats(); renderClientsList();
+  // Load recent interactions for each client and render inline
+  loadClientInteractionsInline();
+}
+async function loadClientInteractionsInline() {
+  for (const c of allClients) {
+    const res = await fetch(`${API}/api/clients/${c.id}/interactions`);
+    const interactions = await res.json();
+    const el = document.getElementById(`client-history-${c.id}`);
+    if (!el) continue;
+    if (interactions.length === 0) {
+      el.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:6px 0">No interactions logged yet</div>';
+    } else {
+      const typeIcons = { call:'📞', meeting:'🤝', email:'💌', message:'💬', note:'📝' };
+      el.innerHTML = interactions.slice(0, 3).map(i => `
+        <div style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;background:var(--surface2);border-radius:8px;margin-bottom:4px;border-left:3px solid var(--accent-soft)">
+          <span style="font-size:12px;flex-shrink:0">${typeIcons[i.type] || '📝'}</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;color:var(--text);line-height:1.4">${i.summary}</div>
+            <div style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:3px">${i.date}</div>
+          </div>
+        </div>
+      `).join('') + (interactions.length > 3 ? `<div style="font-size:10px;color:var(--accent);cursor:pointer;padding:4px 0;font-family:'JetBrains Mono',monospace" onclick="openClientModal(${c.id})">+ ${interactions.length - 3} more</div>` : '');
+    }
+  }
 }
 function renderClientStats() {
   const active = allClients.filter(c => c.status === 'active');
@@ -3285,6 +3591,10 @@ function renderClientsList() {
         <div class="meta-block"><div class="meta-label">Frequency</div><div class="meta-value">Every ${c.followup_frequency_days||14} days</div></div>
       </div>
       ${c.notes ? `<div class="client-notes">${c.notes}</div>` : ''}
+      <div style="margin-top:10px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--accent);font-weight:600;text-transform:uppercase;margin-bottom:8px">Recent History</div>
+        <div id="client-history-${c.id}"><div class="loading" style="font-size:11px">Loading…</div></div>
+      </div>
       <div class="client-actions">
         <button class="btn btn-accent btn-sm" onclick="quickLogContact(${c.id})">✓ Log check-in</button>
         <button class="btn btn-ghost btn-sm" onclick="openClientModal(${c.id})">View history</button>
@@ -3999,7 +4309,7 @@ function renderMeetingCard(m, isUpcoming) {
       ${m.location ? `<span>📍 ${m.location}</span>` : ''}
     </div>
     ${m.purpose ? `<div class="meeting-purpose">"${m.purpose}"</div>` : ''}
-    ${m.discussion_notes ? `<div style="font-size:12px;color:var(--text-soft);margin-top:8px;padding:8px;background:var(--surface2);border-radius:6px">${m.discussion_notes}</div>` : ''}
+    ${m.discussion_notes ? `<div style="margin-top:10px"><div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--accent);font-weight:600;text-transform:uppercase;margin-bottom:4px">Discussion Notes</div><div style="font-size:12px;color:var(--text);padding:10px 12px;background:var(--surface2);border-radius:8px;line-height:1.5;border-left:3px solid var(--accent-soft)">${m.discussion_notes}</div></div>` : ''}
     ${m.followup_action ? `<div class="meeting-followup">
       <div class="meeting-followup-label">Follow-up ${m.followup_date ? `by ${m.followup_date}` : ''}</div>
       ${m.followup_action}
@@ -4231,7 +4541,7 @@ setInterval(() => {
 
 const urlParams = new URLSearchParams(window.location.search);
 const viewParam = urlParams.get('view');
-if (viewParam && ['weekly','content','reading','performance','pipeline','meetings','clients','monthly','quarterly','reflection'].includes(viewParam)) {
+if (viewParam && ['weekly','content','reading','performance','pipeline','meetings','clients','bench','monthly','quarterly','reflection'].includes(viewParam)) {
   switchView(viewParam);
 }
 </script>

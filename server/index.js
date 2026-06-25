@@ -1460,6 +1460,50 @@ app.delete('/api/meetings/:id', async (req, res) => {
   res.json({ ok: true });
 });
 
+// ══════════════════════════════════════════
+//  BENCH (FREELANCERS) API
+// ══════════════════════════════════════════
+
+app.get('/api/bench', async (req, res) => {
+  const status = req.query.status;
+  let q = supabase.from('bench').select('*');
+  if (status) q = q.eq('status', status);
+  const { data, error } = await q.order('name');
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data || []);
+});
+
+app.post('/api/bench', async (req, res) => {
+  const b = req.body;
+  if (!b.name) return res.status(400).json({ error: 'name required' });
+  const { data, error } = await supabase.from('bench').insert({
+    name: b.name,
+    job_title: b.job_title || null,
+    linkedin: b.linkedin || null,
+    email: b.email || null,
+    phone: b.phone || null,
+    rate: b.rate || null,
+    currency: b.currency || 'AED',
+    skills: b.skills || null,
+    notes: b.notes || null,
+    status: b.status || 'available',
+    rating: b.rating || null,
+  }).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.patch('/api/bench/:id', async (req, res) => {
+  const { data, error } = await supabase.from('bench').update(req.body).eq('id', req.params.id).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.delete('/api/bench/:id', async (req, res) => {
+  await supabase.from('bench').delete().eq('id', req.params.id);
+  res.json({ ok: true });
+});
+
 app.post('/api/trigger/morning',     async (req, res) => { await sendMorningCheckin(); res.json({ ok: true }); });
 app.post('/api/trigger/rollover',    async (req, res) => { await rolloverIncompleteTasks(); res.json({ ok: true }); });
 
