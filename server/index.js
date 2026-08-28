@@ -14,7 +14,15 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, '../public')));
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
-const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+
+// Twilio is optional — only init if credentials are set
+let twilioClient = null;
+if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
+  twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+  console.log('[Twilio] Initialized');
+} else {
+  console.log('[Twilio] Skipped — no credentials set. WhatsApp features disabled.');
+}
 
 // ══════════════════════════════════════════
 //  AUTH MIDDLEWARE
@@ -221,6 +229,7 @@ function getISOWeek(date = new Date()) {
 function getQuarter(month) { return Math.ceil(month / 3); }
 
 async function sendWA(body) {
+  if (!twilioClient) { console.log('[WA] Skipped (no Twilio)'); return; }
   return twilioClient.messages.create({
     from: process.env.TWILIO_WHATSAPP_FROM,
     to: process.env.YOUR_WHATSAPP_NUMBER,
@@ -452,6 +461,7 @@ console.log('[Cron] Schedules: morning 10am, afternoon 3pm, evening 7pm, Friday 
 // ══════════════════════════════════════════
 
 app.post('/webhook/whatsapp', async (req, res) => {
+  if (!twilioClient) return res.sendStatus(503);
   const raw = (req.body.Body || '').trim();
   const msg = raw.toLowerCase();
   const from = req.body.From;
