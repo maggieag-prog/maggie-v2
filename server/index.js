@@ -671,8 +671,19 @@ app.get('/api/calendar/upcoming', async (req, res) => {
 });
 
 // ── All existing API routes ──
+// Auto-rollover: runs once per calendar day, triggered on first tasks fetch
+let lastRolloverDate = null;
+
 app.get('/api/tasks', async (req, res) => {
   const date = req.query.date || todayUAE();
+  const today = todayUAE();
+
+  // If fetching today's tasks and we haven't rolled over yet today, do it now
+  if (date === today && lastRolloverDate !== today) {
+    lastRolloverDate = today;
+    await rolloverIncompleteTasks();
+  }
+
   const { data } = await supabase.from('tasks').select('*').eq('date', date).order('created_at');
   res.json(data || []);
 });
@@ -1057,14 +1068,36 @@ async function sendWeeklySummary() {
     const s = snap.stats;
     const h = snap.highlights;
 
+    // Fetch outreach data for this week
+    const thisWeek = getWeekRange();
+    const { data: outreachData } = await supabase.from('outreach_daily')
+      .select('*').gte('date', thisWeek.from).lte('date', thisWeek.to);
+    const outreach = {};
+    const oMetrics = ['messages_sent','connections_sent','connections_accepted','replies_received',
+      'positive_replies','conversations_started','meetings_booked','follow_ups','content_posts'];
+    oMetrics.forEach(m => { outreach[m] = (outreachData || []).reduce((s, d) => s + (d[m] || 0), 0); });
+
     let body = `✨ *Your Week in Review*\n_${snap.period_label}_\n\n`;
 
-    // Header line
     if (s.tasks.completion_rate >= 70) body += `🌟 *What a week, beautiful!*\n\n`;
     else if (s.pipeline.won_count > 0) body += `🎉 *Wins this week!*\n\n`;
     else body += `💕 *Here's your week:*\n\n`;
 
-    body += `📊 *The numbers*\n`;
+    // Outreach section
+    if (outreach.messages_sent > 0 || outreach.connections_sent > 0) {
+      body += `📣 *Outreach*\n`;
+      body += `• Messages sent: ${outreach.messages_sent}\n`;
+      body += `• Connections: ${outreach.connections_sent} sent → ${outreach.connections_accepted} accepted\n`;
+      body += `• Replies: ${outreach.replies_received} (${outreach.positive_replies} positive)\n`;
+      body += `• Meetings booked: ${outreach.meetings_booked}\n`;
+      if (outreach.connections_sent > 0) {
+        const accRate = Math.round((outreach.connections_accepted / outreach.connections_sent) * 100);
+        body += `• Acceptance rate: ${accRate}%\n`;
+      }
+      body += `\n`;
+    }
+
+    body += `📊 *Activity*\n`;
     body += `• Tasks: ${s.tasks.done}/${s.tasks.total} (${s.tasks.completion_rate}%)\n`;
     body += `• Habit completions: ${s.habits.total_completions}${s.habits.perfect_days > 0 ? ` · ${s.habits.perfect_days} perfect day${s.habits.perfect_days===1?'':'s'}` : ''}\n`;
     if (s.meetings.total > 0) body += `• Meetings: ${s.meetings.completed}/${s.meetings.total} completed\n`;
@@ -1072,7 +1105,6 @@ async function sendWeeklySummary() {
       body += `• Pipeline: ${s.pipeline.leads_added} new · ${s.pipeline.won_count} won (AED ${s.pipeline.won_value.toLocaleString()})\n`;
     }
     if (s.content.published > 0) body += `• Content published: ${s.content.published}\n`;
-    if (s.reading.books_finished > 0) body += `• Books finished: ${s.reading.books_finished}\n`;
 
     if (h.wins.length > 0) {
       body += `\n💖 *Wins to celebrate*\n`;
@@ -1084,7 +1116,7 @@ async function sendWeeklySummary() {
       h.focus.slice(0, 2).forEach(f => body += `• ${f}\n`);
     }
 
-    body += `\n🔗 ${process.env.APP_URL}?view=performance`;
+    body += `\n🔗 ${process.env.APP_URL}?view=outreach`;
 
     await sendWA(body);
     console.log('[Cron] Weekly summary sent + snapshot saved');
@@ -1471,6 +1503,107 @@ app.delete('/api/meetings/:id', async (req, res) => {
 });
 
 // ══════════════════════════════════════════
+//  OUTREACH TRACKING API
+// ══════════════════════════════════════════
+
+// Get outreach data for a week (Mon-Sun containing the given date)
+app.get('/api/outreach/week', async (req, res) => {
+  const refDate = req.query.date ? new Date(req.query.date + 'T00:00:00') : new Date();
+  const dow = (refDate.getDay() + 6) % 7;
+  const monday = new Date(refDate); monday.setDate(refDate.getDate() - dow);
+  const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
+  const from = monday.toLocaleDateString('en-CA', { timeZone: 'Asia/Dubai' });
+  const to = sunday.toLocaleDateString('en-CA', { timeZone: 'Asia/Dubai' });
+
+  const { data, error } = await supabase.from('outreach_daily')
+    .select('*').gte('date', from).lte('date', to).order('date');
+  if (error) return res.status(500).json({ error: error.message });
+
+  // Build full 7-day grid (fill missing days with zeros)
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday); d.setDate(monday.getDate() + i);
+    const ds = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Dubai' });
+    const existing = (data || []).find(r => r.date === ds);
+    days.push(existing || {
+      date: ds, messages_sent: 0, connections_sent: 0, connections_accepted: 0,
+      replies_received: 0, positive_replies: 0, conversations_started: 0,
+      meetings_booked: 0, follow_ups: 0, content_posts: 0
+    });
+  }
+
+  // Calculate totals
+  const totals = {};
+  const metrics = ['messages_sent','connections_sent','connections_accepted','replies_received',
+    'positive_replies','conversations_started','meetings_booked','follow_ups','content_posts'];
+  metrics.forEach(m => { totals[m] = days.reduce((s, d) => s + (d[m] || 0), 0); });
+
+  // Calculate conversion rates
+  const conversions = {
+    connection_acceptance: totals.connections_sent > 0 ? Math.round((totals.connections_accepted / totals.connections_sent) * 100) : 0,
+    response_rate: totals.connections_accepted > 0 ? Math.round((totals.replies_received / totals.connections_accepted) * 100) : 0,
+    positive_rate: totals.replies_received > 0 ? Math.round((totals.positive_replies / totals.replies_received) * 100) : 0,
+    meeting_conversion: totals.positive_replies > 0 ? Math.round((totals.meetings_booked / totals.positive_replies) * 100) : 0,
+  };
+
+  res.json({ from, to, days, totals, conversions });
+});
+
+// Upsert a day's outreach numbers
+app.post('/api/outreach/day', async (req, res) => {
+  const { date, ...metrics } = req.body;
+  if (!date) return res.status(400).json({ error: 'date required' });
+
+  // Check if row exists
+  const { data: existing } = await supabase.from('outreach_daily').select('id').eq('date', date).single();
+  let result;
+  if (existing) {
+    result = await supabase.from('outreach_daily').update(metrics).eq('date', date).select().single();
+  } else {
+    result = await supabase.from('outreach_daily').insert({ date, ...metrics }).select().single();
+  }
+  if (result.error) return res.status(500).json({ error: result.error.message });
+  res.json(result.data);
+});
+
+// Sector tracking
+app.get('/api/outreach/sectors', async (req, res) => {
+  const { data, error } = await supabase.from('outreach_sectors').select('*').order('sector');
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data || []);
+});
+
+app.patch('/api/outreach/sectors/:id', async (req, res) => {
+  const { data, error } = await supabase.from('outreach_sectors').update(req.body).eq('id', req.params.id).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.post('/api/outreach/sectors', async (req, res) => {
+  if (!req.body.sector) return res.status(400).json({ error: 'sector required' });
+  const { data, error } = await supabase.from('outreach_sectors').insert({ sector: req.body.sector }).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.delete('/api/outreach/sectors/:id', async (req, res) => {
+  await supabase.from('outreach_sectors').delete().eq('id', req.params.id);
+  res.json({ ok: true });
+});
+
+// Get all outreach weeks (for history / reports)
+app.get('/api/outreach/history', async (req, res) => {
+  const weeks = parseInt(req.query.weeks) || 8;
+  const now = new Date();
+  const since = new Date(now); since.setDate(since.getDate() - (weeks * 7));
+  const sinceStr = since.toLocaleDateString('en-CA', { timeZone: 'Asia/Dubai' });
+  const { data, error } = await supabase.from('outreach_daily')
+    .select('*').gte('date', sinceStr).order('date', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data || []);
+});
+
+// ══════════════════════════════════════════
 //  BENCH (FREELANCERS) API
 // ══════════════════════════════════════════
 
@@ -1539,7 +1672,15 @@ app.post('/api/trigger/afternoon',   async (req, res) => { await sendAfternoonCh
 app.post('/api/trigger/evening',     async (req, res) => { await sendEveningCalendarPreview(); res.json({ ok: true }); });
 app.post('/api/trigger/reflection',  async (req, res) => { await sendWeeklyReflection(); res.json({ ok: true }); });
 
-app.get('/health', (req, res) => res.json({ status: 'ok' }));
+app.get('/health', async (req, res) => {
+  // Also trigger rollover on health pings (cron-job.org hits this every 10 mins)
+  const today = todayUAE();
+  if (lastRolloverDate !== today) {
+    lastRolloverDate = today;
+    await rolloverIncompleteTasks();
+  }
+  res.json({ status: 'ok' });
+});
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, '../public/index.html')));
 
 const PORT = process.env.PORT || 3000;
